@@ -1,0 +1,102 @@
+rules_version = '2';
+
+// KIDDO — Firestore security rules.
+//
+// The parent owns the account. A child is a profile that belongs to exactly
+// one parent, and a journey belongs to exactly one child. Every rule below
+// is "the signed-in parent, and only for what is theirs"; everything else —
+// including every unauthenticated request — is denied by the final match.
+//
+// Enumeration is impossible by construction: `users/{uid}` and
+// `journeys/{childId}` can only be read by id, and a `children` list query
+// is only allowed when it is filtered to `parentId == request.auth.uid`
+// (Firestore rejects a query whose possible results the rules would deny).
+//
+// Tested with the emulator: `npm run test:rules` (see tests/firestore.rules.test.mjs).
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null && request.auth.uid != null;
+    }
+
+    function isOwner(uid) {
+      return signedIn() && request.auth.uid == uid;
+    }
+
+    function ownsChild(childId) {
+      return signedIn()
+        && exists(/databases/$(database)/documents/children/$(childId))
+        && get(/databases/$(database)/documents/children/$(childId)).data.parentId == request.auth.uid;
+    }
+
+    function onlyKeys(keys) {
+      return request.resource.data.keys().hasOnly(keys);
+    }
+
+    function validName(name) {
+      return name is string && name.size() >= 1 && name.size() <= 24;
+    }
+
+    // users/{uid} — one document per parent account, keyed by auth uid.
+    //
+    // `subscription` is the server's field: written by the Stripe webhook
+    // through the Admin SDK (which bypasses these rules), readable by the
+    // owner, and never creatable or changeable from a client. An update
+    // may only touch `email` and `updatedAt`; a create may not carry
+    // `subscription` at all.
+    match /users/{uid} {
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid)
+        && onlyKeys(['email', 'createdAt', 'updatedAt'])
+        && request.resource.data.email is string
+        && request.resource.data.email == request.auth.token.email;
+      allow update: if isOwner(uid)
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'updatedAt'])
+        && request.resource.data.email == resource.data.email;
+      allow delete: if isOwner(uid);
+    }
+
+    // stripeEvents/{eventId} — the webhook's idempotency log. Server only.
+    match /stripeEvents/{eventId} {
+      allow read, write: if false;
+    }
+
+    // children/{childId} — a profile owned by one parent. parentId is fixed
+    // at creation and can never be changed, so a child cannot be moved to
+    // another account from the client.
+    match /children/{childId} {
+      allow read: if signedIn() && resource.data.parentId == request.auth.uid;
+      allow create: if signedIn()
+        && onlyKeys(['parentId', 'name', 'createdAt', 'updatedAt'])
+        && request.resource.data.parentId == request.auth.uid
+        && validName(request.resource.data.name);
+      allow update: if signedIn()
+        && resource.data.parentId == request.auth.uid
+        && request.resource.data.parentId == resource.data.parentId
+        && onlyKeys(['parentId', 'name', 'createdAt', 'updatedAt'])
+        && validName(request.resource.data.name)
+        && request.resource.data.createdAt == resource.data.createdAt;
+      allow delete: if signedIn() && resource.data.parentId == request.auth.uid;
+    }
+
+    // journeys/{childId} — the child's Journey, keyed by the child's id so
+    // ownership is a single lookup on the child document.
+    match /journeys/{childId} {
+      allow read, delete: if ownsChild(childId);
+      allow create, update: if ownsChild(childId)
+        && onlyKeys(['completed', 'medium', 'hard', 'last', 'updatedAt'])
+        && request.resource.data.completed is list
+        && request.resource.data.completed.size() <= 200
+        && (!request.resource.data.keys().hasAny(['medium'])
+          || (request.resource.data.medium is list && request.resource.data.medium.size() <= 200))
+        && (!request.resource.data.keys().hasAny(['hard'])
+          || (request.resource.data.hard is list && request.resource.data.hard.size() <= 200))
+        && (request.resource.data.last == null || request.resource.data.last is string);
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

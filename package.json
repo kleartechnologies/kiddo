@@ -1,0 +1,49 @@
+{
+  "name": "kiddo",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON --import ./scripts/alias-hook.mjs --test \"tests/**/*.test.ts\"",
+    "measure": "node scripts/measure-viewports.mjs",
+    "measure:order": "node scripts/measure-order.mjs",
+    "measure:match": "node scripts/measure-match.mjs",
+    "measure:match-quest": "node scripts/measure-match-quest.mjs",
+    "measure:mixed": "node scripts/measure-mixed.mjs",
+    "measure:batch": "node scripts/measure-mixed.mjs http://127.0.0.1:4310/playground/batch",
+    "measure:visual": "node scripts/measure-visual.mjs",
+    "measure:magic": "node scripts/measure-magic.mjs",
+    "measure:worlds": "node scripts/measure-worlds.mjs",
+    "measure:magic-wired": "node scripts/measure-magic-wired.mjs",
+    "measure:quest-magic": "node scripts/measure-quest-magic.mjs",
+    "measure:journey": "node scripts/measure-journey.mjs",
+    "measure:parents": "node scripts/measure-parents.mjs",
+    "measure:landing": "node scripts/measure-landing.mjs",
+    "measure:account": "node scripts/measure-account.mjs",
+    "test:rules": "node scripts/test-rules.mjs"
+  },
+  "dependencies": {
+    "firebase": "^12.18.0",
+    "firebase-admin": "^14.3.0",
+    "framer-motion": "^13.1.1",
+    "lucide-react": "^1.33.0",
+    "next": "16.3.2",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "stripe": "^22.5.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.2",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.2",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}

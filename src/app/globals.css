@@ -1,0 +1,189 @@
+@import "tailwindcss";
+
+/* ==========================================================================
+   KIDDO design tokens
+   The single source of truth for colour, type, radius, shadow and motion.
+   Everything in the UI should reach for a token, never a raw hex value.
+   ========================================================================== */
+
+@theme {
+  /* --- Surfaces -------------------------------------------------------- */
+  --color-cream-50: #fefcf8;
+  --color-cream-100: #fbf8f3; /* Paper. The canonical product background. */
+  --color-paper: #ffffff;
+  --color-edge: #ece5da; /* hairline borders on paper */
+
+  /* --- Ink -------------------------------------------------------------
+     One warm near-black for every face and every piece of type. */
+  --color-ink-900: #2e2a32;
+  --color-ink-700: #4a4550;
+  --color-ink-500: #78737f;
+  --color-ink-300: #ada8b2;
+
+  /* --- Character hues --------------------------------------------------
+     Five hues, one per character, plus honey for rewards. `base` is the
+     exact hex the character is drawn in and must never be re-tuned; soft,
+     deep and ink are UI shades derived from it for surfaces and text. */
+  --color-sage-soft: #e7f1ea;
+  --color-sage-base: #93c8a3; /* KIDDO · brand primary */
+  --color-sage-deep: #6fa681;
+  --color-sage-ink: #35634a;
+
+  --color-apricot-soft: #fbeadd;
+  --color-apricot-base: #efa470; /* FOXY */
+  --color-apricot-deep: #d4844f;
+  --color-apricot-ink: #7a4526;
+
+  --color-blossom-soft: #fbe6e7;
+  --color-blossom-base: #efa6ab; /* BIBI */
+  --color-blossom-deep: #d67f86;
+  --color-blossom-ink: #7c3b41;
+
+  --color-sprout-soft: #edf3da;
+  --color-sprout-base: #bcd37c; /* PIP */
+  --color-sprout-deep: #9cb65c;
+  --color-sprout-ink: #4c5c22;
+
+  --color-tide-soft: #e3eef6;
+  --color-tide-base: #8fbad9; /* WALLY */
+  --color-tide-deep: #6795b7;
+  --color-tide-ink: #2c4e66;
+
+  --color-honey-soft: #fdf2dc;
+  --color-honey-base: #f6d189; /* rewards, stars, confetti */
+  --color-honey-deep: #d9af5f;
+  --color-honey-ink: #6b4e14;
+
+  /* Cheeks only, drawn at 26-45% opacity. Never a surface colour. */
+  --color-blush: #e88c74;
+
+  /* --- Feedback --------------------------------------------------------
+     Warm, never alarming. "retry" is apricot, not red: KIDDO never scolds. */
+  --color-yes: #4e8a6b;
+  --color-yes-soft: #e7f1ea;
+  --color-retry: #d4844f;
+  --color-retry-soft: #fbeadd;
+  /* Ink, so the focus ring is maximum contrast and not a sixth hue. */
+  --color-focus: #2e2a32;
+
+  /* --- Type ------------------------------------------------------------ */
+  --font-display: var(--font-fredoka), ui-rounded, "SF Pro Rounded", system-ui,
+    sans-serif;
+  --font-sans: var(--font-nunito), ui-rounded, system-ui, sans-serif;
+
+  /* --- Radius ---------------------------------------------------------- */
+  --radius-tile: 1.25rem;
+  --radius-card: 1.75rem;
+  --radius-hero: 2.5rem;
+
+  /* --- Shadows ---------------------------------------------------------
+     Soft and warm, never grey. Characters themselves never take a shadow. */
+  --shadow-soft: 0 2px 0 0 rgb(46 42 50 / 0.04), 0 10px 24px -12px rgb(46 42 50 / 0.16);
+  --shadow-lift: 0 4px 0 0 rgb(46 42 50 / 0.05), 0 20px 36px -16px rgb(46 42 50 / 0.22);
+
+  /* --- Motion ----------------------------------------------------------- */
+  --ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+/* Deliberately a single, bright, daylight theme. KIDDO has no dark mode:
+   a children's play world should look the same for every child. */
+:root {
+  color-scheme: light;
+}
+
+@layer base {
+  html {
+    -webkit-tap-highlight-color: transparent;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    background-color: var(--color-cream-100);
+    color: var(--color-ink-900);
+    font-family: var(--font-sans);
+    /* Children drag on the screen constantly; stop rubber-band selection. */
+    -webkit-user-select: none;
+    user-select: none;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  /* One consistent, high-contrast focus ring everywhere. */
+  :focus-visible {
+    outline: 3px solid var(--color-focus);
+    outline-offset: 3px;
+    border-radius: 0.5rem;
+  }
+
+  button,
+  a {
+    touch-action: manipulation;
+  }
+}
+
+@layer utilities {
+  /* Minimum comfortable target for small hands (Apple/Google guidance is
+     44px; we go bigger because the audience is 4-8 year olds). */
+  .tap-target {
+    min-height: 3.5rem;
+    min-width: 3.5rem;
+  }
+
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* ==========================================================================
+   KIDDO World — the only thing in the product that moves on its own.
+
+   The house rule is that nothing loops in the background, and it still holds
+   for anything a child could mistake for part of a game. Clouds are the one
+   exception, and only on the home screen: they cross about a fifth of their
+   own width over a minute and a half, which is slower than a real cloud and
+   far too slow to catch the eye — you notice it after looking away and back,
+   which is exactly what makes the place feel alive rather than printed.
+
+   Declared inside `no-preference` rather than switched off further down: the
+   blanket reduce rule below collapses durations to nothing, and a transform
+   animation collapsed that way *jumps* to its end position instead of never
+   starting. Under reduce these clouds are simply never animated at all.
+   ========================================================================== */
+@media (prefers-reduced-motion: no-preference) {
+  .world-drift {
+    animation: world-drift 96s ease-in-out infinite alternate;
+  }
+
+  .world-drift-slow {
+    animation: world-drift 148s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes world-drift {
+  from {
+    transform: translate3d(-11%, 0, 0);
+  }
+  to {
+    transform: translate3d(11%, 0, 0);
+  }
+}
+
+/* Respect the OS setting. Framer Motion is additionally configured with
+   reducedMotion="user", this covers plain CSS transitions. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

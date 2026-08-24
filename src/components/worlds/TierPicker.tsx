@@ -1,0 +1,82 @@
+"use client";
+
+import { ArrowRight, Check, Lock } from "lucide-react";
+
+import { cn } from "@/lib/cn";
+import type { TierState } from "@/lib/journey/journey";
+import { TIERS, TIER_WORDS, type Tier } from "@/lib/worlds/activities";
+
+/**
+ * Three buttons: Easy, Medium, Hard.
+ *
+ * The one piece of UI the difficulty system owns. It renders *state*, never
+ * decides it — what is done, ready or locked comes from the journey via
+ * `tierStateOf`, and what happens on a tap is the caller's. A locked tier is
+ * still a real button a screen reader can land on and hear "Hard. Locked." —
+ * it just does nothing when pressed, the way a locked door still has a
+ * handle. Nothing here says "wrong", "score" or "level": a tier is only how
+ * big a challenge the same friendly round deals.
+ *
+ * State is never colour alone: done wears a check, ready an arrow, locked a
+ * padlock, each beside its word.
+ */
+
+const STATE_WORDS: Record<TierState, string> = {
+  done: "Completed",
+  ready: "Unlocked",
+  locked: "Locked",
+};
+
+export function TierPicker({
+  states,
+  selected,
+  onSelect,
+}: {
+  states: Readonly<Record<Tier, TierState>>;
+  selected: Tier | null;
+  onSelect: (tier: Tier) => void;
+}) {
+  return (
+    <div
+      role="group"
+      aria-label="How big a challenge"
+      className="flex flex-wrap items-center justify-center gap-2"
+    >
+      {TIERS.map((tier) => {
+        const state = states[tier];
+        const locked = state === "locked";
+        const active = selected === tier;
+        return (
+          <button
+            key={tier}
+            type="button"
+            data-tier={tier}
+            data-tier-state={state}
+            aria-pressed={active}
+            aria-disabled={locked || undefined}
+            aria-label={`${TIER_WORDS[tier]}. ${STATE_WORDS[state]}.`}
+            onClick={() => {
+              if (!locked) onSelect(tier);
+            }}
+            className={cn(
+              "inline-flex min-h-12 min-w-12 items-center justify-center gap-1.5 rounded-full border-2 px-4 text-base font-semibold transition-colors",
+              active
+                ? "bg-tide-soft border-tide-base text-tide-ink"
+                : "bg-paper border-edge text-ink-700",
+              locked && "opacity-60",
+            )}
+          >
+            {state === "done" ? (
+              <Check className="size-4" strokeWidth={3} aria-hidden />
+            ) : locked ? (
+              <Lock className="size-4" aria-hidden />
+            ) : (
+              <ArrowRight className="size-4" aria-hidden />
+            )}
+            {TIER_WORDS[tier]}
+          </button>
+        );
+      })}
+    </div>
+  );
+}

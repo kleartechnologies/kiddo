@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@600;700;800;900&family=Work+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  html, body { margin: 0; padding: 0; background: #FBF8F3; }
+  * { box-sizing: border-box; }
+  a { color: #4E8A6B; text-decoration: none; border-bottom: 1px solid rgba(78,138,107,.35); }
+  a:hover { color: #2E2A32; border-bottom-color: #2E2A32; }
+</style>
+</helmet>
+
+<svg aria-hidden="true" style="position:absolute;width:0;height:0;overflow:hidden">
+  <defs>
+    <g id="k-arm"><rect x="-10" y="-8" width="20" height="44" rx="10" fill="#93C8A3"></rect><circle cx="0" cy="40" r="12.5" fill="#93C8A3"></circle></g>
+    <g id="k-leg"><rect x="-12" y="-10" width="24" height="32" rx="12" fill="#93C8A3"></rect><ellipse cx="0" cy="28" rx="17" ry="12" fill="#93C8A3"></ellipse></g>
+    <g id="fx-arm"><rect x="-10" y="-8" width="20" height="44" rx="10" fill="#EFA470"></rect><circle cx="0" cy="40" r="12.5" fill="#EFA470"></circle></g><g id="fx-leg"><rect x="-12" y="-10" width="24" height="32" rx="12" fill="#EFA470"></rect><ellipse cx="0" cy="28" rx="17" ry="12" fill="#EFA470"></ellipse></g>
+    <g id="bb-arm"><rect x="-10" y="-8" width="20" height="44" rx="10" fill="#EFA6AB"></rect><circle cx="0" cy="40" r="12.5" fill="#EFA6AB"></circle></g><g id="bb-leg"><rect x="-12" y="-10" width="24" height="32" rx="12" fill="#EFA6AB"></rect><ellipse cx="0" cy="28" rx="17" ry="12" fill="#EFA6AB"></ellipse></g>
+    <g id="pp-arm"><rect x="-10" y="-8" width="20" height="44" rx="10" fill="#BCD37C"></rect><circle cx="0" cy="40" r="12.5" fill="#BCD37C"></circle></g><g id="pp-leg"><rect x="-12" y="-10" width="24" height="32" rx="12" fill="#BCD37C"></rect><ellipse cx="0" cy="28" rx="17" ry="12" fill="#BCD37C"></ellipse></g>
+    <g id="k-shadow"><ellipse cx="100" cy="212" rx="46" ry="8" fill="#2E2A32" opacity=".07"></ellipse></g>
+
+    <g id="k-core">
+      <circle cx="62" cy="60" r="23" fill="#93C8A3"></circle>
+      <circle cx="62" cy="60" r="11" fill="#FFFFFF" opacity=".38"></circle>
+      <circle cx="138" cy="60" r="23" fill="#93C8A3"></circle>
+      <circle cx="138" cy="60" r="11" fill="#FFFFFF" opacity=".38"></circle>
+      <ellipse cx="100" cy="118" rx="56" ry="54" fill="#93C8A3"></ellipse>
+      <ellipse cx="100" cy="140" rx="33" ry="27" fill="#FFFFFF" opacity=".34"></ellipse>
+    </g>
+    <g id="k-limbs-idle">
+      <use href="#k-arm" transform="translate(54,112) rotate(24)"></use>
+      <use href="#k-arm" transform="translate(146,112) rotate(-24)"></use>
+      <use href="#k-leg" transform="translate(80,166)"></use>
+      <use href="#k-leg" transform="translate(120,166)"></use>
+    </g>
+
+    <g id="f-cheeks"><circle cx="58" cy="130" r="10" fill="#E88C74" opacity=".32"></circle><circle cx="142" cy="130" r="10" fill="#E88C74" opacity=".32"></circle></g>
+
+    <g id="f-happy">
+      <ellipse cx="81" cy="110" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="119" cy="110" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="85.5" cy="104.5" r="4" fill="#FFFFFF"></circle>
+      <circle cx="123.5" cy="104.5" r="4" fill="#FFFFFF"></circle>
+      <path d="M87 139 Q100 152 113 139" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <use href="#f-cheeks"></use>
+    </g>
+    <g id="f-curious">
+      <ellipse cx="86" cy="109" rx="11" ry="13" fill="#2E2A32"></ellipse>
+      <ellipse cx="124" cy="109" rx="11" ry="13" fill="#2E2A32"></ellipse>
+      <circle cx="90.5" cy="103.5" r="3.8" fill="#FFFFFF"></circle>
+      <circle cx="128.5" cy="103.5" r="3.8" fill="#FFFFFF"></circle>
+      <path d="M112 88 Q123 81 134 88" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <ellipse cx="102" cy="142" rx="6.5" ry="7.5" fill="#2E2A32"></ellipse>
+      <use href="#f-cheeks"></use>
+    </g>
+    <g id="f-thinking">
+      <ellipse cx="79" cy="106" rx="10" ry="11.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="117" cy="106" rx="10" ry="11.5" fill="#2E2A32"></ellipse>
+      <circle cx="83" cy="101" r="3.4" fill="#FFFFFF"></circle>
+      <circle cx="121" cy="101" r="3.4" fill="#FFFFFF"></circle>
+      <path d="M66 86 Q79 80 91 86" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <path d="M105 85 Q117 80 129 86" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <path d="M92 143 Q100 139 109 142" fill="none" stroke="#2E2A32" stroke-width="5" stroke-linecap="round"></path>
+      <circle cx="156" cy="74" r="4" fill="#2E2A32" opacity=".2"></circle>
+      <circle cx="170" cy="58" r="6" fill="#2E2A32" opacity=".16"></circle>
+      <circle cx="186" cy="40" r="8.5" fill="#2E2A32" opacity=".12"></circle>
+      <use href="#f-cheeks"></use>
+    </g>
+    <g id="f-surprised">
+      <circle cx="81" cy="108" r="15" fill="#2E2A32"></circle>
+      <circle cx="119" cy="108" r="15" fill="#2E2A32"></circle>
+      <circle cx="86" cy="102" r="5.5" fill="#FFFFFF"></circle>
+      <circle cx="124" cy="102" r="5.5" fill="#FFFFFF"></circle>
+      <path d="M66 82 Q81 74 96 82" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <path d="M104 82 Q119 74 134 82" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <ellipse cx="100" cy="145" rx="9.5" ry="12" fill="#2E2A32"></ellipse>
+      <use href="#f-cheeks"></use>
+    </g>
+    <g id="f-excited">
+      <path d="M69 113 Q81 97 93 113" fill="none" stroke="#2E2A32" stroke-width="6.5" stroke-linecap="round"></path>
+      <path d="M107 113 Q119 97 131 113" fill="none" stroke="#2E2A32" stroke-width="6.5" stroke-linecap="round"></path>
+      <path d="M83 133 Q100 161 117 133 Z" fill="#2E2A32"></path>
+      <ellipse cx="100" cy="150" rx="7" ry="5" fill="#EFA6AB"></ellipse>
+      <rect x="-5" y="-5" width="10" height="10" rx="2.5" transform="translate(40,84) rotate(45)" fill="#F6D189"></rect>
+      <rect x="-4" y="-4" width="8" height="8" rx="2" transform="translate(164,70) rotate(45)" fill="#F6D189"></rect>
+      <circle cx="58" cy="130" r="10" fill="#E88C74" opacity=".4"></circle>
+      <circle cx="142" cy="130" r="10" fill="#E88C74" opacity=".4"></circle>
+    </g>
+    <g id="f-celebrating">
+      <path d="M69 113 Q81 97 93 113" fill="none" stroke="#2E2A32" stroke-width="6.5" stroke-linecap="round"></path>
+      <path d="M107 113 Q119 97 131 113" fill="none" stroke="#2E2A32" stroke-width="6.5" stroke-linecap="round"></path>
+      <path d="M79 131 Q100 166 121 131 Z" fill="#2E2A32"></path>
+      <ellipse cx="100" cy="153" rx="9" ry="6" fill="#EFA6AB"></ellipse>
+      <circle cx="58" cy="130" r="10.5" fill="#E88C74" opacity=".45"></circle>
+      <circle cx="142" cy="130" r="10.5" fill="#E88C74" opacity=".45"></circle>
+    </g>
+    <g id="f-encouraging">
+      <ellipse cx="81" cy="110" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="85.5" cy="104.5" r="4" fill="#FFFFFF"></circle>
+      <path d="M108 110 Q119 103 130 110" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <path d="M86 137 Q100 151 112 137" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <use href="#f-cheeks"></use>
+    </g>
+    <g id="f-sleepy">
+      <path d="M69 107 Q81 119 93 107" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <path d="M107 107 Q119 119 131 107" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <ellipse cx="100" cy="141" rx="5.5" ry="6.5" fill="#2E2A32"></ellipse>
+      <circle cx="152" cy="70" r="5" fill="#2E2A32" opacity=".18"></circle>
+      <circle cx="166" cy="56" r="7" fill="#2E2A32" opacity=".14"></circle>
+      <circle cx="182" cy="40" r="9" fill="#2E2A32" opacity=".1"></circle>
+      <circle cx="58" cy="130" r="10" fill="#E88C74" opacity=".26"></circle>
+      <circle cx="142" cy="130" r="10" fill="#E88C74" opacity=".26"></circle>
+    </g>
+
+    <g id="kiddo"><use href="#k-shadow"></use><use href="#k-limbs-idle"></use><use href="#k-core"></use><use href="#f-happy"></use></g>
+
+    <g id="foxy">
+      <use href="#k-shadow"></use>
+      <ellipse cx="170" cy="150" rx="20" ry="34" transform="rotate(-24 170 150)" fill="#EFA470"></ellipse>
+      <ellipse cx="180" cy="122" rx="15" ry="17" transform="rotate(-24 180 122)" fill="#FFFFFF" opacity=".72"></ellipse>
+      <path d="M58 76 L72 22 L102 60 Z" fill="#EFA470" stroke="#EFA470" stroke-width="12" stroke-linejoin="round"></path>
+      <path d="M142 76 L128 22 L98 60 Z" fill="#EFA470" stroke="#EFA470" stroke-width="12" stroke-linejoin="round"></path>
+      <path d="M68 66 L74 40 L90 58 Z" fill="#FFFFFF" opacity=".55" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="8" stroke-linejoin="round"></path>
+      <path d="M132 66 L126 40 L110 58 Z" fill="#FFFFFF" opacity=".55" stroke="#FFFFFF" stroke-opacity=".55" stroke-width="8" stroke-linejoin="round"></path>
+      <use href="#fx-arm" transform="translate(54,114) rotate(22)"></use>
+      <use href="#fx-arm" transform="translate(146,114) rotate(-22)"></use>
+      <use href="#fx-leg" transform="translate(80,168)"></use>
+      <use href="#fx-leg" transform="translate(120,168)"></use>
+      <ellipse cx="100" cy="120" rx="54" ry="52" fill="#EFA470"></ellipse>
+      <ellipse cx="100" cy="143" rx="32" ry="26" fill="#FFFFFF" opacity=".5"></ellipse>
+      <ellipse cx="100" cy="130" rx="24" ry="17" fill="#FFFFFF" opacity=".55"></ellipse>
+      <ellipse cx="82" cy="108" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="118" cy="108" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="86.5" cy="102.5" r="4" fill="#FFFFFF"></circle>
+      <circle cx="122.5" cy="102.5" r="4" fill="#FFFFFF"></circle>
+      <ellipse cx="100" cy="126" rx="7.5" ry="6" fill="#2E2A32"></ellipse>
+      <path d="M100 133 Q92 142 84 137" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <path d="M100 133 Q108 142 116 137" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <circle cx="59" cy="126" r="9.5" fill="#E88C74" opacity=".3"></circle>
+      <circle cx="141" cy="126" r="9.5" fill="#E88C74" opacity=".3"></circle>
+    </g>
+
+    <g id="bibi">
+      <use href="#k-shadow"></use>
+      <circle cx="158" cy="156" r="15" fill="#FFFFFF" opacity=".7"></circle>
+      <g transform="translate(82,66) rotate(-11)"><rect x="-11" y="-60" width="22" height="66" rx="11" fill="#EFA6AB"></rect><rect x="-5" y="-52" width="10" height="50" rx="5" fill="#FFFFFF" opacity=".42"></rect></g>
+      <g transform="translate(120,62) rotate(13)"><rect x="-11" y="-60" width="22" height="66" rx="11" fill="#EFA6AB"></rect><rect x="-5" y="-52" width="10" height="50" rx="5" fill="#FFFFFF" opacity=".42"></rect></g>
+      <use href="#bb-arm" transform="translate(56,118) rotate(23)"></use>
+      <use href="#bb-arm" transform="translate(144,118) rotate(-23)"></use>
+      <use href="#bb-leg" transform="translate(80,170)"></use>
+      <use href="#bb-leg" transform="translate(120,170)"></use>
+      <ellipse cx="100" cy="124" rx="52" ry="50" fill="#EFA6AB"></ellipse>
+      <ellipse cx="100" cy="146" rx="31" ry="25" fill="#FFFFFF" opacity=".38"></ellipse>
+      <ellipse cx="82" cy="115" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="118" cy="115" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="86.5" cy="109.5" r="4" fill="#FFFFFF"></circle>
+      <circle cx="122.5" cy="109.5" r="4" fill="#FFFFFF"></circle>
+      <ellipse cx="100" cy="132" rx="6" ry="4.6" fill="#2E2A32"></ellipse>
+      <path d="M100 137 Q93 145 86 141" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <path d="M100 137 Q107 145 114 141" fill="none" stroke="#2E2A32" stroke-width="4.5" stroke-linecap="round"></path>
+      <circle cx="60" cy="133" r="9.5" fill="#E88C74" opacity=".32"></circle>
+      <circle cx="140" cy="133" r="9.5" fill="#E88C74" opacity=".32"></circle>
+    </g>
+
+    <g id="pip">
+      <use href="#k-shadow"></use>
+      <use href="#pp-arm" transform="translate(52,130) rotate(32)"></use>
+      <use href="#pp-arm" transform="translate(148,130) rotate(-32)"></use>
+      <use href="#pp-leg" transform="translate(74,168) rotate(20)"></use>
+      <use href="#pp-leg" transform="translate(126,168) rotate(-20)"></use>
+      <circle cx="70" cy="62" r="24" fill="#BCD37C"></circle>
+      <circle cx="130" cy="62" r="24" fill="#BCD37C"></circle>
+      <ellipse cx="100" cy="132" rx="56" ry="46" fill="#BCD37C"></ellipse>
+      <ellipse cx="100" cy="151" rx="34" ry="22" fill="#FFFFFF" opacity=".4"></ellipse>
+      <ellipse cx="70" cy="60" rx="12" ry="13.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="130" cy="60" rx="12" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="74.5" cy="54" r="4.2" fill="#FFFFFF"></circle>
+      <circle cx="134.5" cy="54" r="4.2" fill="#FFFFFF"></circle>
+      <path d="M68 126 Q100 154 132 126" fill="none" stroke="#2E2A32" stroke-width="6" stroke-linecap="round"></path>
+      <circle cx="60" cy="122" r="9.5" fill="#E88C74" opacity=".3"></circle>
+      <circle cx="140" cy="122" r="9.5" fill="#E88C74" opacity=".3"></circle>
+    </g>
+
+    <g id="wally">
+      <use href="#k-shadow"></use>
+      <ellipse cx="170" cy="112" rx="24" ry="12" transform="rotate(-32 170 112)" fill="#8FBAD9"></ellipse>
+      <ellipse cx="170" cy="146" rx="24" ry="12" transform="rotate(30 170 146)" fill="#8FBAD9"></ellipse>
+      <ellipse cx="52" cy="152" rx="20" ry="11" transform="rotate(30 52 152)" fill="#8FBAD9"></ellipse>
+      <ellipse cx="132" cy="166" rx="18" ry="11" transform="rotate(-22 132 166)" fill="#8FBAD9"></ellipse>
+      <circle cx="96" cy="54" r="7" fill="#8FBAD9" opacity=".55"></circle>
+      <circle cx="88" cy="38" r="5" fill="#8FBAD9" opacity=".42"></circle>
+      <circle cx="102" cy="30" r="4" fill="#8FBAD9" opacity=".32"></circle>
+      <ellipse cx="98" cy="126" rx="58" ry="50" fill="#8FBAD9"></ellipse>
+      <ellipse cx="98" cy="148" rx="36" ry="24" fill="#FFFFFF" opacity=".36"></ellipse>
+      <ellipse cx="80" cy="117" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <ellipse cx="116" cy="117" rx="11.5" ry="13.5" fill="#2E2A32"></ellipse>
+      <circle cx="84.5" cy="111.5" r="4" fill="#FFFFFF"></circle>
+      <circle cx="120.5" cy="111.5" r="4" fill="#FFFFFF"></circle>
+      <path d="M76 142 Q98 158 120 142" fill="none" stroke="#2E2A32" stroke-width="5.5" stroke-linecap="round"></path>
+      <circle cx="56" cy="134" r="9.5" fill="#E88C74" opacity=".28"></circle>
+      <circle cx="138" cy="134" r="9.5" fill="#E88C74" opacity=".28"></circle>
+    </g>
+  </defs>
+</svg>
+
+<div style="font-family:'Work Sans',system-ui,sans-serif;color:#2E2A32;background:#FBF8F3;padding:0 0 120px">
+
+  <div style="max-width:1360px;margin:0 auto;padding:0 48px">
+
+    <header style="display:flex;flex-direction:column;gap:0;padding:72px 0 0">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:32px;flex-wrap:wrap;border-bottom:1px solid rgba(46,42,50,.12);padding-bottom:22px">
+        <div style="display:flex;flex-direction:column;gap:6px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:900;font-size:30px;letter-spacing:-.02em">KIDDO</div>
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">Character identity · v1 concept</div>
+        </div>
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6F6A74;text-align:right;line-height:1.9">
+          <div>Ages 4–8</div>
+          <div>Vector · flat · animatable</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:64px 0 88px">
+        <div style="display:flex;flex-direction:column;gap:28px">
+          <h1 style="font-family:'Nunito',sans-serif;font-weight:900;font-size:74px;line-height:.98;letter-spacing:-.035em;margin:0;text-wrap:pretty">Meet KIDDO<br />and friends.</h1>
+          <p style="margin:0;font-size:19px;line-height:1.6;color:#57525C;max-width:52ch;text-wrap:pretty">A family of five original characters built from one shape vocabulary. Every form is a circle, a capsule or a soft ellipse, which keeps them readable at 24px, recolourable for content packs, and simple enough to rig for motion.</p>
+          <div style="display:flex;gap:10px;flex-wrap:wrap">
+            <span style="font-size:13px;font-weight:500;padding:8px 15px;border-radius:100px;background:#FFFFFF;border:1px solid rgba(46,42,50,.1);color:#57525C">Playful</span>
+            <span style="font-size:13px;font-weight:500;padding:8px 15px;border-radius:100px;background:#FFFFFF;border:1px solid rgba(46,42,50,.1);color:#57525C">Warm</span>
+            <span style="font-size:13px;font-weight:500;padding:8px 15px;border-radius:100px;background:#FFFFFF;border:1px solid rgba(46,42,50,.1);color:#57525C">Curious</span>
+            <span style="font-size:13px;font-weight:500;padding:8px 15px;border-radius:100px;background:#FFFFFF;border:1px solid rgba(46,42,50,.1);color:#57525C">Encouraging</span>
+            <span style="font-size:13px;font-weight:500;padding:8px 15px;border-radius:100px;background:#FFFFFF;border:1px solid rgba(46,42,50,.1);color:#57525C">Premium</span>
+          </div>
+        </div>
+        <div style="background:#F1EDE4;border-radius:36px;padding:24px;display:flex;align-items:center;justify-content:center;min-height:440px">
+          <svg viewBox="0 0 200 230" style="width:100%;max-width:400px;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg>
+        </div>
+      </div>
+    </header>
+
+    <section data-screen-label="The family" style="padding:0 0 104px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:36px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">01 — The family</div>
+          <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">One family, five silhouettes</h2>
+        </div>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#57525C;max-width:38ch">KIDDO is the only non-animal in the cast, so it stays the brand mark. The four friends carry the game worlds.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:22px 20px 26px;display:flex;flex-direction:column;gap:16px">
+          <div style="background:#EEF5EF;border-radius:20px;padding:14px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em">KIDDO</span><span style="width:10px;height:10px;border-radius:100px;background:#93C8A3"></span></div>
+            <div style="font-size:14px;line-height:1.55;color:#57525C">The lead. A round, big-eared creature that belongs to no species.</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#6F6A74">Curious · positive · playful · encouraging · slightly mischievous</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:22px 20px 26px;display:flex;flex-direction:column;gap:16px">
+          <div style="background:#FBF0E7;border-radius:20px;padding:14px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#EFA470"><use href="#foxy"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em">FOXY</span><span style="width:10px;height:10px;border-radius:100px;background:#EFA470"></span></div>
+            <div style="font-size:14px;line-height:1.55;color:#57525C">A clever, curious fox.</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#6F6A74">Clever · observant · adventurous</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:22px 20px 26px;display:flex;flex-direction:column;gap:16px">
+          <div style="background:#FBEFF0;border-radius:20px;padding:14px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#EFA6AB"><use href="#bibi"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em">BIBI</span><span style="width:10px;height:10px;border-radius:100px;background:#EFA6AB"></span></div>
+            <div style="font-size:14px;line-height:1.55;color:#57525C">A cheerful rabbit.</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#6F6A74">Energetic · enthusiastic · playful</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:22px 20px 26px;display:flex;flex-direction:column;gap:16px">
+          <div style="background:#F5F8EA;border-radius:20px;padding:14px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#BCD37C"><use href="#pip"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em">PIP</span><span style="width:10px;height:10px;border-radius:100px;background:#BCD37C"></span></div>
+            <div style="font-size:14px;line-height:1.55;color:#57525C">A funny little frog.</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#6F6A74">Silly · mischievous · cheerful</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:22px 20px 26px;display:flex;flex-direction:column;gap:16px">
+          <div style="background:#EDF3F8;border-radius:20px;padding:14px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#8FBAD9"><use href="#wally"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px"><span style="font-family:'Nunito',sans-serif;font-weight:900;font-size:22px;letter-spacing:-.01em">WALLY</span><span style="width:10px;height:10px;border-radius:100px;background:#8FBAD9"></span></div>
+            <div style="font-size:14px;line-height:1.55;color:#57525C">A friendly little whale.</div>
+            <div style="font-size:12.5px;line-height:1.6;color:#6F6A74">Calm · gentle · adventurous</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <sc-if value="{{ showConstruction }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Construction" style="padding:0 0 104px">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px">
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">02 — Construction</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">The rules that make them a family</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:20px">Proportion grid</div>
+          <div style="background:#F7F3EB;border-radius:20px;padding:16px;display:flex;justify-content:center">
+            <svg viewBox="0 0 440 250" style="width:100%;height:auto">
+              <g transform="translate(120,10)"><use href="#kiddo"></use></g>
+              <g stroke="#2E2A32" stroke-opacity=".26" stroke-width="1" stroke-dasharray="4 4">
+                <line x1="14" y1="47" x2="426" y2="47"></line>
+                <line x1="14" y1="74" x2="426" y2="74"></line>
+                <line x1="14" y1="128" x2="426" y2="128"></line>
+                <line x1="14" y1="182" x2="426" y2="182"></line>
+                <line x1="14" y1="222" x2="426" y2="222"></line>
+                <line x1="220" y1="18" x2="220" y2="238"></line>
+              </g>
+              <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#6F6A74">
+                <text x="14" y="43">ear crown</text>
+                <text x="14" y="70">body top</text>
+                <text x="14" y="124">eye line</text>
+                <text x="14" y="178">body base</text>
+                <text x="14" y="218">ground</text>
+              </g>
+              <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#6F6A74" text-anchor="end">
+                <text x="426" y="124">0.45 × height</text>
+                <text x="426" y="178">2 body-widths tall</text>
+                <text x="426" y="218">limbs inside silhouette</text>
+              </g>
+            </svg>
+          </div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">One mass, not a head on a body. Total height is two body-widths; the eye line sits at 45% of full height on every character. Limbs are short enough that the silhouette stays a circle.</div>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:18px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:20px">Shared primitives</div>
+          <div style="background:#F7F3EB;border-radius:20px;padding:16px;display:flex;justify-content:center">
+            <svg viewBox="0 0 440 250" style="width:100%;height:auto">
+              <ellipse cx="66" cy="64" rx="42" ry="40" fill="#93C8A3"></ellipse>
+              <circle cx="176" cy="64" r="24" fill="#93C8A3"></circle>
+              <g transform="translate(286,34)"><use href="#k-arm"></use></g>
+              <g transform="translate(384,34)"><use href="#k-leg"></use></g>
+              <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#6F6A74" text-anchor="middle">
+                <text x="66" y="128">body ellipse</text>
+                <text x="176" y="128">ear circle</text>
+                <text x="286" y="128">arm capsule</text>
+                <text x="384" y="128">leg capsule</text>
+              </g>
+              <ellipse cx="66" cy="180" rx="14" ry="16" fill="#2E2A32"></ellipse>
+              <circle cx="71.5" cy="173" r="5" fill="#FFFFFF"></circle>
+              <path d="M152 174 Q176 196 200 174" fill="none" stroke="#2E2A32" stroke-width="6" stroke-linecap="round"></path>
+              <circle cx="286" cy="180" r="14" fill="#E88C74" opacity=".32"></circle>
+              <ellipse cx="384" cy="180" rx="28" ry="18" fill="#FFFFFF" stroke="rgba(46,42,50,.14)"></ellipse>
+              <g font-family="ui-monospace,Menlo,monospace" font-size="10" fill="#6F6A74" text-anchor="middle">
+                <text x="66" y="222">eye + highlight</text>
+                <text x="176" y="222">round-cap mouth</text>
+                <text x="286" y="222">blush 32%</text>
+                <text x="384" y="222">white overlay</text>
+              </g>
+            </svg>
+          </div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Four solid shapes and four face parts build all five characters. Arms and legs are literally the same two objects across the cast — only rotation changes.</div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:100px;background:#93C8A3"></span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.1em;color:#6F6A74">RULE 01</span></div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px;line-height:1.25">One hue per character</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Every lighter form — belly, inner ear, muzzle, tail tip — is the same hue with white laid over it at a fixed opacity. No second colour, no gradients. Change one hex and the character is fully recoloured for a content pack.</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:100px;background:#EFA470"></span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.1em;color:#6F6A74">RULE 02</span></div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px;line-height:1.25">Faces are always ink</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Eyes, mouths and noses use a single warm near-black (#2E2A32) at every size. Only the blush is warm. This is what keeps expressions readable on a game card and inside a 24px sticker.</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="display:flex;align-items:center;gap:8px"><span style="width:9px;height:9px;border-radius:100px;background:#8FBAD9"></span><span style="font-family:ui-monospace,Menlo,monospace;font-size:11px;letter-spacing:.1em;color:#6F6A74">RULE 03</span></div>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px;line-height:1.25">No outlines, no detail below 8px</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Flat fills only. Any feature that would disappear at icon scale is not drawn at all — which is why there is no fur, no fingers, no rendering and no texture anywhere in the cast.</div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <section data-screen-label="Expressions" style="padding:0 0 104px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:36px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">03 — Expression sheet</div>
+          <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">Eight faces, one body</h2>
+        </div>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#57525C;max-width:40ch">The body never changes between these. Expression lives entirely in a swappable face layer, so a new emotion costs four shapes rather than a new illustration.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-limbs-idle"></use><use href="#k-core"></use><use href="#f-happy"></use></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Happy</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="rotate(6 100 170)"><use href="#k-limbs-idle"></use><use href="#k-core"></use><use href="#f-curious"></use></g></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Curious</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-arm" transform="translate(54,112) rotate(20)"></use><use href="#k-arm" transform="translate(150,114) rotate(-118)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-thinking"></use></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Thinking</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-arm" transform="translate(54,112) rotate(46)"></use><use href="#k-arm" transform="translate(146,112) rotate(-46)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-surprised"></use></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Surprised</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(54,110) rotate(78)"></use><use href="#k-arm" transform="translate(146,110) rotate(-78)"></use><use href="#f-excited"></use></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Excited</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="translate(0,-4)"><use href="#k-leg" transform="translate(80,166) rotate(-22)"></use><use href="#k-leg" transform="translate(120,166) rotate(18)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(54,110) rotate(96)"></use><use href="#k-arm" transform="translate(146,110) rotate(-96)"></use><use href="#f-celebrating"></use></g></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Celebrating</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-arm" transform="translate(54,112) rotate(30)"></use><use href="#k-arm" transform="translate(146,112) rotate(-104)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-encouraging"></use></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Encouraging</div>
+        </div>
+        <div style="background:#EEF5EF;border-radius:24px;padding:16px 16px 18px;display:flex;flex-direction:column;gap:10px;align-items:center">
+          <svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="rotate(-9 100 190)"><use href="#k-arm" transform="translate(54,112) rotate(8)"></use><use href="#k-arm" transform="translate(146,112) rotate(-8)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-sleepy"></use></g></svg>
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Sleepy</div>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Poses" style="padding:0 0 104px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:36px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">04 — Pose library</div>
+          <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">A pose for every product moment</h2>
+        </div>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#57525C;max-width:40ch">Each pose is the same rig at different rotations, so all eight can be reached by animating between them.</p>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="translate(0,-4)"><use href="#k-leg" transform="translate(80,166) rotate(-12)"></use><use href="#k-leg" transform="translate(120,166) rotate(12)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(54,110) rotate(84)"></use><use href="#k-arm" transform="translate(146,110) rotate(-84)"></use><use href="#f-excited"></use></g></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Correct answer</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Arms flung out, eyes squeezed shut. Held for 600ms, then back to idle.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="rotate(-5 100 180)"><use href="#k-arm" transform="translate(54,112) rotate(34)"></use><use href="#k-arm" transform="translate(146,112) rotate(-100)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-encouraging"></use></g></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Wrong answer</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Never sad. An open hand and a wink: try the other one.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="translate(0,-8)"><use href="#k-leg" transform="translate(80,166) rotate(-26)"></use><use href="#k-leg" transform="translate(120,166) rotate(20)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(54,110) rotate(102)"></use><use href="#k-arm" transform="translate(146,110) rotate(-102)"></use><use href="#f-celebrating"></use></g><rect x="-5" y="-5" width="10" height="10" rx="2.5" transform="translate(34,60) rotate(45)" fill="#F6D189"></rect><rect x="-4" y="-4" width="8" height="8" rx="2" transform="translate(172,48) rotate(45)" fill="#EFA6AB"></rect><rect x="-4" y="-4" width="8" height="8" rx="2" transform="translate(150,22) rotate(45)" fill="#8FBAD9"></rect></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Level complete</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">The biggest pose in the set. Jump, both legs kicked out, confetti diamonds.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="rotate(4 100 180)"><use href="#k-arm" transform="translate(54,112) rotate(18)"></use><use href="#k-arm" transform="translate(150,114) rotate(-122)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-thinking"></use></g></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Empty state</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Arm raised, looking off past the frame. Nothing here yet.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-arm" transform="translate(54,112) rotate(18)"></use><use href="#k-arm" transform="translate(146,112) rotate(-88)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-curious"></use></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Game instructions</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Arm straight out to point at the thing the child should tap.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(58,104) rotate(132)"></use><use href="#k-arm" transform="translate(142,104) rotate(-132)"></use><use href="#f-surprised"></use><rect x="-10" y="-10" width="20" height="20" rx="4.5" transform="translate(100,22) rotate(45)" fill="#F6D189"></rect></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Reward unlock</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Both hands raised to receive. The reward drops into the gap between them.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px;display:flex;align-items:center;justify-content:center;gap:14px;aspect-ratio:200/230">
+            <svg viewBox="0 0 200 230" style="width:58%;height:auto"><use href="#k-arm" transform="translate(54,112) rotate(10)"></use><use href="#k-arm" transform="translate(146,112) rotate(-10)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-happy"></use></svg>
+            <div style="display:flex;flex-direction:column;gap:8px;align-items:center">
+              <svg viewBox="0 0 200 230" style="width:44px;height:auto;color:#93C8A3"><use href="#k-core"></use><use href="#f-happy"></use></svg>
+              <svg viewBox="0 0 200 230" style="width:24px;height:auto;color:#93C8A3"><use href="#k-core"></use><use href="#f-happy"></use></svg>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Sticker / icon</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Limbs drop away below 64px. Ears, eyes and mouth carry the whole identity.</div>
+          </div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:24px;padding:14px 14px 20px;display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EEF5EF;border-radius:18px;padding:10px"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><g transform="rotate(-10 100 195)"><use href="#k-arm" transform="translate(54,112) rotate(6)"></use><use href="#k-arm" transform="translate(146,112) rotate(-6)"></use><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#f-sleepy"></use></g></svg></div>
+          <div style="display:flex;flex-direction:column;gap:5px;padding:0 6px">
+            <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:16px">Session over</div>
+            <div style="font-size:13px;line-height:1.55;color:#6F6A74">Leaning, eyes closed. Signals the end of screen time without a warning tone.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Palette" style="padding:0 0 104px">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px">
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">05 — Palette</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">Five character hues, one ink, one paper</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:18px;margin-bottom:18px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#93C8A3;border-radius:22px;height:120px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Sage</div><div style="font-size:13px;color:#6F6A74">KIDDO · brand primary</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#93C8A3</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EFA470;border-radius:22px;height:120px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Apricot</div><div style="font-size:13px;color:#6F6A74">FOXY · warm accent</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#EFA470</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#EFA6AB;border-radius:22px;height:120px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Blossom</div><div style="font-size:13px;color:#6F6A74">BIBI · soft accent</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#EFA6AB</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#BCD37C;border-radius:22px;height:120px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Sprout</div><div style="font-size:13px;color:#6F6A74">PIP · fresh green</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#BCD37C</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#8FBAD9;border-radius:22px;height:120px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Tide</div><div style="font-size:13px;color:#6F6A74">WALLY · calm blue</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#8FBAD9</div></sc-if></div>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#F6D189;border-radius:22px;height:76px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Honey</div><div style="font-size:13px;color:#6F6A74">Rewards, stars, confetti</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#F6D189</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#E88C74;border-radius:22px;height:76px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Blush</div><div style="font-size:13px;color:#6F6A74">Cheeks only, at 26–45%</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#E88C74</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#FBF8F3;border:1px solid rgba(46,42,50,.12);border-radius:22px;height:76px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Paper</div><div style="font-size:13px;color:#6F6A74">Default background</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#FBF8F3</div></sc-if></div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:#2E2A32;border-radius:22px;height:76px"></div>
+          <div style="display:flex;flex-direction:column;gap:3px"><div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:15px">Ink</div><div style="font-size:13px;color:#6F6A74">Every face, all type</div><sc-if value="{{ showHex }}" hint-placeholder-val="{{ true }}"><div style="font-family:ui-monospace,Menlo,monospace;font-size:11.5px;color:#6F6A74">#2E2A32</div></sc-if></div>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Scale and backgrounds" style="padding:0 0 104px">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px">
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">06 — Stress tests</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">Small, and on colour</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1.1fr .9fr;gap:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:22px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:20px">Down to 24px</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);align-items:end;gap:18px">
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:center"><svg viewBox="0 0 200 230" style="width:150px;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg><div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#6F6A74">128</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:center"><svg viewBox="0 0 200 230" style="width:75px;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg><div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#6F6A74">64</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:center"><svg viewBox="0 0 200 230" style="width:47px;height:auto;color:#93C8A3"><use href="#k-core"></use><use href="#f-happy"></use></svg><div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#6F6A74">40</div></div>
+            <div style="display:flex;flex-direction:column;gap:10px;align-items:center"><svg viewBox="0 0 200 230" style="width:28px;height:auto;color:#93C8A3"><use href="#k-core"></use><use href="#f-happy"></use></svg><div style="font-family:ui-monospace,Menlo,monospace;font-size:10.5px;color:#6F6A74">24</div></div>
+          </div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Two variants only: full body above 64px, head-and-ears below it. The blush and eye highlights stay — they are what stop the icon reading as a flat blob.</div>
+        </div>
+
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:28px;display:flex;flex-direction:column;gap:22px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:20px">On colour</div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px">
+            <div style="background:#2E2A32;border-radius:18px;padding:10px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg></div>
+            <div style="background:#EFA470;border-radius:18px;padding:10px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg></div>
+            <div style="background:#8FBAD9;border-radius:18px;padding:10px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg></div>
+            <div style="background:#F6D189;border-radius:18px;padding:10px;display:flex;justify-content:center"><svg viewBox="0 0 200 230" style="width:100%;height:auto;color:#93C8A3"><use href="#kiddo"></use></svg></div>
+          </div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">No outline is needed because the white belly overlay and the ink face give enough internal contrast on any brand background. Sage on sage is the one pairing to avoid.</div>
+        </div>
+      </div>
+    </section>
+
+    <sc-if value="{{ showConstruction }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Rig" style="padding:0 0 104px">
+      <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:32px;flex-wrap:wrap;margin-bottom:36px">
+        <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">07 — Rig</div>
+          <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">Built to be animated</h2>
+        </div>
+        <p style="margin:0;font-size:16px;line-height:1.6;color:#57525C;max-width:40ch">Seven layers, four pivots. Everything in the pose library above is one of these parts rotated around a fixed point.</p>
+      </div>
+
+      <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:32px">
+        <svg viewBox="0 0 1300 300" style="width:100%;height:auto">
+          <g transform="translate(20,18) scale(.8)"><use href="#k-core"></use></g>
+          <g transform="translate(258,54)"><use href="#k-arm"></use><circle cx="0" cy="0" r="4" fill="none" stroke="#2E2A32" stroke-opacity=".5" stroke-width="1.5"></circle><path d="M0 0 A 52 52 0 0 1 40 34" fill="none" stroke="#2E2A32" stroke-opacity=".3" stroke-width="1.5" stroke-dasharray="4 4"></path></g>
+          <g transform="translate(392,54)"><use href="#k-leg"></use><circle cx="0" cy="0" r="4" fill="none" stroke="#2E2A32" stroke-opacity=".5" stroke-width="1.5"></circle><path d="M0 0 A 40 40 0 0 1 28 28" fill="none" stroke="#2E2A32" stroke-opacity=".3" stroke-width="1.5" stroke-dasharray="4 4"></path></g>
+          <g transform="translate(460,18) scale(.8)"><use href="#f-happy"></use></g>
+          <g transform="translate(700,18) scale(.8)"><use href="#k-limbs-idle"></use><use href="#k-core"></use><use href="#f-happy"></use></g>
+          <g transform="translate(900,18) scale(.8)"><g transform="rotate(6 100 170)"><use href="#k-limbs-idle"></use><use href="#k-core"></use><use href="#f-curious"></use></g></g>
+          <g transform="translate(1100,18) scale(.8)"><use href="#k-leg" transform="translate(80,166)"></use><use href="#k-leg" transform="translate(120,166)"></use><use href="#k-core"></use><use href="#k-arm" transform="translate(54,110) rotate(84)"></use><use href="#k-arm" transform="translate(146,110) rotate(-84)"></use><use href="#f-excited"></use></g>
+          <g font-family="ui-monospace,Menlo,monospace" font-size="12" fill="#6F6A74" text-anchor="middle">
+            <text x="100" y="252">core</text>
+            <text x="270" y="252">arm ×2</text>
+            <text x="270" y="270">shoulder pivot</text>
+            <text x="404" y="252">leg ×2</text>
+            <text x="404" y="270">hip pivot</text>
+            <text x="540" y="252">face layer</text>
+            <text x="780" y="252">idle</text>
+            <text x="980" y="252">tilt 6°</text>
+            <text x="1180" y="252">arms 84°</text>
+          </g>
+          <g stroke="#2E2A32" stroke-opacity=".14" stroke-width="1"><line x1="660" y1="30" x2="660" y2="235"></line></g>
+        </svg>
+      </div>
+
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px">Idle loop</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Core scales 1.00 → 1.02 on a 2.4s ease-in-out, ears lag by 120ms. Nothing else moves. This is the default state on every screen a character appears on.</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px">Blink</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Eyes scale to 0.1 on the y axis for 90ms at a random 3–7s interval. Because the face is its own layer, the blink is one transform and never touches the body.</div>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:26px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px">Reactions</div>
+          <div style="font-size:14.5px;line-height:1.65;color:#57525C">Swap the face layer and rotate the limbs, 220ms with a slight overshoot. No squash on the silhouette so the character never feels rubbery.</div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <sc-if value="{{ showSpec }}" hint-placeholder-val="{{ true }}">
+    <section data-screen-label="Guardrails" style="padding:0 0 40px">
+      <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:36px">
+        <div style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:#6F6A74">08 — Guardrails</div>
+        <h2 style="font-family:'Nunito',sans-serif;font-weight:800;font-size:42px;line-height:1.05;letter-spacing:-.028em;margin:0">What keeps this premium</h2>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+        <div style="background:#FFFFFF;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:30px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;border-radius:100px;background:#93C8A3"></span><span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px">Always</span></div>
+          <div style="display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.6;color:#57525C">
+            <div>Flat fills, one hue per character, white overlays for every lighter form.</div>
+            <div>Eyes at 45% height, always the same ink, always with a single offset highlight.</div>
+            <div>Silhouette readable as a solid black shape before any face is added.</div>
+            <div>Encouraging faces on failure states. Characters never scold, frown or look disappointed.</div>
+            <div>Generous negative space around a character — at least 12% of the frame on every side.</div>
+          </div>
+        </div>
+        <div style="background:#F7F3EB;border:1px solid rgba(46,42,50,.08);border-radius:28px;padding:30px;display:flex;flex-direction:column;gap:20px">
+          <div style="display:flex;align-items:center;gap:10px"><span style="width:9px;height:9px;border-radius:100px;background:#E88C74"></span><span style="font-family:'Nunito',sans-serif;font-weight:800;font-size:19px">Never</span></div>
+          <div style="display:flex;flex-direction:column;gap:14px;font-size:15px;line-height:1.6;color:#57525C">
+            <div>Gradients, drop shadows on the characters, glow, outlines or texture.</div>
+            <div>A sixth hue, a neon tint, or two saturated colours on one character.</div>
+            <div>Pupils drawn inside the eye, eyebrows on KIDDO except in thinking and surprised.</div>
+            <div>Baby-talk copy, exclamation stacks, or more than one character celebrating at once.</div>
+            <div>Fingers, teeth, tongues outside the two open-mouth faces, or any detail under 8px.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+    </sc-if>
+
+    <footer style="border-top:1px solid rgba(46,42,50,.12);padding-top:26px;display:flex;justify-content:space-between;gap:24px;flex-wrap:wrap;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:#6F6A74">
+      <div>KIDDO &amp; Friends — character identity v1</div>
+      <div>Characters only · no product UI in scope</div>
+    </footer>
+
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;showConstruction&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sheet contents&quot;},&quot;showSpec&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sheet contents&quot;},&quot;showHex&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;tsType&quot;:&quot;boolean&quot;,&quot;section&quot;:&quot;Sheet contents&quot;}}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      showConstruction: this.props.showConstruction ?? true,
+      showSpec: this.props.showSpec ?? true,
+      showHex: this.props.showHex ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

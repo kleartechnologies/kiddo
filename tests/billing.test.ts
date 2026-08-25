@@ -5,16 +5,22 @@ import { beforeEach, test } from "node:test";
 import Stripe from "stripe";
 
 import {
+  AMOUNTS,
+  MONTHS,
   NO_SUBSCRIPTION,
   PLANS,
   PLAN_ORDER,
+  YEARLY_PER_MONTH,
+  YEARLY_SAVING_PERCENT,
   describeSubscription,
   hasAccess,
   isNewer,
   isPlan,
   parseSubscription,
+  money,
   stateFromStripe,
   statusFromStripe,
+  statusLabel,
   type SubscriptionState,
 } from "@/lib/billing/subscription";
 import {
@@ -55,11 +61,14 @@ const DAY = 24 * 60 * 60 * 1000;
 const NOW = 1_800_000_000_000;
 const PRICES = { monthly: "price_monthly_test", yearly: "price_yearly_test" };
 
-const stripeSub = (over: Partial<{ status: string; price: string; end: number; cancel: boolean }> = {}) => ({
+const stripeSub = (
+  over: Partial<{ status: string; price: string; end: number; cancel: boolean; cancelAt: number | null }> = {},
+) => ({
   id: "sub_1",
   status: over.status ?? "active",
   customer: "cus_1",
   cancel_at_period_end: over.cancel ?? false,
+  cancel_at: over.cancelAt ?? null,
   items: { data: [{ price: { id: over.price ?? PRICES.yearly }, current_period_end: over.end ?? NOW / 1000 + 30 * 86400 }] },
 });
 
@@ -75,6 +84,47 @@ test("there are exactly two plans at the locked prices, yearly first as best val
   assert.equal(PLANS.monthly.note, null);
   assert.ok(isPlan("monthly") && isPlan("yearly"));
   assert.ok(!isPlan("lifetime") && !isPlan("trial") && !isPlan("family") && !isPlan(""));
+});
+
+test("every price a parent sees is derived from the one amounts table", () => {
+  /* Sen, the way Stripe holds them — so the two can be compared by eye. */
+  assert.deepEqual(AMOUNTS, { monthly: 990, yearly: 5990 });
+  assert.deepEqual(MONTHS, { monthly: 1, yearly: 12 });
+  assert.equal(money(990), "RM9.90");
+  assert.equal(money(5990), "RM59.90");
+  for (const plan of PLAN_ORDER) {
+    assert.equal(PLANS[plan].amount, AMOUNTS[plan]);
+    assert.equal(PLANS[plan].price, money(AMOUNTS[plan]), `${plan} price is not the ${plan} amount`);
+  }
+  /* The two numbers the yearly card argues with, both computed. */
+  assert.equal(YEARLY_PER_MONTH, "RM4.99");
+  assert.equal(YEARLY_SAVING_PERCENT, 50);
+  assert.ok(AMOUNTS.yearly < AMOUNTS.monthly * MONTHS.yearly, "yearly must actually save money");
+});
+
+test("changing a price means changing one file: nothing else writes an amount", () => {
+  const walk = (dir: string): string[] =>
+    readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+      entry.isDirectory() ? walk(`${dir}/${entry.name}`) : /\.(ts|tsx)$/.test(entry.name) ? [`${dir}/${entry.name}`] : [],
+    );
+  const src = new URL("../src", import.meta.url).pathname;
+  for (const file of walk(src)) {
+    if (file.endsWith("/lib/billing/subscription.ts")) continue;
+    /* Comments may name a price; a rendered string may not. */
+    const visible = readFileSync(file, "utf8").replace(/\/\*[\s\S]*?\*\//g, "").replace(/^\s*\/\/.*$/gm, "");
+    assert.doesNotMatch(visible, /RM\s?\d/, `${file} hardcodes a price instead of reading PLANS`);
+  }
+});
+
+test("the account area can say, in one word, what state the subscription is in", () => {
+  assert.equal(statusLabel(ACTIVE, NOW), "Active");
+  assert.equal(statusLabel({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW), "Ending");
+  assert.equal(statusLabel({ ...ACTIVE, currentPeriodEnd: NOW - 30 * DAY }, NOW), "Renewing", "an active row whose period ran out long ago is waiting on Stripe, not failing");
+  assert.equal(statusLabel({ ...ACTIVE, status: "past_due" }, NOW), "Payment failed");
+  assert.equal(statusLabel({ ...ACTIVE, status: "incomplete" }, NOW), "Confirming");
+  assert.equal(statusLabel({ ...ACTIVE, status: "cancelled" }, NOW), "Cancelled");
+  assert.equal(statusLabel({ ...ACTIVE, status: "expired" }, NOW), "Ended");
+  assert.equal(statusLabel(NO_SUBSCRIPTION, NOW), "No subscription");
 });
 
 test("every Stripe status maps to an explicit KIDDO state, and only active opens KIDDO", () => {
@@ -132,6 +182,50 @@ test("a Stripe subscription becomes KIDDO state with the plan resolved from the 
   assert.equal(hasAccess(ended, NOW), false);
 });
 
+test("a cancellation is read as cancel-at-period-end however Stripe words it", () => {
+  const END = NOW / 1000 + 30 * 86400;
+
+  /* Stripe API 2026-07-29.dahlia: cancelling in the Customer Portal leaves
+     `cancel_at_period_end` false and records the scheduled end in
+     `cancel_at`. Reading only the flag tells a parent who has just
+     cancelled that their plan renews — which is the one thing it will not
+     do. Verified against a real test-mode portal cancellation. */
+  const portal = stateFromStripe(stripeSub({ cancelAt: END }), PRICES, 1000);
+  assert.equal(portal.cancelAtPeriodEnd, true);
+  assert.equal(portal.status, "active", "Stripe still calls it active until the period ends");
+  assert.equal(statusLabel(portal, NOW), "Ending");
+  assert.match(describeSubscription(portal, NOW), /^Cancelled\. KIDDO stays open until /);
+
+  /* The older shape means the same thing and still reads the same way. */
+  assert.equal(stateFromStripe(stripeSub({ cancel: true }), PRICES, 1000).cancelAtPeriodEnd, true);
+  assert.equal(
+    stateFromStripe(stripeSub({ cancel: true, cancelAt: null }), PRICES, 1000).cancelAtPeriodEnd,
+    true,
+  );
+
+  /* Neither set: a subscription that really is renewing is left alone. */
+  const renewing = stateFromStripe(stripeSub(), PRICES, 1000);
+  assert.equal(renewing.cancelAtPeriodEnd, false);
+  assert.equal(statusLabel(renewing, NOW), "Active");
+  assert.match(describeSubscription(renewing, NOW), /Renews on /);
+  assert.deepEqual(
+    { ...portal, cancelAtPeriodEnd: false },
+    renewing,
+    "a scheduled cancellation changes that one field and nothing else",
+  );
+
+  /* One Stripe has already ended still maps by its status alone. */
+  const ended = stateFromStripe(stripeSub({ status: "canceled", cancelAt: END }), PRICES, 1000);
+  assert.equal(ended.status, "cancelled");
+  assert.equal(statusLabel(ended, NOW), "Cancelled");
+
+  /* Access is decided by status and period end. This flag never moves it. */
+  assert.equal(hasAccess(portal, NOW), true, "cancelling keeps KIDDO open until the period ends");
+  assert.equal(hasAccess(portal, NOW + 32 * DAY), false, "and closed after it, grace included");
+  assert.equal(hasAccess(renewing, NOW), true);
+  assert.equal(hasAccess(ended, NOW), false);
+});
+
 test("out-of-order and duplicate events never roll the state backwards", () => {
   const older = stateFromStripe(stripeSub({ status: "active" }), PRICES, 1000);
   const newer = stateFromStripe(stripeSub({ status: "canceled" }), PRICES, 2000);
@@ -154,7 +248,7 @@ test("a subscription read back from the cloud is parsed defensively", () => {
 });
 
 test("the billing line is a sentence a parent can act on, never a code", () => {
-  assert.match(describeSubscription(ACTIVE, NOW), /Annual plan, RM59\.90 a year\. Renews on/);
+  assert.match(describeSubscription(ACTIVE, NOW), /Yearly plan, RM59\.90 a year\. Renews on/);
   assert.match(describeSubscription({ ...ACTIVE, plan: "monthly" }, NOW), /Monthly plan, RM9\.90 a month/);
   assert.match(describeSubscription({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW), /Cancelled\. KIDDO stays open until/);
   assert.match(describeSubscription({ ...ACTIVE, status: "past_due" }, NOW), /payment didn’t go through/);

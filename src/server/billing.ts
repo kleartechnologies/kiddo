@@ -9,6 +9,7 @@ import {
   type Plan,
   type SubscriptionState,
 } from "@/lib/billing/subscription";
+import { parseJoinEvent, type JoinEvent } from "@/lib/social/joins";
 import { adminDb } from "./firebaseAdmin";
 import { priceIds, stripe } from "./stripe";
 
@@ -25,6 +26,7 @@ import { priceIds, stripe } from "./stripe";
 
 const USERS = "users";
 const EVENTS = "stripeEvents";
+const JOINS = "joinEvents";
 
 export async function userDoc(uid: string): Promise<FirebaseFirestore.DocumentData | null> {
   const snap = await adminDb().collection(USERS).doc(uid).get();
@@ -76,6 +78,7 @@ export async function applySubscription(
       status: sub.status,
       customer: typeof sub.customer === "string" ? sub.customer : sub.customer.id,
       cancel_at_period_end: sub.cancel_at_period_end,
+      cancel_at: sub.cancel_at,
       items: {
         data: sub.items.data.map((item) => ({
           price: { id: item.price.id },
@@ -87,13 +90,49 @@ export async function applySubscription(
     eventCreated,
   );
   const ref = adminDb().collection(USERS).doc(uid);
-  return adminDb().runTransaction(async (tx) => {
+  const applied = await adminDb().runTransaction(async (tx) => {
     const snap = await tx.get(ref);
     const existing = snap.exists ? parseSubscription(snap.data()?.subscription) : null;
     if (existing && existing.eventCreated > 0 && !isNewer(incoming, existing)) return null;
     tx.set(ref, { subscription: { ...incoming, updatedAt: Date.now() } }, { merge: true });
-    return incoming;
+    return { incoming, wasActive: existing?.status === "active" };
   });
+  if (!applied) return null;
+  /* A subscription that has just started paying for the first time is the
+     one thing a stranger may be told about — as "a family joined", nothing
+     more. A renewal is active → active and says nothing new. */
+  if (applied.incoming.status === "active" && !applied.wasActive) {
+    await recordJoin(sub.id, applied.incoming.plan, eventCreated * 1000);
+  }
+  return applied.incoming;
+}
+
+/**
+ * Remember, in a form that identifies nobody, that a family joined: when,
+ * and which plan. Keyed by the Stripe subscription id so one subscription
+ * can only ever produce one notice however many times Stripe tells us
+ * about it. Never blocks the webhook — a notice is not worth a retry.
+ */
+export async function recordJoin(
+  subscriptionId: string,
+  plan: Plan | null,
+  at: number,
+): Promise<void> {
+  try {
+    await adminDb().collection(JOINS).doc(subscriptionId).create({ at, plan });
+  } catch (error) {
+    if (isAlreadyExists(error)) return;
+    console.error("[billing/join]", error instanceof Error ? error.message : error);
+  }
+}
+
+/**
+ * The recent joins, for `GET /api/social/recent`. Reads only the two
+ * public fields; the private ones are not in the document to begin with.
+ */
+export async function recentJoinEvents(limit: number): Promise<JoinEvent[]> {
+  const snap = await adminDb().collection(JOINS).orderBy("at", "desc").limit(limit).get();
+  return snap.docs.map((doc) => parseJoinEvent(doc.data())).filter((e): e is JoinEvent => e !== null);
 }
 
 /**

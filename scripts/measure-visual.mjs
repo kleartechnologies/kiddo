@@ -7,9 +7,10 @@
  * screenshot:
  *
  *   1. Is the picture actually there, and big enough to read?
- *   2. **Does it go away?** A level-two board that still has drawings on it is
- *      a permanent hint, and a permanent hint is the failure this whole phase
- *      is built to avoid.
+ *   2. **Is it there wherever the library reaches?** A board whose every
+ *      picture is in the library and which still renders the platform's emoji
+ *      font is the failure this pass was opened to fix — it puts a KIDDO board
+ *      and a system emoji on one screen. The level is not allowed to decide.
  *   3. Is a board ever *half* drawn? Two illustrations among four glyphs is a
  *      pattern a child can answer without learning anything.
  *
@@ -514,6 +515,37 @@ async function tryToMiss(cdp, sessionId, state) {
 let failures = 0;
 let browser;
 
+/**
+ * The boards the library can draw every picture of, and which therefore have
+ * to arrive drawn — every time, on every screen.
+ *
+ * This is the check that replaced "does the picture go away at level two". It
+ * used to be a failure for a board above the entry level to carry a drawing,
+ * on the theory that the drawing was a scaffold; it was not one. An emoji cow
+ * and a drawn cow ask a child for exactly the same thing, so withholding the
+ * drawing removed no help and only mixed two art styles on one board. What the
+ * rungs of the real ladder take away — a counting board dropping to a block of
+ * pips at level three, a pool widening — is asserted in `tests/visual.test.ts`,
+ * where it can be sampled hundreds of times instead of twice.
+ *
+ * Only boards whose *whole* pool is in the library are listed. `rhyming` and
+ * `sound-partners` above level one are not, and are correctly plain there.
+ */
+const COVERED = [
+  { activity: "general-knowledge.home-partners", level: 1 },
+  { activity: "general-knowledge.animal-babies", level: 1 },
+  { activity: "general-knowledge.animal-homes", level: 1 },
+  { activity: "math.counting-objects", level: 1 },
+  /* Every countable in the table is drawn, so level two is covered too. Level
+     three is not listed: it may deal a block of pips, which has no picture. */
+  { activity: "math.counting-objects", level: 2 },
+];
+
+/** A board is that entry's if the challenge came from that activity at it. */
+const coversBoard = (entry, board) =>
+  board.level === entry.level &&
+  String(board.activity ?? "").split("#")[0] === entry.activity;
+
 /** Everything that would be wrong with this board, in words. */
 const problemsWith = (board) => {
   const problems = [];
@@ -536,8 +568,8 @@ const problemsWith = (board) => {
     problems.push(`${board.exposedArt} drawings not aria-hidden`);
   if (board.mixedColumns.length)
     problems.push(`half-drawn column (${board.mixedColumns.join(", ")})`);
-  if (board.level !== null && board.level > 1 && board.art.length)
-    problems.push(`scaffold survived to L${board.level}`);
+  if (COVERED.some((entry) => coversBoard(entry, board)) && board.art.length === 0)
+    problems.push("no drawing, on a board the library covers end to end");
   if (board.prompt?.layout === "subject" && board.prompt.share > MAX_SUBJECT_SHARE)
     problems.push(`subject takes ${Math.round(board.prompt.share * 100)}% of the screen`);
   if (board.anchor && board.anchor.height < MIN_ART)
@@ -616,15 +648,16 @@ try {
         );
       }
 
-      /* The ladder, read off the round itself. Entry-level boards have to be
-         drawn at least sometimes — a library nothing reaches is a library
-         nobody has to maintain — and boards above the entry level have to be
-         drawn never. The second half is the one that matters. */
+      /* The reach, read off the round itself. Boards have to be drawn at the
+         entry level — a library nothing reaches is a library nobody has to
+         maintain — and they have to be drawn *above* it too, because a zero
+         there means something started gating the drawing on the level again.
+         The second half is the one that changed. */
       const entry = boards.filter((b) => b.level === 1);
       const above = boards.filter((b) => b.level !== null && b.level > 1);
       const drawnEntry = entry.filter((b) => b.art.length).length;
       const drawnAbove = above.filter((b) => b.art.length).length;
-      const ladder = drawnEntry > 0 && drawnAbove === 0;
+      const ladder = drawnEntry > 0 && drawnAbove > 0;
       if (!ladder) failures += 1;
 
       const all = boards.length === STEPS;

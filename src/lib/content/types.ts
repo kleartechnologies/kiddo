@@ -170,9 +170,14 @@ export interface TextItem extends ItemBase {
    * PICTURE -> PICTURE + WORD -> SYMBOL ladder in
    * `docs/kiddo-visual-system.md`.
    *
-   * Optional, and expected to be absent above the entry level. A picture that
-   * never leaves is not a scaffold, it is the answer — see
-   * `illustratedAtLevel` in `art.ts`, which is where every activity asks when.
+   * Optional, and all-or-nothing across a board: a tray with three of five
+   * tiles anchored is a tray where the answer is the odd one out. What decides
+   * is `boardIsDrawn` in `art.ts` — the library, not the level — because a
+   * drawing and an emoji of the same thing ask a child for the same work, so
+   * withholding one above the entry level removed no scaffold and only put two
+   * art styles on one board. The rungs that do remove something (the window
+   * widening, the pool widening) are elsewhere and untouched.
+   *
    * An id with no drawing registered simply draws nothing, and the word is
    * exactly what it was.
    */
@@ -419,10 +424,10 @@ export interface Prompt {
    * `S _ N` is a puzzle to a reader and noise to a four year old — until a
    * sun sits over it, at which point it is a word with a meaning. That is
    * what this is: **context, not a scaffold**. It never encodes the answer —
-   * the speech has already said the word out loud — so unlike a tile
-   * illustration it does not fade with level; the glyph inside it follows
-   * the same promotion rule as every picture (`art` at the entry level,
-   * emoji above it).
+   * the speech has already said the word out loud — so it does not fade with
+   * level, and the glyph inside it follows the same promotion rule as every
+   * picture: drawn whenever the library knows the word, and the emoji it has
+   * always been when it does not.
    *
    * Ignored when the layout is `subject`: a subject is already one big thing
    * to look at, and two heroes on one stage is a crowd.

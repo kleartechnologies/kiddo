@@ -1,5 +1,5 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
-import { illustratedAtLevel, type ArtId } from "../../art";
+import { boardIsDrawn, type ArtId } from "../../art";
 import type { Level } from "../../difficulty";
 import type { Rng } from "../../rng";
 import type { ConnectNode, ConnectPair } from "../../types";
@@ -143,12 +143,18 @@ export const ANIMAL_ART: Readonly<Record<string, ArtId>> = {
   fox: "animal.fox",
 };
 
-/** An animal tile, drawn where the level asks for a drawing and one exists. */
-export function animalItem(name: string, level: Level) {
-  return drawn(
-    ANIMALS[name],
-    illustratedAtLevel(level) ? ANIMAL_ART[name] : undefined,
-  );
+/**
+ * An animal tile, drawn when the board it is going on is a drawn board.
+ *
+ * The caller decides, and it decides for the whole board at once — which is
+ * why this takes a flag rather than a level. Whether a board is drawn is
+ * `boardIsDrawn` over every picture that will be on it, so a column can never
+ * come out half illustrated, and the animals the library has not drawn keep
+ * the whole board on glyphs rather than sitting in a drawn row looking like
+ * the odd one out.
+ */
+export function animalItem(name: string, illustrated: boolean) {
+  return drawn(ANIMALS[name], illustrated ? ANIMAL_ART[name] : undefined);
 }
 
 /* ------------------------------------------------ which one is a giraffe? */
@@ -526,19 +532,25 @@ export const babyPartners = defineGeneratedActivity({
 
     /* MODE 1 on the left, MODE 3 on the right, on one board — and that is the
        activity rather than an inconsistency. The left column is a thing in the
-       world, so at the entry level it is drawn and carries no word at all. The
-       right column is the *name* of the baby, which is the whole objective:
-       there is no picture that tells a lamb from a sheep, so a drawn right
-       column would be a board a child could finish without ever meeting the
-       word "lamb".
+       world, so it is drawn. The right column is the *name* of the baby, which
+       is the whole objective: there is no picture that tells a lamb from a
+       sheep, so a drawn right column would be a board a child could finish
+       without ever meeting the word "lamb".
 
-       The drawing leaves at level two, where the pool widens past the five
-       animals a three year old can name. Nothing about the left column leaks
-       an answer either way — the right column is words, so "join the drawn
-       ones to the drawn ones" is not a strategy that exists here. */
+       The left column is all of it or none of it. Nothing here leaks an answer
+       either way — the right column is words, so "join the drawn ones to the
+       drawn ones" is not a strategy that exists — but a column with two
+       drawings and three emoji in it is the mixture the visual system exists
+       to refuse. So the board is drawn when the library knows every animal on
+       it, which is every board at level one and the boards above it that
+       happen to deal from the animals it knows. */
+    const illustrated = boardIsDrawn(
+      chosen.map((animal) => ANIMAL_ART[animal.name]),
+    );
+
     const left: ConnectNode[] = chosen.map((animal) => ({
       id: `animal-${animal.name}`,
-      item: animalItem(animal.name, level),
+      item: animalItem(animal.name, illustrated),
     }));
 
     const right: ConnectNode[] = displaceBabies(chosen, rng).map((animal) => {

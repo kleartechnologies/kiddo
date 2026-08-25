@@ -1,5 +1,4 @@
-import { illustratedAtLevel, type ArtId } from "../../art";
-import type { Level } from "../../difficulty";
+import type { ArtId } from "../../art";
 import type { Rng } from "../../rng";
 import { wordPicture } from "../../vocabulary";
 import type {
@@ -75,7 +74,7 @@ export function namedLetter(letter: string): TextItem {
  * `ContentItemView` — because in this pack the word is nearly always the thing
  * being learned, and a picture that outweighed it would turn reading into
  * looking. Which activities ask, and at which level they stop, is each
- * activity's own decision; `illustratedAtLevel` in `art.ts` is when.
+ * activity's own decision; `boardIsDrawn` in `art.ts` is the whole of when.
  */
 export function wordItem(word: string, art?: ArtId): TextItem {
   return { kind: "text", text: word.toUpperCase(), art };
@@ -168,18 +167,24 @@ export function board(
  * `lib/content/vocabulary.ts`; a word it does not know gets no anchor, which
  * is exactly what every word got before anchors existed.
  *
- * The anchor itself is context and appears at every level — the word is
- * already spoken aloud, so it never leaks an answer — but the *drawing*
- * inside it follows the same promotion ladder as every other picture:
- * a KIDDO illustration at the entry level, the emoji above that.
+ * The anchor is context and appears at every level — the word is already
+ * spoken aloud, so it never leaks an answer — and the *drawing* inside it now
+ * follows the anchor rather than the level. `types.ts` has always said this is
+ * context and not a scaffold; fading the drawing out at level two was the one
+ * line that disagreed with it, and all it bought was a KIDDO board with a
+ * system emoji sitting on top of it.
+ *
+ * There is nothing to keep all-or-nothing here: an anchor is one picture,
+ * alone above a line of letters, so there is no second picture for it to be
+ * half of. A word the vocabulary has no drawing for keeps its glyph.
  */
-export function wordAnchor(word: string, level: Level): ContentItem | undefined {
+export function wordAnchor(word: string): ContentItem | undefined {
   const picture = wordPicture(word);
   if (!picture) return undefined;
   return {
     kind: "picture",
     glyph: picture.glyph,
     label: word.toLowerCase(),
-    ...(illustratedAtLevel(level) && picture.art ? { art: picture.art } : {}),
+    ...(picture.art ? { art: picture.art } : {}),
   };
 }

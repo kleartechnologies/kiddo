@@ -1,4 +1,4 @@
-import { illustratedAtLevel, type ArtId } from "@/lib/content/art";
+import type { ArtId } from "@/lib/content/art";
 import { defineQuizActivity, drawn, except, pic, type Question, type Sym } from "./shared";
 
 /**
@@ -56,16 +56,17 @@ const DRAWN_LAND = Object.fromEntries(
 ) as Record<LandKey, Sym>;
 
 /**
- * Which set of tiles a level is dealt from.
+ * Which set of tiles a board is dealt from. The drawn ones, always.
  *
- * The scaffold, and the same one every other illustrated activity uses: the
- * pictures belong to the entry level and leave as the board gets harder, so a
- * child who has learnt the places by their drawings has to name them by their
- * words at level two. Nothing else about the board changes — same keys, same
- * labels, same glyphs underneath.
+ * All seven places are in the library, so there is no level at which this
+ * board could come out half of each and no level at which withholding the
+ * drawings would teach anything: an emoji mountain and a drawn mountain ask a
+ * child exactly the same question. `LAND` is still what is underneath — same
+ * keys, same labels, same glyphs — so a drawn board and a plain one are the
+ * same board to a screen reader, and a place the library ever loses falls back
+ * to its glyph without a line of this file changing.
  */
-const tilesAt = (level: 1 | 2 | 3): Record<LandKey, Sym> =>
-  illustratedAtLevel(level) ? DRAWN_LAND : LAND;
+const tilesAt = (): Record<LandKey, Sym> => DRAWN_LAND;
 
 /**
  * Naming boards get the same `avoid` the property boards have, because a
@@ -111,7 +112,7 @@ export const landAndWater = defineQuizActivity({
   host: "wally",
   questions: [
     ...NAMES.map(({ key, level, avoid }): Question => {
-      const tiles = tilesAt(level);
+      const tiles = tilesAt();
       const answer = tiles[key];
       const barred = (avoid ?? []).map((other) => tiles[other]);
       return {
@@ -126,7 +127,7 @@ export const landAndWater = defineQuizActivity({
       };
     }),
     ...PROPERTIES.map((fact): Question => {
-      const tiles = tilesAt(fact.level);
+      const tiles = tilesAt();
       const answer = tiles[fact.key];
       const barred = new Set<string>([
         answer.key,

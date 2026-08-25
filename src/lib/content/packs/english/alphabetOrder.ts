@@ -1,5 +1,5 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
-import { illustratedAtLevel, type ArtId } from "../../art";
+import { boardIsDrawn, type ArtId } from "../../art";
 import type { Level } from "../../difficulty";
 import type { Rng } from "../../rng";
 import type { OrderItem } from "../../types";
@@ -182,10 +182,11 @@ export const alphabetOrderActivity = defineGeneratedActivity({
      * looks: `ALPHABET_RUNS` counts three-letter runs and level one is the only
      * level that deals them, so narrowing the *choice* to the drawn letters
      * would delete `E F G` through `H I J` from the product entirely. This way
-     * a child meets every run and four of the eight arrive with pictures. */
-    const anchored =
-      illustratedAtLevel(level) &&
-      values.every((letter) => LETTER_ART[letter] !== undefined);
+     * a child meets every run, and a run whose every letter has a picture
+     * arrives with them — at whatever level it was dealt. The level never
+     * decided this; the library does, and above level one the window is wide
+     * enough that an all-drawn run is the rare one. */
+    const anchored = boardIsDrawn(values.map((letter) => LETTER_ART[letter]));
 
     const items: OrderItem[] = trayOrder(
       values,

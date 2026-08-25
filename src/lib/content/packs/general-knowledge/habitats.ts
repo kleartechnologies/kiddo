@@ -1,9 +1,9 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
-import { illustratedAtLevel, narrowToDrawn, type ArtId } from "../../art";
+import { boardIsDrawn, narrowToDrawn, type ArtId } from "../../art";
 import type { Level } from "../../difficulty";
 import type { Rng } from "../../rng";
 import type { ConnectNode, ConnectPair } from "../../types";
-import { ANIMAL_ART, ANIMALS, animalItem } from "./animals";
+import { ANIMAL_ART, animalItem } from "./animals";
 import {
   aOrAn,
   capitalise,
@@ -175,13 +175,20 @@ export const animalHabitats = defineQuizActivity({
   ageRange: { min: 3, max: 6 },
   host: "bibi",
   questions: HOMES.map((entry): Question => {
-    /* The scaffold, fact by fact: a level-one question is asked with the
-       animal and every place tile drawn, and the drawing leaves at level two
-       with the rest of the ladder — `illustratedAtLevel` is the one word for
-       when, and with all ten places in the library a level-one options row is
-       never half of each. */
+    /* Drawn, fact by fact, and drawn at every level the fact is asked at. The
+       library knows all ten places, so the options row is never half of each
+       whatever is sampled onto it; the one thing that can be missing is the
+       animal on the stage above them, and a drawn row under an emoji animal is
+       exactly the mixture the visual system refuses. So the whole question —
+       subject and every place it could be asked against — is drawn together or
+       not at all. */
+    const illustrated = boardIsDrawn([
+      ANIMAL_ART[entry.animal],
+      ...(Object.keys(PLACES) as PlaceKey[]).map((key) => PLACE_ART[key]),
+    ]);
+
     const place = (key: PlaceKey): Sym =>
-      illustratedAtLevel(entry.level)
+      illustrated
         ? { key: PLACES[key].key, item: drawn(PLACES[key], PLACE_ART[key]) }
         : PLACES[key];
     const barred = new Set<PlaceKey>([entry.home, ...(entry.avoid ?? [])]);
@@ -196,7 +203,7 @@ export const animalHabitats = defineQuizActivity({
       hint: "Picture the animal at home. What is all around it?",
       idea: `home:${entry.animal}`,
       family: "place",
-      display: [{ kind: "item", item: animalItem(entry.animal, entry.level) }],
+      display: [{ kind: "item", item: animalItem(entry.animal, illustrated) }],
     };
   }),
 });
@@ -243,14 +250,12 @@ function poolAtLevel(level: Level): readonly Home[] {
  * finish it: join the drawn ones to the drawn ones. It works, it is not the
  * skill, and a five year old will find it before an adult does.
  *
- * So a level-one board is all illustration or all glyph, never a mixture, and
- * this is the "all". A fact survives only if the library has both halves of
- * it — today the sea and the farm, which leaves the monkey in the jungle out.
- * That is why `narrowToDrawn` is a coin rather than a rule: about half of the
- * level-one boards are dealt from here and drawn, the rest are dealt from the
- * whole level-one pool and are glyph, so the monkey keeps its place and no
- * board is ever half of each. The day `PLACE_ART` learns the jungle this
- * function needs no edit.
+ * A fact survives here only if the library has both halves of it, which since
+ * the places were finished means both halves of every level-one fact and the
+ * animals it knows above that. It is what `narrowToDrawn` narrows *to*, and
+ * nothing more: whether a board ends up drawn is read off the facts that came
+ * out of the deal, by `boardIsDrawn`, so a board dealt from the whole pool
+ * that happens to be drawable is drawn too and no board is ever half of each.
  */
 function illustrablePool(pool: readonly Home[]): readonly Home[] {
   return pool.filter(
@@ -366,11 +371,21 @@ export const homePartners = defineGeneratedActivity({
   levels: [1, 2, 3],
   generate: ({ level, rng }): ChallengeSpec => {
     /* MODE 1, both sides, and no reading anywhere on the board — the purest
-       SHOW -> INTERACT -> REINFORCE activity in the product. On about half the
-       level-one boards the pool narrows to the facts that can be drawn end to
-       end and the whole board is illustration; on the rest, and from level two
-       up, the whole board is glyph. It is never half of each: see
-       `illustrablePool` and `narrowToDrawn`.
+       SHOW -> INTERACT -> REINFORCE activity in the product.
+
+       Two decisions, and they are no longer the same decision. `narrowToDrawn`
+       still tosses its coin over *which facts* a level-one board is dealt from,
+       so the monkey keeps its place at level one and every fact is still dealt
+       at every level it was dealt at before. What the board is *drawn with* is
+       then read off the facts that actually came out: the library knows every
+       place, so a board is drawn exactly when it knows every animal on it —
+       which is every level-one board however the coin fell, and the boards
+       above it that happened to deal animals it has drawn.
+
+       Never half of each, at any level. That is `boardIsDrawn`, and it is
+       asked over both columns at once because both columns are content here:
+       two drawings among four glyphs would be a pattern to join rather than a
+       home to find.
 
        If a narrowed pool somehow could not fill a board, `joinable` returns its
        best attempt and the board would be short, so the fall back to the full
@@ -378,19 +393,21 @@ export const homePartners = defineGeneratedActivity({
     const wanted = pairsAtLevel(level);
     const drawing = narrowToDrawn(level, rng);
     const narrowed = drawing ? illustrablePool(poolAtLevel(level)) : [];
-    const illustrated = drawing && narrowed.length >= wanted;
 
     const chosen = joinable(
-      illustrated ? narrowed : poolAtLevel(level),
+      drawing && narrowed.length >= wanted ? narrowed : poolAtLevel(level),
       wanted,
       rng,
     );
 
+    const illustrated = boardIsDrawn([
+      ...chosen.map((entry) => ANIMAL_ART[entry.animal]),
+      ...chosen.map((entry) => PLACE_ART[entry.home]),
+    ]);
+
     const left: ConnectNode[] = chosen.map((entry) => ({
       id: animalId(entry),
-      item: illustrated
-        ? animalItem(entry.animal, level)
-        : ANIMALS[entry.animal].item,
+      item: animalItem(entry.animal, illustrated),
     }));
 
     const right: ConnectNode[] = displace(chosen, rng).map((entry) => ({

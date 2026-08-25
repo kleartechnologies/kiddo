@@ -2,7 +2,7 @@ import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
 import { forLevel, type Level, type LevelTable } from "../../difficulty";
 import type { Rng } from "../../rng";
 import type { ConnectNode, ConnectPair } from "../../types";
-import { narrowToDrawn } from "../../art";
+import { boardIsDrawn, narrowToDrawn } from "../../art";
 import { wordPicture } from "../../vocabulary";
 import { PHONICS_WORDS, SAME_SOUND, type PhonicsWord } from "./phonics";
 import { letterId, namedLetter } from "./shared";
@@ -160,19 +160,23 @@ export const soundPartnersActivity = defineGeneratedActivity({
   host: "pip",
   levels: [1, 2, 3],
   generate: ({ level, rng }): ChallengeSpec => {
-    /* The entry-level coin the other boards toss (`narrowToDrawn`): about
-       half of level one is dealt from the pictures the library has drawn and
-       is wholly illustrated, the rest is dealt from the whole pool and is
-       wholly glyph. A board is never half of each — two drawings among four
-       emoji would be a pattern to join instead of a sound to hear — and every
-       sound is still dealt at every level it was dealt at before. The letter
-       column is never drawn over: the letter is the objective. */
+    /* The entry-level coin the other boards toss (`narrowToDrawn`) still
+       decides which sounds level one is dealt from, so every sound is still
+       dealt at every level it was dealt at before. What the board is drawn
+       with is then read off the pictures that came out: all of them or none.
+
+       Never half of each, even though the right column is letters and nothing
+       here could leak. A column carrying two illustrations and three emoji is
+       the mixture the visual system exists to refuse, whatever it does or does
+       not give away. The letter column is never drawn over at all: the letter
+       is the objective. */
     const wanted = forLevel(PAIRS, level, 5);
     let chosen = narrowToDrawn(level, rng) ? chooseBoard(level, rng, true) : [];
-    const illustrated =
-      chosen.length >= wanted &&
-      chosen.every((entry) => wordPicture(entry.word)?.art !== undefined);
     if (chosen.length < wanted) chosen = chooseBoard(level, rng);
+
+    const illustrated = boardIsDrawn(
+      chosen.map((entry) => wordPicture(entry.word)?.art),
+    );
 
     const left: ConnectNode[] = chosen.map((entry) => ({
       id: pictureId(entry),

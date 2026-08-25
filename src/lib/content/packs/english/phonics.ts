@@ -1,5 +1,5 @@
 import { defineGeneratedActivity } from "../../activity";
-import { forLevel, type Level, type LevelTable } from "../../difficulty";
+import { forLevel, type LevelTable } from "../../difficulty";
 import type { Rng } from "../../rng";
 import {
   board,
@@ -169,19 +169,14 @@ function couldAnswer(word: PhonicsWord, sound: string): boolean {
  *
  * `What sound does DOG start with?` — D, B, G.
  */
-function askForTheSound(
-  entry: PhonicsWord,
-  tiles: number,
-  rng: Rng,
-  level: Level,
-) {
+function askForTheSound(entry: PhonicsWord, tiles: number, rng: Rng) {
   const distractors = pickDistractors(entry.sound, tiles - 1, rng, entry.wrong);
 
   return {
     prompt: {
       speech: `What sound does ${entry.word} start with?`,
       display: [part(wordItem(entry.word))],
-      anchor: wordAnchor(entry.word, level),
+      anchor: wordAnchor(entry.word),
     },
     payload: board(entry.sound, distractors, rng, namedLetter),
     explanation: `${entry.word} starts with ${entry.sound}.`,
@@ -230,7 +225,7 @@ export const beginningSoundsActivity = defineGeneratedActivity({
        until the child has met the first shape of the question. */
     const asked =
       level === 1 || rng.next() < 0.5
-        ? askForTheSound(entry, tiles, rng, level)
+        ? askForTheSound(entry, tiles, rng)
         : askForTheWord(entry, tiles, rng, pool);
 
     return {

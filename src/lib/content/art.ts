@@ -185,23 +185,24 @@ export function artCategoryOf(id: ArtId): ArtCategory {
 }
 
 /**
- * Whether a board at this level is drawn with illustrations.
+ * Whether a board at this level deals from a *narrowed* pool.
  *
- * The scaffolding rule, written down once so five activities cannot disagree
- * about it. A picture is help, and help that never goes away is not help — it
- * is a crutch a child learns to lean on instead of learning the thing. So the
- * illustration belongs to the *entry* level and leaves as the board gets
- * harder, which is the ladder `docs/kiddo-visual-system.md` §L calls
- * PICTURE -> PICTURE + WORD -> SYMBOL.
+ * Read the name carefully: this says which levels may restrict themselves to
+ * the facts the library has drawn, and it no longer says how anything is
+ * **rendered**. Rendering is `boardIsDrawn` below, and the difference between
+ * the two is the difference between content and paint.
  *
- * What each activity falls back *to* is its own decision and is not the same
- * decision twice: a counting board falls back from drawn apples to emoji apples
- * to a block of pips, and an alphabet tray falls back from a letter with a
- * picture over it to the letter alone. This only says *when*.
+ * It is still level one and only level one, because narrowing a pool takes
+ * facts away from a board and the entry level is the only place that is worth
+ * doing: a level-one counting board deals from the fourteen things the library
+ * knows, and level two deals from the whole table. Every level above the entry
+ * one sees more of the world, which is the ladder.
  *
- * Level one and only level one, on purpose. Every activity that uses this
- * offers three levels, level two is where the pool widens and the board grows,
- * and a scaffold that survived the first widening would be carried to the top.
+ * What this deliberately no longer decides is whether the picture is a KIDDO
+ * drawing or a system emoji. That was never a difficulty lever — an emoji cow
+ * and a drawn cow ask a child for exactly the same thing — and using it as one
+ * meant every board above the entry level mixed the illustration system with
+ * the platform's emoji font. See `boardIsDrawn`.
  */
 export function illustratedAtLevel(level: Level): boolean {
   return level <= 1;
@@ -226,11 +227,15 @@ export function illustratedAtLevel(level: Level): boolean {
  * twelve. Both are real losses, and neither is worth a picture.
  *
  * So the entry level does both, board by board: about half its boards are
- * dealt from the drawn set and are wholly illustrated, and the rest are dealt
- * from the whole pool and are wholly glyph. Every fact is still dealt at every
- * level it was dealt at before, no board is ever half-drawn, and a child at the
- * entry level meets pictures often rather than always — which is what a
- * scaffold is.
+ * dealt from the drawn set, and the rest are dealt from the whole pool. Every
+ * fact is still dealt at every level it was dealt at before.
+ *
+ * What comes out of the two halves is no longer "drawn" and "glyph", because
+ * this function stopped being a rendering decision when `boardIsDrawn` became
+ * one. A narrowed board is drawable by construction; an unnarrowed board is
+ * drawn too whenever the facts it happened to deal are all in the library, and
+ * is glyph as a whole when they are not. So the coin now only decides *which
+ * facts*, which is the only thing it was ever entitled to decide.
  *
  * The share is a coin rather than a tuned number because it does not want
  * tuning: it wants to be obviously neither "never" nor "always". As the library
@@ -239,4 +244,44 @@ export function illustratedAtLevel(level: Level): boolean {
  */
 export function narrowToDrawn(level: Level, rng: Rng): boolean {
   return illustratedAtLevel(level) && rng.next() < 0.5;
+}
+
+/**
+ * Whether a board showing these pictures is drawn.
+ *
+ * The rule that replaced "the drawing belongs to level one". A board is drawn
+ * when the library can draw **every** picture on it, and is left as glyphs the
+ * moment it cannot draw one of them — so the answer to "is this board
+ * illustrated?" is a fact about the library rather than about the level.
+ *
+ * ## Why the level stopped deciding
+ *
+ * `illustratedAtLevel` still says which levels deal from a *narrowed pool*,
+ * which is a content decision and stays exactly where it was. What it no
+ * longer does is decide how a picture is **drawn**, because that was never a
+ * decision about difficulty: an emoji cow and a drawn cow tell a child the
+ * same thing and cost them the same effort. Fading the drawing at level two
+ * did not remove a scaffold, it only put a KIDDO board and a system emoji on
+ * the same screen — which is the one thing the visual system is for.
+ *
+ * The ladder that *is* pedagogy is untouched, because it was never this
+ * function: `counting-objects` still drops to a block of pips at level three,
+ * `alphabet-order` still widens its window, and every pool still widens with
+ * the level. Those take something away. A drawing does not.
+ *
+ * ## Why all-or-nothing survived
+ *
+ * This is the rule that actually protects a board, and it is the whole reason
+ * the predicate takes a list rather than one id. On a board where the pictures
+ * are the content — an animal and its home, a word and the word it rhymes with
+ * — two illustrations among four glyphs is a pattern, and a child who joins the
+ * two drawn ones is right for entirely the wrong reason. So a caller passes the
+ * art of *every picture the child will see*, including the ones that resolved
+ * to nothing, and gets one answer for the whole board.
+ *
+ * An empty board is not drawn: `every` on an empty list is `true`, and a board
+ * with no pictures on it has nothing to promote.
+ */
+export function boardIsDrawn(art: readonly (ArtId | undefined)[]): boolean {
+  return art.length > 0 && art.every((id) => id !== undefined);
 }

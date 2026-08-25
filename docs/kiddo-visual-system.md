@@ -282,9 +282,9 @@ By level:
 |-------|-------------------|
 | 1 | picture carries the meaning; text is minimal or absent |
 | 2 | picture and word together, or the word alone with the pool widened |
-| 3 | the symbol or the concept, with the picture gone |
+| 3 | the symbol or the concept, and the thing itself may be gone |
 
-## M · When the picture goes away
+## M · What the ladder takes away, and what it does not
 
 The most important rule in this document.
 
@@ -293,25 +293,52 @@ The most important rule in this document.
 > Visuals should teach independence rather than become permanent hints.
 
 Help that never goes away is not help; it is a crutch a child learns to lean on
-instead of learning the thing. So the illustration belongs to the **entry
-level** and leaves as the board gets harder.
+instead of learning the thing. The rung of the ladder has to **take something
+away**: a picture replaced by a word, a thing replaced by a block of pips, a
+pool that widens so the board can no longer be answered from memory.
 
-`illustratedAtLevel(level)` in `lib/content/art.ts` is that rule, written down
-once so that five activities cannot disagree about it. It says level one and
-only level one, because every activity that uses it offers three levels, level
-two is where the pool widens and the board grows, and a scaffold that survived
-the first widening would be carried all the way to the top.
+### The one thing it does not take away is the drawing
 
-**What each activity falls back *to* is its own decision**, and it is not the
-same decision twice:
+A drawing is not a rung, and treating it as one was a mistake this document
+made until the emoji audit. An emoji cow and a drawn cow name the same animal,
+sit in the same tile, read out the same accessible name and ask a child for
+exactly the same work. Withholding the drawing above level one therefore
+removed no help at all — it only put a KIDDO board and the platform's emoji
+font on the same screen, which is the one outcome this whole document exists to
+prevent.
+
+So the rule is now about the library rather than about the level:
+
+> **`boardIsDrawn(art)` in `lib/content/art.ts`.** A board is drawn when the
+> library can draw **every** picture on it, at any level, and is wholly glyph
+> the moment it cannot draw one of them.
+
+`illustratedAtLevel(level)` stayed exactly where it was and kept its job, which
+was always a **content** job: it says which levels deal from a narrowed pool —
+level one and only level one, because taking facts away from a board is a thing
+only the entry level should do. It no longer says anything about paint.
+
+**What each activity now looks like**, with the rungs that genuinely remove
+something in **bold**:
 
 | activity | level 1 | level 2 | level 3 |
 |----------|---------|---------|---------|
-| `general-knowledge.home-partners` | drawn animal ↔ drawn place, no words | glyph ↔ glyph | glyph ↔ glyph, four lines |
-| `general-knowledge.animal-babies` | drawn animal ↔ the baby's **word** | glyph ↔ word | glyph ↔ word, five lines |
-| `math.counting-objects` | a row of drawn things | a row of emoji, wider pool | a row, or a **block of pips** |
-| `english.alphabet-order` | letter with a picture above it | letter alone | letter alone, five-tile derangement |
-| `english.rhyming-partners` | word with a picture above it | word alone | word alone, sound-only rhymes |
+| `general-knowledge.home-partners` | drawn animal ↔ drawn place, no words | drawn, or wholly glyph where the library falls short; **wider pool** | as level 2, **four lines** |
+| `general-knowledge.animal-babies` | drawn animal ↔ the baby's **word** | as level 1, **wider pool** | as level 1, **five lines** |
+| `general-knowledge.animal-homes` | drawn animal, drawn places | drawn where covered, **wider pool** | as level 2 |
+| `general-knowledge.land-and-water` | drawn places | drawn places, **harder property questions** | drawn places, **harder still** |
+| `math.counting-objects` | a row of drawn things | a row of drawn things, **wider pool** | a row, or a **block of pips** |
+| `english.alphabet-order` | letter with a picture above it | as level 1, **wider window** | as level 1, **five-tile derangement** |
+| `english.rhyming-partners` | word with a picture above it | mostly word alone — the library does not cover the level-2 pool | word alone, **sound-only rhymes** |
+| `english.sound-partners` | drawn picture ↔ letter | mostly plain, same reason | plain, **more pairs** |
+| `english.spelling` | word anchor drawn when the word is known | as level 1, **more letters missing** | as level 1, **more still** |
+
+Two of those rows say "mostly plain", and that is honest rather than a gap in
+the rule: `rhyming-partners` and `sound-partners` deal above level one from
+vocabulary the library has not drawn, and a board is wholly glyph rather than
+half of each. Closing them is not a code change: it is drawings for the words
+those pools deal — BOAT, MOON, SOCK, TRAIN and their partners — after which the
+same rule draws those boards with nothing else edited.
 
 ### The all-or-nothing rule
 
@@ -339,10 +366,16 @@ a picture.
 
 So on those two activities the entry level does both, board by board:
 `narrowToDrawn` is a **coin**. About half the level-one boards are dealt from
-the drawn set and are wholly illustrated; the rest are dealt from the whole pool
-and are wholly glyph. Every fact is still dealt at every level it was dealt at
-before, no board is ever half-drawn, and a child at the entry level meets
-pictures often rather than always — which is what a scaffold is.
+the drawn set; the rest are dealt from the whole pool. Every fact is still dealt
+at every level it was dealt at before.
+
+What comes out of the two halves is no longer *drawn* and *glyph*, because the
+coin stopped being a rendering decision when `boardIsDrawn` became one. A
+narrowed board is drawable by construction; an unnarrowed board is drawn too
+whenever the facts it happened to deal are all in the library. On
+`home-partners` that turned out to be every level-one board either way — the
+whole level-one pool is covered — so the coin now only decides *which facts*,
+which is the only thing it was ever entitled to decide.
 
 `counting-objects` needs no coin, because there the *concept* is the number and
 not the thing: a child who counts six drawn apples has learned exactly what a

@@ -8,9 +8,11 @@ board in the five upgraded activities has to fall back to emoji for want
 of a drawing.
 
 The rules of Phase 9 all still hold: one GameShell, one engine per kind,
-art is data (`ArtId` on a `ContentItem`), glyph is the floor, the
-illustration is a promotion, and `illustratedAtLevel` / `narrowToDrawn`
-are the only two words for *when*.
+art is data (`ArtId` on a `ContentItem`), glyph is the floor, and the
+illustration is a promotion. What changed since is *when*: `boardIsDrawn`
+answers it from the library rather than from the level, and
+`illustratedAtLevel` / `narrowToDrawn` kept only the content half of the
+job — which levels deal from a narrowed pool.
 
 ## The audit (done before any code was written)
 

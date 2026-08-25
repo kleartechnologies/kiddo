@@ -2,8 +2,8 @@ import type { SessionPlan } from "@/lib/content/session";
 import type { MixedStep } from "./mixedRound";
 
 /**
- * The upgraded activities, each shown at the level where its picture is
- * doing the most and again at the level where it has gone.
+ * The upgraded activities, each shown at two levels: the one where its picture
+ * is doing the most, and one above it.
  *
  * Same shape as `mixedRound.ts` and `batchRound.ts`, same page, same
  * `drawSession`, and — the point of the round — no new engine, no new stage and
@@ -12,21 +12,30 @@ import type { MixedStep } from "./mixedRound";
  *
  * ## What it is for
  *
- * One question, which is the question the visual phase has to answer with
- * something other than a screenshot: **does the picture go away?** A scaffold
- * that stays is not a scaffold, and the only way to see the difference is to
- * put level one next to level two and look. So the round is arranged in pairs,
- * and `scripts/measure-visual.mjs` walks it on eight screens.
+ * One question: **does the drawing reach as far as the library does?** The
+ * round used to ask the opposite one — *does the picture go away at level two*
+ * — on the theory that a drawing was a scaffold to be withdrawn. It is not:
+ * an emoji cow and a drawn cow ask a child for exactly the same thing, so all
+ * the withdrawal bought was a KIDDO board with the platform's emoji font on
+ * top of it. So the pairs stayed and their meaning inverted. Where a board's
+ * whole pool is in the library it is drawn at every level, and where it is not
+ * the board is wholly glyph; `scripts/measure-visual.mjs` walks the round on
+ * eight screens and fails if a covered board arrives plain.
+ *
+ * The rungs that *are* pedagogy are still visible in it — counting drops to a
+ * block of pips at level three, alphabet-order widens its window — and those
+ * take something away from the child rather than restyling it.
  *
  * ## Why home-partners appears twice at the same level
  *
- * Because `narrowToDrawn` is a coin. About half of that activity's level-one
- * boards are dealt from the facts the library can draw end to end and are
- * wholly illustrated; the rest are dealt from the whole level-one pool and are
- * wholly glyph, so the monkey does not lose its place at level one. Two
- * consecutive slots is how you watch both halves happen — and how a reviewer
- * checks the thing that actually matters, which is that a board is never half
- * of each.
+ * Because `narrowToDrawn` is a coin, and it still is: about half of that
+ * activity's level-one boards are dealt from the facts the library can draw
+ * end to end and the rest from the whole level-one pool, so the monkey does
+ * not lose its place at level one. What changed is what comes out of the two
+ * halves — both are now drawn, because level one's whole pool turned out to be
+ * covered either way. Two consecutive slots is still how you watch the coin,
+ * and how a reviewer checks the thing that matters most, which is that a board
+ * is never half drawn and half glyph.
  *
  * Nothing here is a game. It is not in `data/games.ts`, it has no route under
  * `/play`, and the home screen has never heard of it.
@@ -41,7 +50,8 @@ export const VISUAL_ROUND: readonly MixedStep[] = [
   { level: 1, from: ["general-knowledge.animal-babies"], label: "connect · L1" },
   { level: 2, from: ["general-knowledge.animal-babies"], label: "connect · L2" },
 
-  /* The whole ladder inside one activity: drawn things, then emoji, then pips. */
+  /* The whole ladder inside one activity: drawn things, more drawn things from
+     a wider pool, then the pips — which are the rung that removes something. */
   { level: 1, from: ["math.counting-objects"], label: "choice · L1" },
   { level: 2, from: ["math.counting-objects"], label: "choice · L2" },
   { level: 3, from: ["math.counting-objects"], label: "choice · L3" },
@@ -61,8 +71,9 @@ export const VISUAL_ROUND: readonly MixedStep[] = [
   { level: 1, from: ["english.sound-partners"], label: "connect · L1" },
   { level: 2, from: ["english.sound-partners"], label: "connect · L2" },
 
-  /* The prompt anchor (Phase 9): the sun above `S _ N`. Level one may draw
-     the anchor; level two keeps its glyph, and the letter scaffold has gone. */
+  /* The prompt anchor (Phase 9): the sun above `S _ N`. Drawn at both levels
+     when the word is one the library knows — the anchor is context and never a
+     scaffold — while the letter scaffold underneath it does still go. */
   { level: 1, from: ["english.spelling"], label: "choice · anchored L1" },
   { level: 2, from: ["english.spelling"], label: "choice · anchored L2" },
 

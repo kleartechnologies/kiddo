@@ -137,7 +137,7 @@ export const spellingActivity = defineGeneratedActivity({
         /* The word, as a thing rather than as letters — the sun over S _ N.
            This is what lets a child who cannot read yet know what they are
            spelling. */
-        anchor: wordAnchor(entry.word, level),
+        anchor: wordAnchor(entry.word),
       },
       payload: board(
         answer,

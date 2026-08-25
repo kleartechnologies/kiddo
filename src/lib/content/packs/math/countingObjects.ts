@@ -1,6 +1,5 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
 import { illustratedAtLevel, type ArtId } from "../../art";
-import type { Level } from "../../difficulty";
 import type { PictureItem, PromptPart } from "../../types";
 import { forLevel, numberChoices, type LevelTable } from "./shared";
 
@@ -117,24 +116,26 @@ const TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 4 };
  */
 type Arrangement = "row" | "block";
 
-function picture(thing: Countable, level: Level): PictureItem {
+function picture(thing: Countable): PictureItem {
   return {
     kind: "picture",
     glyph: thing.glyph,
     label: thing.one,
     /* The whole row is one thing repeated, so it is drawn or it is not — a
        half-drawn row would be two kinds of apple and a child would count two
-       groups. `DRAWN` is what makes that true: at level one the thing itself is
-       chosen from the six that have a drawing. */
-    ...(illustratedAtLevel(level) && thing.art ? { art: thing.art } : {}),
+       groups. That is free here rather than arranged: every countable in the
+       table has a drawing, so a row is all of one or all of the other whatever
+       the level dealt, and a countable added without one falls back to its
+       glyph for the whole row. */
+    ...(thing.art ? { art: thing.art } : {}),
   };
 }
 
 /** A line of things across the stage. Wraps rather than overflows. */
-function rowOf(thing: Countable, count: number, level: Level): PromptPart[] {
+function rowOf(thing: Countable, count: number): PromptPart[] {
   return Array.from({ length: count }, () => ({
     kind: "item" as const,
-    item: picture(thing, level),
+    item: picture(thing),
   }));
 }
 
@@ -156,21 +157,25 @@ export const countingObjectsActivity = defineGeneratedActivity({
     const arrangement: Arrangement =
       level >= 3 && rng.next() < 0.5 ? "block" : "row";
 
-    /* The PICTURE -> PICTURE -> SYMBOL ladder, inside one activity and
-       readable in three lines. Level one counts *drawn* things, chosen from the
-       six the library has; level two counts the same kind of thing as an emoji,
-       out of a pool more than twice as wide; level three sometimes counts pips,
-       which is quantity with the thing taken away entirely.
+    /* The ladder that is actually pedagogy, in two lines. Level one counts a
+       thing out of the narrowed pool; every level counts a thing out of the
+       table; and level three sometimes counts *pips*, which is quantity with
+       the thing taken away entirely. That last step is the PICTURE -> SYMBOL
+       rung, and it is a step because something is genuinely gone.
+
+       What is not a rung is emoji-instead-of-illustration. A drawn apple and
+       an emoji apple are the same apple to a child counting them, so the row
+       is drawn at every level; `picture` says so.
 
        Note what does not change: the question, the gesture, the tiles and the
-       marking. Only how much the picture is doing for the child. */
+       marking. */
     const pool = illustratedAtLevel(level) ? DRAWN : THINGS;
     const thing = pool[rng.int(0, pool.length - 1)];
 
     const display: PromptPart[] =
       arrangement === "block"
         ? [{ kind: "item", item: { kind: "count", value, accent: "tide" } }]
-        : rowOf(thing, value, level);
+        : rowOf(thing, value);
 
     const what = arrangement === "block" ? "dots" : thing.many;
 

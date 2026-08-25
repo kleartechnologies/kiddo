@@ -57,7 +57,11 @@ const DRAWINGS = [
   "src/components/kiddo/artwork/illustrations/shading.tsx",
 ];
 
-/** The activities on the picture ladder: five from Phase 9, two from 10. */
+/**
+ * The activities the library reaches: five from Phase 9, two from 10, and the
+ * two the emoji audit added — `land-and-water`, whose seven places are drawn
+ * end to end, and `spelling`, whose anchor is a picture of the word.
+ */
 const UPGRADED = [
   "general-knowledge.home-partners",
   "general-knowledge.animal-babies",
@@ -66,6 +70,8 @@ const UPGRADED = [
   "english.rhyming-partners",
   "general-knowledge.animal-homes",
   "english.sound-partners",
+  "general-knowledge.land-and-water",
+  "english.spelling",
 ] as const;
 
 type ActivityId = Parameters<typeof getActivity>[0];
@@ -83,6 +89,12 @@ function itemsOf(challenge: Challenge): ContentItem[] {
   for (const part of challenge.prompt.display ?? []) {
     if (part.kind === "item") items.push(part.item);
   }
+
+  /* The anchor counts. It is the smaller picture beside the question — a
+     picture of DOG above the letters that spell it — and a child sees it on
+     the board like anything else, so a rule about what boards look like that
+     skipped it would have a hole exactly the size of the English pack. */
+  if (challenge.prompt.anchor) items.push(challenge.prompt.anchor);
 
   const payload = challenge.payload;
   if (payload.kind === "choice") items.push(...payload.options.map((o) => o.item));
@@ -330,42 +342,116 @@ test("a subject prompt is one thing to look at, never a line", () => {
 /* ---------------------------------------------------------- the ladder -- */
 
 /* 12 --------------------------------------------------------------------- */
-test("the scaffold belongs to the entry level and to no other", () => {
-  /* PICTURE -> PICTURE + WORD -> SYMBOL, asserted on real boards rather than
-     read off a function. Help that never goes away is not help: it is a crutch
-     a child learns to lean on instead of learning the thing. */
-  for (const id of UPGRADED) {
-    const activity = activityOf(id);
+test("the library decides whether a board is drawn, and the level never does", () => {
+  /* What replaced "the scaffold belongs to the entry level".
+   *
+   * Withholding a drawing above level one was never a rung on the ladder. An
+   * emoji cow and a drawn cow ask a child for exactly the same thing, so all
+   * the rule bought was a KIDDO board with the platform's emoji font sitting on
+   * top of it — which is the one thing the visual system exists to prevent. The
+   * rungs that *are* pedagogy take something away, and every one of them is
+   * still here: see the two tests below this one.
+   *
+   * So the question a board answers now is "can the library draw all of me?".
+   * Where it can, at every level, it does — and that is what this asserts,
+   * because the failure it is guarding against is the drawing quietly coming
+   * back under a level gate somebody re-adds. */
+  const ALWAYS = ["math.counting-objects", "general-knowledge.land-and-water"] as const;
 
+  for (const id of ALWAYS) {
+    const activity = activityOf(id);
     for (const level of activity.levels) {
       const boards = sample(activity, level, 40);
       const withArt = boards.filter((board) => drawn(board).length > 0);
-
-      if (level === 1) {
-        assert.ok(
-          withArt.length > 0,
-          `${id} draws nothing at all at level one`,
-        );
-      } else {
-        assert.equal(
-          withArt.length,
-          0,
-          `${id} carried its pictures up to level ${level}`,
-        );
-      }
+      assert.ok(
+        withArt.length > 0,
+        `${id} draws nothing at level ${level}, and every picture it deals is in the library`,
+      );
     }
+  }
+
+  /* Entry level, everywhere. A board dealt from a pool the library covers end
+     to end has no reason left to be glyphs, and all four of these are covered
+     at level one — so anything less than every board is a gate that came back. */
+  const WHOLLY_DRAWN_AT_ENTRY = [
+    "general-knowledge.home-partners",
+    "general-knowledge.animal-babies",
+    "general-knowledge.animal-homes",
+    "general-knowledge.land-and-water",
+    "math.counting-objects",
+  ] as const;
+
+  for (const id of WHOLLY_DRAWN_AT_ENTRY) {
+    const activity = activityOf(id);
+    for (const challenge of sample(activity, 1, 40)) {
+      assert.ok(
+        drawn(challenge).length > 0,
+        `${id} dealt an undrawn board at level one`,
+      );
+    }
+  }
+
+  /* And above it, where the library reaches. `narrowToDrawn` is still a coin
+     over which *facts* are dealt, so these are the activities where a board
+     above the entry level is drawn whenever the facts it dealt happen to be
+     ones the library knows. Zero here would mean the level is deciding again. */
+  const REACHES_ABOVE_ENTRY = [
+    "general-knowledge.home-partners",
+    "general-knowledge.animal-babies",
+    "general-knowledge.animal-homes",
+    "english.alphabet-order",
+    "english.spelling",
+  ] as const;
+
+  for (const id of REACHES_ABOVE_ENTRY) {
+    const activity = activityOf(id);
+    const above = activity.levels.filter((level) => level > 1);
+    const withArt = above.flatMap((level) =>
+      sample(activity, level, 40).filter((board) => drawn(board).length > 0),
+    );
+    assert.ok(
+      withArt.length > 0,
+      `${id} draws nothing above level one, so something is gating on the level`,
+    );
+  }
+});
+
+/* 12a -------------------------------------------------------------------- */
+test("the rungs that take something away are all still there", () => {
+  /* The ladder that survived, asserted so that loosening the drawing rule
+     cannot be mistaken for loosening this one. Each of these removes something
+     from the child rather than restyling it. */
+
+  /* PICTURE -> SYMBOL. A block of pips is quantity with the thing taken away,
+     and it belongs to level three and to nowhere below it. */
+  const counting = activityOf("math.counting-objects");
+  for (const level of counting.levels) {
+    const blocks = sample(counting, level, 30).filter((challenge) =>
+      (challenge.prompt.display ?? []).some(
+        (part) => part.kind === "item" && part.item.kind === "count",
+      ),
+    );
+    if (level >= 3) {
+      assert.ok(blocks.length > 0, "level three never reached a block of pips");
+    } else {
+      assert.equal(blocks.length, 0, `level ${level} counted pips instead of things`);
+    }
+  }
+
+  /* The pools still widen. A level-one counting board deals from the narrowed
+     set; above it the whole table is in play. `illustratedAtLevel` is what says
+     so, and it is a content decision that outlived being a paint one. */
+  for (const level of LEVELS) {
+    assert.equal(illustratedAtLevel(level), level === 1, `level ${level}`);
   }
 });
 
 /* 13 --------------------------------------------------------------------- */
-test("the rule about when is written down once", () => {
-  /* Five activities cannot disagree about which level is the entry level, so
-     none of them decides for itself. */
-  for (const level of LEVELS) {
-    assert.equal(illustratedAtLevel(level), level === 1, `level ${level}`);
-  }
-
-  /* And the coin is a coin: never at level two, sometimes at level one. */
+test("the coin narrows a pool and nothing else", () => {
+  /* `narrowToDrawn` decides which *facts* an entry-level connect board is
+     dealt from, and since the drawing stopped following the level that is the
+     only thing it decides. It is still a coin: never at level two, sometimes
+     at level one. */
   const rng = createRng(7);
   assert.equal(narrowToDrawn(2, rng), false, "a level-two board narrowed itself");
   assert.equal(narrowToDrawn(3, rng), false, "a level-three board narrowed itself");
@@ -394,6 +480,34 @@ test("a board is wholly drawn or wholly plain, and never half of each", () => {
         assert.ok(
           withArt === 0 || withArt === nodes.length,
           `${id} dealt a board with ${withArt}/${nodes.length} drawn`,
+        );
+      }
+    }
+  }
+
+  /* The same leak on a board with one column. `animal-homes` shows a cow and
+     offers ten places; `land-and-water` offers seven; a counting board shows
+     one thing many times. If the drawn tile were a subset of the offered ones,
+     "pick the pretty one" would be a strategy — so every picture a child can
+     see on one of these boards is drawn, or none of them is. This is the rule
+     that had to survive the drawing following the library instead of the
+     level, and it is why `boardIsDrawn` takes a list. */
+  const onePool = [
+    "general-knowledge.animal-homes",
+    "general-knowledge.land-and-water",
+    "math.counting-objects",
+  ] as const;
+  for (const id of onePool) {
+    const activity = activityOf(id);
+    for (const level of activity.levels) {
+      for (const challenge of sample(activity, level, 40)) {
+        const pictures = itemsOf(challenge).filter((item) => item.kind === "picture");
+        if (pictures.length === 0) continue;
+
+        const withArt = pictures.filter((item) => artOf(item)).length;
+        assert.ok(
+          withArt === 0 || withArt === pictures.length,
+          `${id} dealt a board with ${withArt}/${pictures.length} drawn`,
         );
       }
     }

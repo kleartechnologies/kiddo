@@ -1,5 +1,5 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
-import { forLevel, type Level, type LevelTable } from "../../difficulty";
+import { forLevel, type LevelTable } from "../../difficulty";
 import type { Rng } from "../../rng";
 import { SAME_SOUND } from "./phonics";
 import {
@@ -135,19 +135,14 @@ export function couldEnd(word: EndingWord, sound: string): boolean {
  *
  * `What sound does DOG end with?` — G, K, D.
  */
-function askForTheSound(
-  entry: EndingWord,
-  tiles: number,
-  rng: Rng,
-  level: Level,
-) {
+function askForTheSound(entry: EndingWord, tiles: number, rng: Rng) {
   const distractors = pickDistractors(entry.sound, tiles - 1, rng, entry.wrong);
 
   return {
     prompt: {
       speech: `What sound does ${entry.word} end with?`,
       display: [part(wordItem(entry.word))],
-      anchor: wordAnchor(entry.word, level),
+      anchor: wordAnchor(entry.word),
     },
     payload: board(entry.sound, distractors, rng, namedLetter),
     explanation: `${entry.word} ends with ${entry.sound}.`,
@@ -196,7 +191,7 @@ export const endingSoundsActivity = defineGeneratedActivity({
        until the child has met the first shape of the question. */
     const asked =
       level === 1 || rng.next() < 0.5
-        ? askForTheSound(entry, tiles, rng, level)
+        ? askForTheSound(entry, tiles, rng)
         : askForTheWord(entry, tiles, rng, pool);
 
     return {

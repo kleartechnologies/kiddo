@@ -1,5 +1,5 @@
 import { defineGeneratedActivity, type ChallengeSpec } from "../../activity";
-import { narrowToDrawn, type ArtId } from "../../art";
+import { boardIsDrawn, narrowToDrawn, type ArtId } from "../../art";
 import type { Level } from "../../difficulty";
 import type { Rng } from "../../rng";
 import type { ConnectNode, ConnectPair } from "../../types";
@@ -326,14 +326,23 @@ export const rhymingPartnersActivity = defineGeneratedActivity({
   host: "bibi",
   levels: [1, 2, 3],
   generate: ({ level, rng }): ChallengeSpec => {
-    const drawn =
+    const narrowed =
       narrowToDrawn(level, rng) && DRAWN_PAIRS.length >= pairsAtLevel(level);
 
-    const chosen = chooseBoard(level, rng, drawn ? DRAWN_PAIRS : undefined);
-    /* `chooseBoard` falls back to its best attempt if it runs short, so the
-       board is only drawn when it actually came out of the drawn pool. */
-    const illustrated =
-      drawn && chosen.every((entry) => WORD_ART[entry.left] !== undefined);
+    const chosen = chooseBoard(level, rng, narrowed ? DRAWN_PAIRS : undefined);
+
+    /* The strictest board in the product, and the reason `boardIsDrawn` takes
+       every picture rather than one. Both columns are words the child has to
+       *hear*, so two drawings among four glyphs would be a way to finish the
+       board without ever saying a word out loud. The coin above still decides
+       which rhymes are dealt — all twelve level-one rhymes are still dealt at
+       level one, which `tests/english.test.ts` insists on — and this decides
+       whether what came out can be drawn end to end. A board dealt from the
+       whole pool that happens to be all drawable is drawn too, at any level;
+       one that is not stays wholly on glyphs. */
+    const illustrated = boardIsDrawn(
+      chosen.flatMap((entry) => [WORD_ART[entry.left], WORD_ART[entry.right]]),
+    );
 
     const art = (word: string) =>
       illustrated ? WORD_ART[word] : undefined;

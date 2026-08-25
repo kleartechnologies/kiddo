@@ -23,6 +23,16 @@ export type TileLook = "tile" | "sign";
 export type NodeLook = "card" | "creature" | "page";
 /** A straight line, a dotted path across land, or a ribbon across a spine. */
 export type JoinLook = "line" | "path" | "ribbon";
+/**
+ * What a thing leaves behind when it walks out of its node and does not come
+ * back. A `travel` board hands its left-hand column's pictures over to the
+ * right-hand column, which leaves four empty capsules sitting on the board —
+ * true, since the animal really has gone, but it reads as four things that
+ * were lost rather than four journeys that were made. A trace is the mark of
+ * having been there: still, faint, and never where a join could be mistaken
+ * for it. `none` is a world where nothing walks.
+ */
+export type TraceLook = "none" | "paw";
 
 /**
  * The engine moments a world may react to. Four, and they all exist already:
@@ -39,6 +49,8 @@ export interface GameWorldSpec {
   tiles: TileLook;
   nodes: NodeLook;
   join: JoinLook;
+  /** What a travelled picture leaves in the node it walked out of. */
+  trace: TraceLook;
   /** Which Magic Motion plays at which moment. `null` is "nothing extra". */
   reactions: Readonly<Record<WorldMoment, MagicMotionName | null>>;
 }
@@ -59,6 +71,7 @@ export const GAME_WORLDS: Readonly<Record<GameWorldId, GameWorldSpec>> = {
     tiles: "tile",
     nodes: "card",
     join: "line",
+    trace: "none",
     reactions: QUIET,
   },
   /* Things to count stand on the grass; the numbers are signs in the ground.
@@ -71,11 +84,13 @@ export const GAME_WORLDS: Readonly<Record<GameWorldId, GameWorldSpec>> = {
     tiles: "sign",
     nodes: "card",
     join: "line",
+    trace: "none",
     reactions: { ...QUIET, right: "sparkle" },
   },
   /* Animals on the land, homes across the way. An animal pops in, walks home
      when the join is right (ConnectStage's own `travel`), and the home
-     sparkles to welcome it. */
+     sparkles to welcome it. What it leaves on the land is a paw print, so a
+     node it has walked out of reads as a place it set off from. */
   animals: {
     id: "animals",
     name: "Animal Adventure",
@@ -83,6 +98,7 @@ export const GAME_WORLDS: Readonly<Record<GameWorldId, GameWorldSpec>> = {
     tiles: "tile",
     nodes: "creature",
     join: "path",
+    trace: "paw",
     reactions: { ...QUIET, arrive: "pop", partner: "sparkle" },
   },
   /* Two pages of a storybook. Pictures grow onto the page; a rhyme found
@@ -94,6 +110,7 @@ export const GAME_WORLDS: Readonly<Record<GameWorldId, GameWorldSpec>> = {
     tiles: "tile",
     nodes: "page",
     join: "ribbon",
+    trace: "none",
     reactions: {
       ...QUIET,
       arrive: "grow",

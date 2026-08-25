@@ -8,63 +8,89 @@
 
 @theme {
   /* --- Surfaces -------------------------------------------------------- */
-  --color-cream-50: #fefcf8;
-  --color-cream-100: #fbf8f3; /* Paper. The canonical product background. */
+  --color-cream-50: #fefcf5;
+  --color-cream-100: #faf5ec; /* Paper. The canonical product background. */
   --color-paper: #ffffff;
-  --color-edge: #ece5da; /* hairline borders on paper */
+  --color-edge: #ebe5da; /* hairline borders on paper */
 
   /* --- Ink -------------------------------------------------------------
-     One warm near-black for every face and every piece of type. */
-  --color-ink-900: #2e2a32;
-  --color-ink-700: #4a4550;
-  --color-ink-500: #78737f;
-  --color-ink-300: #ada8b2;
+     One warm near-black for every face and every piece of type. Warm-brown
+     rather than violet-black, so ink sits under the hues instead of beside
+     them; the three lighter steps keep their lightness and only turn onto
+     the same hue. */
+  --color-ink-900: #2c2620;
+  --color-ink-700: #4f453c;
+  --color-ink-500: #7e7369;
+  --color-ink-300: #b1a8a0;
 
   /* --- Character hues --------------------------------------------------
      Five hues, one per character, plus honey for rewards. `base` is the
      exact hex the character is drawn in and must never be re-tuned; soft,
-     deep and ink are UI shades derived from it for surfaces and text. */
-  --color-sage-soft: #e7f1ea;
-  --color-sage-base: #93c8a3; /* KIDDO · brand primary */
-  --color-sage-deep: #6fa681;
-  --color-sage-ink: #35634a;
+     deep and ink are UI shades derived from it for surfaces and text.
 
-  --color-apricot-soft: #fbeadd;
-  --color-apricot-base: #efa470; /* FOXY */
-  --color-apricot-deep: #d4844f;
-  --color-apricot-ink: #7a4526;
+     Re-tuned once, against the approved character sheet: each `base` gained
+     chroma so the character reads as its own colour at 48px — a fox has to
+     be orange, water has to look wet. `deep` follows its base (same
+     lightness offset, same chroma gain) because it is the base's own pressed
+     edge. `soft` and `ink` are a paper tint and a text colour, and both are
+     contrast decisions, so they keep the lightness and chroma they had and
+     only turn onto the new hue. Raising chroma moves the distances the
+     colour-blindness sweep measures: `tests/palette.test.ts` re-measures
+     them rather than trusting them. */
+  --color-sage-soft: #eaf0e8;
+  --color-sage-base: #86be7c; /* KIDDO · brand primary */
+  --color-sage-deep: #629c59;
+  --color-sage-ink: #44613f;
 
-  --color-blossom-soft: #fbe6e7;
-  --color-blossom-base: #efa6ab; /* BIBI */
-  --color-blossom-deep: #d67f86;
-  --color-blossom-ink: #7c3b41;
+  --color-apricot-soft: #fce9de;
+  --color-apricot-base: #f08a3c; /* FOXY */
+  --color-apricot-deep: #d36a0b;
+  --color-apricot-ink: #774723;
+
+  --color-blossom-soft: #fae6eb;
+  --color-blossom-base: #f49bb4; /* BIBI */
+  --color-blossom-deep: #dd7193;
+  --color-blossom-ink: #7b3a4f;
 
   --color-sprout-soft: #edf3da;
-  --color-sprout-base: #bcd37c; /* PIP */
-  --color-sprout-deep: #9cb65c;
-  --color-sprout-ink: #4c5c22;
+  --color-sprout-base: #a8ce4f; /* PIP */
+  --color-sprout-deep: #88b128;
+  --color-sprout-ink: #4b5c22;
 
-  --color-tide-soft: #e3eef6;
-  --color-tide-base: #8fbad9; /* WALLY */
-  --color-tide-deep: #6795b7;
-  --color-tide-ink: #2c4e66;
+  --color-tide-soft: #e5edf7;
+  --color-tide-base: #62a6dc; /* WALLY */
+  --color-tide-deep: #2483bc;
+  --color-tide-ink: #2f4d67;
 
-  --color-honey-soft: #fdf2dc;
-  --color-honey-base: #f6d189; /* rewards, stars, confetti */
-  --color-honey-deep: #d9af5f;
-  --color-honey-ink: #6b4e14;
+  --color-honey-soft: #fff1dc;
+  --color-honey-base: #f7c55c; /* rewards, stars, confetti */
+  --color-honey-deep: #d7a425;
+  --color-honey-ink: #684f13;
 
   /* Cheeks only, drawn at 26-45% opacity. Never a surface colour. */
-  --color-blush: #e88c74;
+  --color-blush: #f0937c;
+
+  /* --- Scenery ---------------------------------------------------------
+     Depth the six hues cannot give a landscape: a ridge is further away than
+     a hill, a canopy is darker than the grass under it, a trunk is a trunk.
+
+     These are scene layers and nothing else. They are not a seventh accent
+     family: no `Accent` names them, `ACCENTS` has no entry for them, and no
+     board can ever deal one as an answer. They never carry text and they are
+     never a UI surface. `tests/palette.test.ts` holds them to that. */
+  --color-scene-ridge: #b7d9ae;
+  --color-scene-canopy: #6ba45c;
+  --color-scene-wood: #c98a4e;
+  --color-scene-soil: #4a4038;
 
   /* --- Feedback --------------------------------------------------------
      Warm, never alarming. "retry" is apricot, not red: KIDDO never scolds. */
-  --color-yes: #4e8a6b;
-  --color-yes-soft: #e7f1ea;
-  --color-retry: #d4844f;
-  --color-retry-soft: #fbeadd;
+  --color-yes: #63875c;
+  --color-yes-soft: #eaf0e8;
+  --color-retry: #d36a0b;
+  --color-retry-soft: #fce9de;
   /* Ink, so the focus ring is maximum contrast and not a sixth hue. */
-  --color-focus: #2e2a32;
+  --color-focus: #2c2620;
 
   /* --- Type ------------------------------------------------------------ */
   --font-display: var(--font-fredoka), ui-rounded, "SF Pro Rounded", system-ui,
@@ -78,8 +104,8 @@
 
   /* --- Shadows ---------------------------------------------------------
      Soft and warm, never grey. Characters themselves never take a shadow. */
-  --shadow-soft: 0 2px 0 0 rgb(46 42 50 / 0.04), 0 10px 24px -12px rgb(46 42 50 / 0.16);
-  --shadow-lift: 0 4px 0 0 rgb(46 42 50 / 0.05), 0 20px 36px -16px rgb(46 42 50 / 0.22);
+  --shadow-soft: 0 2px 0 0 rgb(44 38 32 / 0.04), 0 10px 24px -12px rgb(44 38 32 / 0.16);
+  --shadow-lift: 0 4px 0 0 rgb(44 38 32 / 0.05), 0 20px 36px -16px rgb(44 38 32 / 0.22);
 
   /* --- Motion ----------------------------------------------------------- */
   --ease-pop: cubic-bezier(0.34, 1.4, 0.64, 1);

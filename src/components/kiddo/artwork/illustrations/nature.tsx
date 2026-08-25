@@ -1,4 +1,5 @@
 import { PAINT } from "./paint";
+import { Shade } from "./shading";
 
 /**
  * Growing things, and the one in the sky.
@@ -7,6 +8,9 @@ import { PAINT } from "./paint";
  * flowers and stars — so they follow the same discipline as `things.tsx`: one
  * compact object, no scene, nothing that splits into parts a child might count
  * separately.
+ *
+ * The sun is the one thing in the library with no `Shade` on it, for the
+ * obvious reason: it is where the light is coming from.
  *
  * The star draws its own path rather than importing `ShapePath` from
  * `ContentItemView`. That import would be a cycle — `ContentItemView` imports
@@ -21,6 +25,7 @@ export function Tree() {
       <circle cx="50" cy="34" r="24" fill={PAINT.green} />
       <circle cx="30" cy="48" r="19" fill={PAINT.green} />
       <circle cx="70" cy="48" r="19" fill={PAINT.green} />
+      <Shade cx={50} cy={34} r={24} />
       <circle cx="40" cy="30" r="9" fill={PAINT.greenSoft} opacity="0.5" />
     </>
   );

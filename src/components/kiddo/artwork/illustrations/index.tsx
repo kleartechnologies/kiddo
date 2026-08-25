@@ -22,17 +22,21 @@ import {
 } from "./animals";
 import { Flower, Star, Sun, Tree } from "./nature";
 import {
+  Beach,
   Burrow,
   Desert,
   Farm,
   Forest,
   House,
+  Island,
   Jungle,
+  Mountain,
   Nest,
   Pond,
   Sea,
   Snow,
   TreeHome,
+  Volcano,
 } from "./places";
 import {
   Apple,
@@ -132,6 +136,10 @@ export const ILLUSTRATIONS: Record<ArtId, () => ReactNode> = {
   "place.desert": Desert,
   "place.snow": Snow,
   "place.tree": TreeHome,
+  "place.mountain": Mountain,
+  "place.beach": Beach,
+  "place.island": Island,
+  "place.volcano": Volcano,
 };
 
 /**

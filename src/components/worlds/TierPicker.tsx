@@ -19,7 +19,24 @@ import { TIERS, TIER_WORDS, type Tier } from "@/lib/worlds/activities";
  *
  * State is never colour alone: done wears a check, ready an arrow, locked a
  * padlock, each beside its word.
+ *
+ * ## How big is drawn, not written
+ *
+ * A four-year-old cannot read "Easy", "Medium", "Hard", and the words are the
+ * only thing here that says how big a round is. So the buttons themselves
+ * step up: three stones standing on one line, each a little taller than the
+ * last. Height only — the widths stay as they were, because three pills that
+ * also grew sideways wrap onto two rows on a 360px phone, and a staircase
+ * broken across two lines is not a staircase. Nothing is counted, nothing is
+ * rated, and the smallest is still comfortably bigger than a thumb.
  */
+
+/** Three stones on one line. The floor is the smallest comfortable target. */
+const TIER_HEIGHT: Readonly<Record<Tier, string>> = {
+  1: "min-h-12",
+  2: "min-h-13",
+  3: "min-h-14",
+};
 
 const STATE_WORDS: Record<TierState, string> = {
   done: "Completed",
@@ -40,7 +57,9 @@ export function TierPicker({
     <div
       role="group"
       aria-label="How big a challenge"
-      className="flex flex-wrap items-center justify-center gap-2"
+      /* Standing on one line, so the three grow *upward*: centred, the same
+         three heights read as a hill rather than a staircase. */
+      className="flex flex-wrap items-end justify-center gap-2"
     >
       {TIERS.map((tier) => {
         const state = states[tier];
@@ -59,7 +78,8 @@ export function TierPicker({
               if (!locked) onSelect(tier);
             }}
             className={cn(
-              "inline-flex min-h-12 min-w-12 items-center justify-center gap-1.5 rounded-full border-2 px-4 text-base font-semibold transition-colors",
+              "inline-flex min-w-12 items-center justify-center gap-1.5 rounded-full border-2 px-4 text-base font-semibold transition-colors",
+              TIER_HEIGHT[tier],
               active
                 ? "bg-tide-soft border-tide-base text-tide-ink"
                 : "bg-paper border-edge text-ink-700",

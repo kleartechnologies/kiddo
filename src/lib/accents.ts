@@ -57,19 +57,30 @@ export const ACCENT_WORDS: Record<Accent, string> = {
  * apart.
  *
  * Simulating protanopia, deuteranopia and tritanopia across the palette and
- * measuring what distance is left in CIE Lab, half of the named pairs
- * collapse:
+ * measuring the CIE Lab distance that survives the worst of the three, half
+ * of the named pairs collapse:
  *
- * - honey / sprout    5.5   yellow and green, gone under protanopia
- * - apricot / sprout  5.8   orange and green, gone under both red-green types
- * - blossom / apricot 9.8   pink and orange, gone under tritanopia
- * - honey / apricot  10.5   yellow and orange, nearly gone under either
- * - blossom / honey  11.1   pink and yellow, gone under tritanopia
+ * - sprout / honey    3.4   green and yellow, gone under protanopia
+ * - apricot / sprout  9.9   orange and green, gone under both red-green types
+ * - blossom / honey  11.9   pink and yellow, gone under tritanopia
+ * - apricot / honey  12.8   orange and yellow, thin to start with, then gone
+ * - apricot / blossom 14.6  orange and pink, gone under tritanopia
  *
- * The five below all keep at least 25, which is a difference anyone can see.
- * `sage` appears in none of them: it and `sprout` are both GREEN, so no
- * question can be asked with both, and every board that needs a green picks
- * `sprout`.
+ * The five below all keep at least 25, which is a difference anyone can see:
+ * tide/apricot 75.6, tide/honey 56.7, blossom/sprout 39.3, tide/blossom 32.6
+ * and tide/sprout 26.5. Blue does most of the work, because blue is the one
+ * hue no dichromacy confuses with a warm one.
+ *
+ * `sage` appears in none of them, and that is a rule rather than a
+ * measurement: it and `sprout` are both GREEN, so no question can be asked
+ * with both, and every board that needs a green picks `sprout`. Sage/honey
+ * would in fact hold 28.6 — it is left off because a palette where the brand
+ * colour is also a quiz answer is a palette that will eventually ship a board
+ * with two greens on it.
+ *
+ * `tests/palette.test.ts` re-derives all of this from `globals.css` on every
+ * run, so a hue nudged two points towards its neighbour fails a test rather
+ * than quietly making a board unfair.
  *
  * A board is not a fair question if the answer is invisible to the child
  * holding it, and "look harder" is not an answer to that. Any content whose

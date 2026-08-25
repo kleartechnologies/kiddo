@@ -8,6 +8,7 @@ import { Friend, type FriendId } from "@/components/character/Friend";
 import {
   BODY_CENTRE,
   BLUSH,
+  EYE_LINE,
   HONEY,
   HUES,
   INK,
@@ -16,7 +17,16 @@ import {
   VIEWBOX,
 } from "@/components/character/canon";
 import { EXPRESSION_ORDER, FACES } from "@/components/character/expressions";
-import { Arm, Body, Cheeks, Ear, Leg, Shadow } from "@/components/character/parts";
+import {
+  Arm,
+  Body,
+  Cheeks,
+  Ear,
+  Leg,
+  Nose,
+  Palette,
+  Shadow,
+} from "@/components/character/parts";
 import { POSES, POSE_ORDER, type Pose } from "@/components/character/poses";
 import { CHARACTER_LIST } from "@/data/characters";
 import { cn } from "@/lib/cn";
@@ -96,12 +106,12 @@ type LayerId =
 const LAYERS: { id: LayerId; label: string; note: string }[] = [
   { id: "leftEar", label: "Left ear", note: "Trails the breathe by 120ms" },
   { id: "rightEar", label: "Right ear", note: "Same shape, mirrored" },
-  { id: "body", label: "Core body", note: "One mass, not a head on a body" },
+  { id: "body", label: "Core body", note: "Torso, satchel, head and muzzle" },
   { id: "leftArm", label: "Left arm", note: `Pivot ${PIVOTS.leftArm.x}, ${PIVOTS.leftArm.y}` },
   { id: "rightArm", label: "Right arm", note: `Pivot ${PIVOTS.rightArm.x}, ${PIVOTS.rightArm.y}` },
   { id: "leftLeg", label: "Left leg", note: `Pivot ${PIVOTS.leftLeg.x}, ${PIVOTS.leftLeg.y}` },
   { id: "rightLeg", label: "Right leg", note: `Pivot ${PIVOTS.rightLeg.x}, ${PIVOTS.rightLeg.y}` },
-  { id: "face", label: "Face layer", note: "Eyes, mouth, blush. The whole expression system" },
+  { id: "face", label: "Face layer", note: "Blush, eyes, brows, nose, mouth. The whole expression system" },
 ];
 
 function LayerDiagram({ highlight }: { highlight: LayerId }) {
@@ -111,16 +121,17 @@ function LayerDiagram({ highlight }: { highlight: LayerId }) {
 
   return (
     <svg viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`} className="h-full w-full">
-      <g opacity={on("leftArm")} transform="translate(54,112) rotate(24)">
+      <Palette hue={hue} />
+      <g opacity={on("leftArm")} transform={`translate(${PIVOTS.leftArm.x},${PIVOTS.leftArm.y}) rotate(24)`}>
         <Arm hue={hue} />
       </g>
-      <g opacity={on("rightArm")} transform="translate(146,112) rotate(-24)">
+      <g opacity={on("rightArm")} transform={`translate(${PIVOTS.rightArm.x},${PIVOTS.rightArm.y}) rotate(-24)`}>
         <Arm hue={hue} />
       </g>
-      <g opacity={on("leftLeg")} transform="translate(80,166)">
+      <g opacity={on("leftLeg")} transform={`translate(${PIVOTS.leftLeg.x},${PIVOTS.leftLeg.y})`}>
         <Leg hue={hue} />
       </g>
-      <g opacity={on("rightLeg")} transform="translate(120,166)">
+      <g opacity={on("rightLeg")} transform={`translate(${PIVOTS.rightLeg.x},${PIVOTS.rightLeg.y})`}>
         <Leg hue={hue} />
       </g>
       <g opacity={on("leftEar")}>
@@ -133,9 +144,11 @@ function LayerDiagram({ highlight }: { highlight: LayerId }) {
         <Body hue={hue} />
       </g>
       <g opacity={on("face")}>
+        <Cheeks opacity={face.cheeks} {...face.cheekSize} />
         {face.eyes}
+        {face.brows}
+        {face.nose ?? <Nose />}
         {face.mouth}
-        <Cheeks opacity={face.cheeks} />
       </g>
     </svg>
   );
@@ -152,22 +165,24 @@ function RigDiagram() {
   ];
   return (
     <svg viewBox={`0 0 ${VIEWBOX.width} ${VIEWBOX.height}`} className="h-full w-full">
+      <Palette hue={hue} />
       <Shadow />
-      <g transform="translate(54,112) rotate(24)"><Arm hue={hue} /></g>
-      <g transform="translate(146,112) rotate(-24)"><Arm hue={hue} /></g>
-      <g transform="translate(80,166)"><Leg hue={hue} /></g>
-      <g transform="translate(120,166)"><Leg hue={hue} /></g>
+      <g transform={`translate(${PIVOTS.leftArm.x},${PIVOTS.leftArm.y}) rotate(24)`}><Arm hue={hue} /></g>
+      <g transform={`translate(${PIVOTS.rightArm.x},${PIVOTS.rightArm.y}) rotate(-24)`}><Arm hue={hue} /></g>
+      <g transform={`translate(${PIVOTS.leftLeg.x},${PIVOTS.leftLeg.y})`}><Leg hue={hue} /></g>
+      <g transform={`translate(${PIVOTS.rightLeg.x},${PIVOTS.rightLeg.y})`}><Leg hue={hue} /></g>
       <Ear side="left" hue={hue} />
       <Ear side="right" hue={hue} />
       <Body hue={hue} />
       <g opacity={0.5}>
         {FACES.happy.eyes}
+        <Nose />
         {FACES.happy.mouth}
       </g>
 
       {/* Annotations */}
-      <line x1={8} y1={110} x2={192} y2={110} stroke={INK} strokeWidth={1} strokeDasharray="4 4" opacity={0.45} />
-      <text x={8} y={104} fill={INK} opacity={0.55} fontSize={9} fontFamily="var(--font-sans)">
+      <line x1={8} y1={EYE_LINE} x2={192} y2={EYE_LINE} stroke={INK} strokeWidth={1} strokeDasharray="4 4" opacity={0.45} />
+      <text x={8} y={EYE_LINE - 6} fill={INK} opacity={0.55} fontSize={9} fontFamily="var(--font-sans)">
         eye line
       </text>
       {pivots.map((p) => (
@@ -262,7 +277,7 @@ const NEVER = [
 const SMALL_SIZES = [128, 64, 48, 40, 32, 24];
 
 const ON_COLOUR: { label: string; hex: string; warn?: string }[] = [
-  { label: "Paper", hex: "#FBF8F3" },
+  { label: "Paper", hex: "#FAF5EC" },
   { label: "Apricot", hex: HUES.foxy },
   { label: "Blossom", hex: HUES.bibi },
   { label: "Sprout", hex: HUES.pip },
@@ -308,8 +323,8 @@ export function CharacterSpec() {
           from the character.
         </p>
         <div className="mt-5 flex flex-wrap gap-2">
-          <Chip>Flat vector</Chip>
-          <Chip>8 layers · 4 pivots</Chip>
+          <Chip>One hue · one light</Chip>
+          <Chip>{LAYERS.length} layers · 4 pivots</Chip>
           <Chip>{EXPRESSION_ORDER.length} expressions</Chip>
           <Chip>{POSE_ORDER.length} poses</Chip>
         </div>
@@ -319,7 +334,7 @@ export function CharacterSpec() {
       <Section
         index="A — Master"
         title="The canonical KIDDO"
-        lead="The approved character, drawn from the master sheet. Round mass, two big ears, sage green, white overlays for every lighter form, one warm near-black for the face, soft cheeks. Nothing here is open to interpretation."
+        lead="The approved character, drawn from the master sheet. A big round head over a soft body, two round ears, sage green lit from the upper left, one cream for every lighter form, one warm near-black for the face, soft cheeks. Nothing here is open to interpretation."
       >
         <div className="grid gap-5 lg:grid-cols-[1.2fr_1fr]">
           <Card padding="lg" className="bg-cream-100 flex items-center justify-center">
@@ -336,19 +351,23 @@ export function CharacterSpec() {
               <dl className="text-ink-500 mt-3 space-y-1.5 text-base">
                 <div className="flex justify-between gap-4">
                   <dt>Drawing area</dt>
-                  <dd className="text-ink-900 font-semibold">200 × 230</dd>
+                  <dd className="text-ink-900 font-semibold">
+                    {VIEWBOX.width} × {VIEWBOX.height}
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt>Eye line</dt>
-                  <dd className="text-ink-900 font-semibold">y 110 · 48% of height</dd>
+                  <dd className="text-ink-900 font-semibold">
+                    y {EYE_LINE} · {Math.round((EYE_LINE / VIEWBOX.height) * 100)}% of height
+                  </dd>
                 </div>
                 <div className="flex justify-between gap-4">
-                  <dt>Body</dt>
-                  <dd className="text-ink-900 font-semibold">ellipse 112 × 108</dd>
+                  <dt>Head</dt>
+                  <dd className="text-ink-900 font-semibold">circle r 58 · 58% of width</dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt>Ears</dt>
-                  <dd className="text-ink-900 font-semibold">r 23 · inner r 11 @ 38%</dd>
+                  <dd className="text-ink-900 font-semibold">r 24 · inner r 13, cream</dd>
                 </div>
                 <div className="flex justify-between gap-4">
                   <dt>Hue</dt>
@@ -404,7 +423,7 @@ export function CharacterSpec() {
       {/* ---------------------------------------------------------------- D */}
       <Section
         index="D — Layers"
-        title="Eight layers, four pivots"
+        title={`${LAYERS.length} layers, four pivots`}
         lead="Everything in the pose library is one of these parts rotated around a fixed point. The arm and the leg are the same two objects across the whole cast — only the rotation changes."
       >
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">

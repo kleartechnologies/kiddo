@@ -51,11 +51,13 @@ export type ArtCategory =
  * Every illustration that exists, by name.
  *
  * `<category>.<thing>`, so the id sorts into its shelf and a missing drawing is
- * a compiler error rather than a blank tile. Forty-four of them, chosen by
- * working backwards from the entry level of five real activities rather than to
- * be a pretty spread — see `docs/kiddo-visual-system.md` for which activity each
- * one is earning its place in. Anything not on this list still draws, as a
- * glyph.
+ * a compiler error rather than a blank tile. Forty-eight of them, chosen by
+ * working backwards from the entry level of real activities rather than to be a
+ * pretty spread — see `docs/kiddo-visual-system.md` for which activity each one
+ * is earning its place in. The last four arrived together because they had to:
+ * `land-and-water` offers seven places on one board, a board is wholly drawn or
+ * wholly plain, and three of seven drawn was three too few to use any of them.
+ * Anything not on this list still draws, as a glyph.
  *
  * The pig was in the first twenty-one and is gone on purpose: KIDDO's home
  * market is Malaysia and Southeast Asia, and a pig is not a picture to hand a
@@ -111,7 +113,12 @@ export type ArtId =
   | "place.forest"
   | "place.desert"
   | "place.snow"
-  | "place.tree";
+  | "place.tree"
+  /* The four that finish the world pack's set of seven. */
+  | "place.mountain"
+  | "place.beach"
+  | "place.island"
+  | "place.volcano";
 
 /**
  * The library as a list, for a test that wants to prove every name is drawn and
@@ -166,6 +173,10 @@ export const ART_IDS: readonly ArtId[] = [
   "place.desert",
   "place.snow",
   "place.tree",
+  "place.mountain",
+  "place.beach",
+  "place.island",
+  "place.volcano",
 ] as const;
 
 /** Which shelf a name sits on. The prefix, and never anything cleverer. */

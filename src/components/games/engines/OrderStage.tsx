@@ -156,12 +156,15 @@ export function OrderStage({
     [items],
   );
 
-  const pointOf = useCallback((clientX: number, clientY: number): Point | null => {
-    const board = boardRef.current;
-    if (!board) return null;
-    const origin = board.getBoundingClientRect();
-    return { x: clientX - origin.left, y: clientY - origin.top };
-  }, []);
+  const pointOf = useCallback(
+    (clientX: number, clientY: number): Point | null => {
+      const board = boardRef.current;
+      if (!board) return null;
+      const origin = board.getBoundingClientRect();
+      return { x: clientX - origin.left, y: clientY - origin.top };
+    },
+    [],
+  );
 
   /** Hands the arrangement up. The engine's only opinion is that it changed. */
   const offer = useCallback(
@@ -191,19 +194,18 @@ export function OrderStage({
     [accepting, offer, onSelect, placed, selectedId],
   );
 
-  const handlePointerDown = (itemId: string) => (
-    event: React.PointerEvent<HTMLButtonElement>,
-  ) => {
-    if (!accepting || placed.includes(itemId)) return;
-    /* Capture, so a finger that leaves the tile keeps sending us moves and we
+  const handlePointerDown =
+    (itemId: string) => (event: React.PointerEvent<HTMLButtonElement>) => {
+      if (!accepting || placed.includes(itemId)) return;
+      /* Capture, so a finger that leaves the tile keeps sending us moves and we
        are told when it goes up wherever that happens to be. */
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDrag({
-      pointerId: event.pointerId,
-      itemId,
-      at: pointOf(event.clientX, event.clientY),
-    });
-  };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setDrag({
+        pointerId: event.pointerId,
+        itemId,
+        at: pointOf(event.clientX, event.clientY),
+      });
+    };
 
   const handlePointerMove = (event: React.PointerEvent<HTMLButtonElement>) => {
     if (drag?.pointerId !== event.pointerId) return;
@@ -228,12 +230,17 @@ export function OrderStage({
     }
 
     /* Up on the tile it started on: a tap, whatever the finger did between. */
-    if (target?.closest<HTMLElement>("[data-order-tile]")?.dataset.itemId === from.itemId) {
+    if (
+      target?.closest<HTMLElement>("[data-order-tile]")?.dataset.itemId ===
+      from.itemId
+    ) {
       choose(from.itemId);
     }
   };
 
-  const handlePointerCancel = (event: React.PointerEvent<HTMLButtonElement>) => {
+  const handlePointerCancel = (
+    event: React.PointerEvent<HTMLButtonElement>,
+  ) => {
     if (drag?.pointerId !== event.pointerId) return;
     setDrag(null);
   };
@@ -244,6 +251,10 @@ export function OrderStage({
   /* The one empty place, which is where any tile the child offers will go. */
   const nextPlace = placed.length;
   const armed = accepting && selectedId !== null;
+  /* Every place filled. The reducer refuses a tile that is out of order, so
+     `placed` only ever holds tiles that were right: a full line *is* the
+     answer, and can be framed as one without asking anything. */
+  const solved = placed.length === total;
 
   return (
     <div className="flex flex-col items-center gap-5 [@media(max-height:44rem)]:gap-3">
@@ -268,121 +279,152 @@ export function OrderStage({
           className="relative flex flex-col gap-5 [@media(max-height:44rem)]:gap-3"
         >
           {/* ---- the line: the answer, being built ---------------------- */}
-          <ol
-            data-order-line=""
-            className={cn(
-              "grid list-none gap-2 sm:gap-3",
-              LINE_COLUMNS[total] ?? LINE_COLUMNS[6],
-            )}
-          >
-            {Array.from({ length: total }, (_, index) => {
-              const filledId = placed[index];
-              const filled = filledId ? itemOf(filledId) : undefined;
-              const isNext = index === nextPlace;
+          <div className="relative">
+            {/* The last tile lands and the row stops being five separate
+                places: one frame around the lot, so a child sees a finished
+                thing rather than a tidy shelf. Drawn over the line rather
+                than around it — a border or a padding here would nudge every
+                tile sideways at the exact moment the child is looking at
+                them. */}
+            {solved ? (
+              <motion.span
+                aria-hidden
+                className="border-sprout-base/45 bg-sprout-soft/25 rounded-card pointer-events-none absolute -inset-2 border-2"
+                initial={reduced ? false : { opacity: 0, scale: 0.97 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={reduced ? { duration: 0 } : springSoft}
+              />
+            ) : null}
+            <ol
+              data-order-line=""
+              className={cn(
+                "relative grid list-none gap-2 sm:gap-3",
+                LINE_COLUMNS[total] ?? LINE_COLUMNS[6],
+              )}
+            >
+              {Array.from({ length: total }, (_, index) => {
+                const filledId = placed[index];
+                const filled = filledId ? itemOf(filledId) : undefined;
+                const isNext = index === nextPlace;
 
-              const face = filled ? (
-                <motion.span
-                  key={filled.id}
-                  className="flex min-h-0 min-w-0 items-center justify-center"
-                  /* It arrives, rather than appearing: the one bit of motion
+                const face = filled ? (
+                  <motion.span
+                    key={filled.id}
+                    className="flex min-h-0 min-w-0 items-center justify-center"
+                    /* It arrives, rather than appearing: the one bit of motion
                      that says "that went in". Nothing loops. */
-                  initial={reduced ? false : { scale: 0.5, opacity: 0 }}
-                  animate={{ scale: 1, opacity: 1 }}
-                  transition={reduced ? { duration: 0 } : springSoft}
-                >
-                  <TileFace item={filled.item} scale="tile" />
-                </motion.span>
-              ) : (
-                /* An empty place says which place it is. A number, not a
+                    initial={reduced ? false : { scale: 0.5, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    transition={reduced ? { duration: 0 } : springSoft}
+                  >
+                    <TileFace item={filled.item} scale="tile" />
+                  </motion.span>
+                ) : (
+                  /* An empty place says which place it is. A number, not a
                    colour, so the board reads the same to everyone. */
-                <span
-                  aria-hidden
-                  className={cn(
-                    "font-display text-2xl font-bold sm:text-3xl",
-                    isNext ? "text-tide-deep" : "text-ink-300",
-                  )}
-                >
-                  {index + 1}
-                </span>
-              );
+                  <span
+                    aria-hidden
+                    className={cn(
+                      "font-display text-2xl font-bold sm:text-3xl",
+                      isNext
+                        ? armed
+                          ? "text-honey-deep"
+                          : "text-tide-deep"
+                        : "text-ink-300",
+                    )}
+                  >
+                    {index + 1}
+                  </span>
+                );
 
-              const shell = cn(
-                "relative flex min-h-16 w-full items-center justify-center rounded-card border-2 p-1",
-                "sm:min-h-20 [@media(max-height:44rem)]:min-h-12",
-                filled
-                  ? "bg-yes-soft border-sprout-base shadow-[0_3px_0_0_var(--color-sprout-deep)]"
-                  : isNext
-                    ? cn(
-                        "border-tide-base border-dashed",
-                        /* Brightens when there is something to put in it. A
-                           state change, never a loop. */
-                        armed ? "bg-tide-soft" : "bg-tide-soft/40",
-                      )
-                    : "border-edge border-dashed bg-paper/60",
-              );
+                const shell = cn(
+                  "relative flex min-h-16 w-full items-center justify-center rounded-card border-2 p-1",
+                  "sm:min-h-20 [@media(max-height:44rem)]:min-h-12",
+                  /* One story about depth, told three ways. An empty place is a
+                   hollow — the hard inset lip is the exact inverse of the
+                   shadow a filled place casts — so the line reads as a row of
+                   holes with things dropped into them, rather than a row of
+                   boxes that happen to be different colours. The place that is
+                   next warms up when there is a tile in hand: honey, because
+                   honey is the invitation everywhere else in the product, and
+                   because green already means "that was right" two states
+                   along. A state change, never a loop. */
+                  filled
+                    ? "bg-yes-soft border-sprout-base shadow-[0_3px_0_0_var(--color-sprout-deep)]"
+                    : isNext
+                      ? armed
+                        ? "bg-honey-soft border-honey-base border-dashed shadow-[inset_0_3px_0_0_var(--color-honey-base)]"
+                        : "bg-tide-soft/40 border-tide-base border-dashed shadow-[inset_0_3px_0_0_var(--color-tide-soft)]"
+                      : "border-edge border-dashed bg-paper/60 shadow-[inset_0_3px_0_0_var(--color-edge)]",
+                );
 
-              if (filled) {
+                if (filled) {
+                  return (
+                    <li key={index} className="min-w-0">
+                      <div className={shell}>
+                        {face}
+                        <span
+                          aria-hidden
+                          className="bg-sprout-deep absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-white"
+                        >
+                          <Check className="size-3.5" strokeWidth={3} />
+                        </span>
+                        <span className="sr-only">
+                          {`Place ${index + 1} of ${total}: ${spokenOf(filled.item)}.`}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                }
+
+                if (!isNext) {
+                  return (
+                    <li key={index} className="min-w-0">
+                      <div className={shell}>
+                        {face}
+                        <span className="sr-only">
+                          {`Place ${index + 1} of ${total}, still empty.`}
+                        </span>
+                      </div>
+                    </li>
+                  );
+                }
+
                 return (
                   <li key={index} className="min-w-0">
-                    <div className={shell}>
-                      {face}
-                      <span
-                        aria-hidden
-                        className="bg-sprout-deep absolute -top-2 -right-2 flex size-6 items-center justify-center rounded-full text-white"
-                      >
-                        <Check className="size-3.5" strokeWidth={3} />
-                      </span>
-                      <span className="sr-only">
-                        {`Place ${index + 1} of ${total}: ${spokenOf(filled.item)}.`}
-                      </span>
-                    </div>
-                  </li>
-                );
-              }
-
-              if (!isNext) {
-                return (
-                  <li key={index} className="min-w-0">
-                    <div className={shell}>
-                      {face}
-                      <span className="sr-only">
-                        {`Place ${index + 1} of ${total}, still empty.`}
-                      </span>
-                    </div>
-                  </li>
-                );
-              }
-
-              return (
-                <li key={index} className="min-w-0">
-                  {/* The insertion point is a real button, so a big obvious
+                    {/* The insertion point is a real button, so a big obvious
                       target exists for a finger that would rather aim at the
                       gap than tap the tile twice. */}
-                  <button
-                    type="button"
-                    data-order-slot=""
-                    className={cn(shell, "touch-none", armed ? "cursor-pointer" : "cursor-default")}
-                    aria-disabled={!armed}
-                    aria-label={
-                      selectedItem
-                        ? `Put ${spokenOf(selectedItem.item)} in place ${index + 1} of ${total}.`
-                        : `Place ${index + 1} of ${total}, next to fill. Choose a tile first.`
-                    }
-                    onClick={(event) => {
-                      /* Keyboard only. A pointer's click always follows its
+                    <button
+                      type="button"
+                      data-order-slot=""
+                      className={cn(
+                        shell,
+                        "touch-none",
+                        armed ? "cursor-pointer" : "cursor-default",
+                      )}
+                      aria-disabled={!armed}
+                      aria-label={
+                        selectedItem
+                          ? `Put ${spokenOf(selectedItem.item)} in place ${index + 1} of ${total}.`
+                          : `Place ${index + 1} of ${total}, next to fill. Choose a tile first.`
+                      }
+                      onClick={(event) => {
+                        /* Keyboard only. A pointer's click always follows its
                          own `pointerup`, which has already been dealt with
                          above; `detail === 0` is what a click from Enter or
                          Space looks like. */
-                      if (event.detail !== 0) return;
-                      if (armed && selectedId) offer(selectedId);
-                    }}
-                  >
-                    {face}
-                  </button>
-                </li>
-              );
-            })}
-          </ol>
+                        if (event.detail !== 0) return;
+                        if (armed && selectedId) offer(selectedId);
+                      }}
+                    >
+                      {face}
+                    </button>
+                  </li>
+                );
+              })}
+            </ol>
+          </div>
 
           {/* ---- the tray: everything still waiting --------------------- */}
           <ul

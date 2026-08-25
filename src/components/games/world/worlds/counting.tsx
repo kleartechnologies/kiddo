@@ -1,4 +1,5 @@
 import {
+  AppleTree,
   Bush,
   Cloud,
   GroundThing,
@@ -14,11 +15,14 @@ import type { GameWorldDefinition } from "../definitions";
  *
  * The things to count stand on the grass rather than in a card, because
  * three apples in a garden are a *place with three apples in it*, and that is
- * the lesson. The numbers are signs planted in the near ground, so the answer
- * row is part of the same picture. The sky, the far hills, the tree and the
- * sun are the backdrop, painted once per world; the field and the ground are
- * part of the composition, so they sit exactly where the board's own parts
- * do, whatever the board's height.
+ * the lesson. The tree at the edge is the garden's apple tree for the same
+ * reason: the world says what it is about before the question does.
+ *
+ * The numbers are signs planted in the near ground, so the answer row is part
+ * of the same picture. The sky, the far hills and the sun are the backdrop,
+ * painted once per world; the field, the ground and the tree are part of the
+ * composition, so they sit exactly where the board's own parts do, whatever
+ * the board's height.
  *
  * Nothing here moves on its own. The apples `pop` in one at a time because
  * `PromptDisplay` already does that for a group of things; the sign that is
@@ -77,11 +81,7 @@ export const COUNTING_WORLD: GameWorldDefinition = {
           BLEED,
         )}
       >
-        <Bush
-          kind="tree"
-          accent="sprout"
-          className="absolute bottom-full left-[3%] w-[clamp(3rem,12%,5.5rem)] translate-y-1"
-        />
+        <AppleTree className="absolute bottom-full left-[3%] w-[clamp(3rem,12%,5.5rem)] translate-y-1" />
         <Bush
           kind="bush"
           accent="sage"
@@ -131,11 +131,7 @@ export const COUNTING_WORLD: GameWorldDefinition = {
           BLEED,
         )}
       >
-        <Bush
-          kind="tree"
-          accent="sprout"
-          className="absolute bottom-full left-[3%] w-[clamp(3rem,12%,5.5rem)] translate-y-1"
-        />
+        <AppleTree className="absolute bottom-full left-[3%] w-[clamp(3rem,12%,5.5rem)] translate-y-1" />
         <Bush
           kind="bush"
           accent="sage"

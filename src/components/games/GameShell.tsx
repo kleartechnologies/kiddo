@@ -258,6 +258,16 @@ export function GameShell({
                 <SpeechBubble
                   className="max-w-2xl flex-1"
                   tail="left"
+                  /* Every line that can be said, at its full height — and
+                     no clamp on the invisible copies. A clamp here was tried
+                     and measured: holding two lines open while a hint renders
+                     at four is a bubble that changes height the moment a
+                     child gets something wrong, which is the one thing this
+                     reserve exists to prevent. `measure-quest-magic.mjs`
+                     catches it as "bubble grew 27.5px on a miss". The dead
+                     space under a short question is the price of a bubble
+                     that never moves, and it is the right way round: a hint
+                     written shorter is a content fix, not a layout one. */
                   reserve={promptReserve.map((line, index) => (
                     <p key={index} className={PROMPT_TEXT}>
                       {line}

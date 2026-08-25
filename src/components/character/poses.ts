@@ -62,8 +62,8 @@ export const POSES: Record<Pose, PoseSpec> = {
     arms: [20, -118],
     legs: [0, 0],
     armPivots: [
-      { x: 54, y: 112 },
-      { x: 150, y: 114 },
+      { x: 46, y: 150 },
+      { x: 158, y: 152 },
     ],
   },
 
@@ -82,8 +82,8 @@ export const POSES: Record<Pose, PoseSpec> = {
     arms: [84, -84],
     legs: [-12, 12],
     armPivots: [
-      { x: 54, y: 110 },
-      { x: 146, y: 110 },
+      { x: 46, y: 148 },
+      { x: 154, y: 148 },
     ],
     lift: -4,
   },
@@ -95,8 +95,8 @@ export const POSES: Record<Pose, PoseSpec> = {
     arms: [102, -102],
     legs: [-26, 20],
     armPivots: [
-      { x: 54, y: 110 },
-      { x: 146, y: 110 },
+      { x: 46, y: 148 },
+      { x: 154, y: 148 },
     ],
     lift: -8,
     effect: "confetti",
@@ -108,7 +108,7 @@ export const POSES: Record<Pose, PoseSpec> = {
     expression: "encouraging",
     arms: [34, -100],
     legs: [0, 0],
-    tilt: { deg: -5, x: 100, y: 180 },
+    tilt: { deg: -5, x: 100, y: 205 },
   },
 
   think: {
@@ -118,10 +118,10 @@ export const POSES: Record<Pose, PoseSpec> = {
     arms: [18, -122],
     legs: [0, 0],
     armPivots: [
-      { x: 54, y: 112 },
-      { x: 150, y: 114 },
+      { x: 46, y: 150 },
+      { x: 158, y: 152 },
     ],
-    tilt: { deg: 4, x: 100, y: 180 },
+    tilt: { deg: 4, x: 100, y: 205 },
   },
 
   receive: {
@@ -131,8 +131,8 @@ export const POSES: Record<Pose, PoseSpec> = {
     arms: [132, -132],
     legs: [0, 0],
     armPivots: [
-      { x: 58, y: 104 },
-      { x: 142, y: 104 },
+      { x: 50, y: 142 },
+      { x: 150, y: 142 },
     ],
     effect: "reward",
   },
@@ -143,7 +143,7 @@ export const POSES: Record<Pose, PoseSpec> = {
     expression: "confused",
     arms: [24, -24],
     legs: [0, 0],
-    tilt: { deg: 6, x: 100, y: 170 },
+    tilt: { deg: 6, x: 100, y: 190 },
   },
 
   hint: {
@@ -160,7 +160,7 @@ export const POSES: Record<Pose, PoseSpec> = {
     expression: "sleepy",
     arms: [6, -6],
     legs: [0, 0],
-    tilt: { deg: -10, x: 100, y: 195 },
+    tilt: { deg: -10, x: 100, y: 218 },
   },
 };
 

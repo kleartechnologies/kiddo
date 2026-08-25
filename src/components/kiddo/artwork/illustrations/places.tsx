@@ -1,4 +1,5 @@
 import { PAINT } from "./paint";
+import { Shade } from "./shading";
 
 /**
  * The places an animal can live in, on a level-one board.
@@ -13,6 +14,15 @@ import { PAINT } from "./paint";
  * None of them contains an animal. `home-partners` puts the animal on the other
  * side of the board, and a farm that already has a cow in it would answer the
  * question before the child did.
+ *
+ * ## Where the light falls
+ *
+ * `Shade` is the product's one light direction, and here it goes on round
+ * masses only — a canopy, a pond, an egg. A wall, a roof and a pine are already
+ * two tones meeting at an edge, which is what a flat drawing does instead of a
+ * ramp; putting a crescent on a triangle would read as a smudge rather than as
+ * light. So the rule is the same rule, applied where a form is round enough for
+ * it to mean anything.
  */
 
 export function House() {
@@ -72,6 +82,7 @@ export function Pond() {
     <>
       <rect x="0" y="58" width="100" height="42" fill={PAINT.greenSoft} />
       <ellipse cx="52" cy="72" rx="42" ry="22" fill={PAINT.blue} />
+      <Shade cx={52} cy={72} rx={42} ry={22} />
       {/* One ripple, so the blue is water and not a mirror. */}
       <path
         d="M32 70 q8 -6 16 0 t16 0"
@@ -108,6 +119,8 @@ export function Nest() {
       {/* Two eggs peeping over the rim. */}
       <ellipse cx="42" cy="46" rx="9" ry="11" fill={PAINT.blueSoft} />
       <ellipse cx="60" cy="46" rx="9" ry="11" fill={PAINT.cream} />
+      <Shade cx={42} cy={46} rx={9} ry={11} />
+      <Shade cx={60} cy={46} rx={9} ry={11} />
       {/* The bowl, woven from arcs of a warmer wood. */}
       <path d="M18 52 a32 26 0 0 0 64 0 Z" fill={PAINT.wood} />
       <g fill="none" stroke={PAINT.yellowDeep} strokeWidth="3" strokeLinecap="round" opacity="0.7">
@@ -149,6 +162,7 @@ export function Jungle() {
       <ellipse cx="30" cy="34" rx="26" ry="16" fill={PAINT.greenDeep} />
       <ellipse cx="68" cy="42" rx="22" ry="14" fill={PAINT.green} />
       <ellipse cx="50" cy="24" rx="24" ry="14" fill={PAINT.green} />
+      <Shade cx={50} cy={24} rx={24} ry={14} />
       {/* A hanging vine — the one thing only a jungle hangs. */}
       <path
         d="M50 36 q4 20 -6 38"
@@ -236,6 +250,7 @@ export function TreeHome() {
       <circle cx="50" cy="28" r="26" fill={PAINT.green} />
       <circle cx="29" cy="38" r="14" fill={PAINT.greenDeep} />
       <circle cx="71" cy="38" r="14" fill={PAINT.greenDeep} />
+      <Shade cx={50} cy={28} r={26} />
       {/* The hollow: the doorway that makes this tree a home, and the whole
           difference between this scene and `nature.tree` the object. */}
       <ellipse cx="50" cy="66" rx="6.5" ry="8.5" fill={PAINT.inkSoft} />
@@ -243,6 +258,113 @@ export function TreeHome() {
       <g stroke={PAINT.greenDeep} strokeWidth="3.5" strokeLinecap="round" fill="none">
         <path d="M20 76 v-8" />
         <path d="M78 76 v-9" />
+      </g>
+    </>
+  );
+}
+
+export function Mountain() {
+  return (
+    <>
+      <rect x="0" y="80" width="100" height="20" fill={PAINT.greenSoft} />
+      {/* A second peak behind, because one triangle is a tent. */}
+      <path d="M4 84 L34 34 L60 84 Z" fill={PAINT.sage} />
+      <path d="M28 86 L62 16 L98 86 Z" fill={PAINT.stone} />
+      {/* The snow on top: the whole of what the question asks about. */}
+      <path d="M62 16 L78 48 q-16 9 -32 0 Z" fill={PAINT.paper} />
+      {/* One tree at the foot, for scale — a mountain is only tall next to
+          something that is not. */}
+      <path d="M14 80 L21 62 L28 80 Z" fill={PAINT.greenDeep} />
+    </>
+  );
+}
+
+export function Beach() {
+  return (
+    <>
+      {/* Sea behind, sand in front. Both are on the `land-and-water` board at
+          once, so the two have to be told apart at tile size: the sea is water
+          edge to edge, and the beach is water with a bank of sand across the
+          bottom of it and something built on the sand. The water reaches the
+          same height as the island's for the same reason — a band floating in
+          the middle of a white box reads as a cropped photograph. */}
+      <rect x="0" y="18" width="100" height="56" rx="6" fill={PAINT.blue} />
+      <g fill="none" stroke={PAINT.paper} strokeWidth="3.5" strokeLinecap="round" opacity="0.85">
+        <path d="M10 44 q9 -7 18 0 t18 0" />
+        <path d="M54 58 q9 -7 18 0 t18 0" />
+      </g>
+      <path d="M0 70 Q50 60 100 72 L100 100 L0 100 Z" fill={PAINT.yellow} />
+      {/* The sandcastle. A child names a beach by what you build on it. */}
+      <rect x="22" y="76" width="30" height="18" fill={PAINT.yellowDeep} />
+      <g fill={PAINT.yellowDeep}>
+        <rect x="22" y="70" width="7" height="8" />
+        <rect x="33" y="70" width="8" height="8" />
+        <rect x="45" y="70" width="7" height="8" />
+      </g>
+      <path d="M37 70 V52" stroke={PAINT.wood} strokeWidth="2.6" strokeLinecap="round" />
+      <path d="M38 53 L54 58 L38 63 Z" fill={PAINT.pinkDeep} />
+      {/* A bucket beside it, so the sand reads as sand you can dig. */}
+      <path d="M70 80 L86 80 L83 94 L73 94 Z" fill={PAINT.blueDeep} />
+      <path d="M70 80 q8 -9 16 0" fill="none" stroke={PAINT.blueDeep} strokeWidth="2.4" />
+    </>
+  );
+}
+
+export function Island() {
+  return (
+    <>
+      {/* Water on every side, which is the answer to the only question this
+          picture is ever asked. */}
+      <rect x="0" y="16" width="100" height="84" rx="6" fill={PAINT.blue} />
+      <g fill="none" stroke={PAINT.paper} strokeWidth="3.5" strokeLinecap="round" opacity="0.85">
+        <path d="M6 32 q8 -7 16 0 t16 0" />
+        <path d="M62 30 q8 -7 16 0 t16 0" />
+        <path d="M12 92 q9 -7 18 0 t18 0" />
+      </g>
+      <ellipse cx="50" cy="80" rx="36" ry="13" fill={PAINT.yellow} />
+      <Shade cx={50} cy={80} rx={36} ry={13} />
+      {/* One palm, leaning the way every drawn palm leans. */}
+      <path
+        d="M52 78 q-5 -20 6 -32"
+        fill="none"
+        stroke={PAINT.wood}
+        strokeWidth="6"
+        strokeLinecap="round"
+      />
+      <g fill={PAINT.greenDeep}>
+        <ellipse cx="42" cy="42" rx="16" ry="7" transform="rotate(-16 42 42)" />
+        <ellipse cx="74" cy="42" rx="16" ry="7" transform="rotate(16 74 42)" />
+        <ellipse cx="58" cy="34" rx="8" ry="13" />
+      </g>
+      <circle cx="52" cy="50" r="4" fill={PAINT.wood} />
+      <circle cx="63" cy="51" r="3.5" fill={PAINT.wood} />
+    </>
+  );
+}
+
+export function Volcano() {
+  return (
+    <>
+      <rect x="0" y="82" width="100" height="18" fill={PAINT.greenSoft} />
+      {/* Flat-topped, where the mountain is pointed, and rock where the
+          mountain wears snow. Drawn in stone rather than sage because a green
+          cone is a hill with a chimney on it: what makes this a volcano is the
+          rock, the flat top and the warm mouth, in that order. */}
+      <path d="M10 86 L38 26 L62 26 L90 86 Z" fill={PAINT.stone} />
+      <path d="M36 26 H64 L66 32 H34 Z" fill={PAINT.orange} />
+      {/* A trickle down one side, and a puff over the top. Warm, small and
+          never frightening — there is no red in KIDDO and none here. */}
+      <path
+        d="M44 32 q-3 12 2 20 q-4 10 -1 18"
+        fill="none"
+        stroke={PAINT.orange}
+        strokeWidth="4.5"
+        strokeLinecap="round"
+      />
+      <g fill={PAINT.stone} opacity="0.75">
+        <circle cx="50" cy="16" r="9" />
+        <circle cx="63" cy="12" r="6.5" />
+        <circle cx="39" cy="12" r="6" />
       </g>
     </>
   );

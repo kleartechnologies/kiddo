@@ -127,11 +127,23 @@ export function ChoiceTile({
         className,
       )}
     >
+      {/* The post, for a world whose answers are planted rather than laid out.
+          Two marks and no more: the post itself, starting at the sign's own
+          edge so the two read as one object rather than a card hovering above
+          a stick, and the patch of ground it goes into. Both sit outside the
+          button's box, so neither is ever part of what a finger has to hit,
+          and both stay inside the row's own `pb-4`. */}
       {look === "sign" ? (
-        <span
-          aria-hidden
-          className="bg-honey-deep absolute top-[calc(100%+0.3rem)] left-1/2 h-4 w-3 -translate-x-1/2 rounded-b-md"
-        />
+        <>
+          <span
+            aria-hidden
+            className="bg-honey-deep absolute top-full left-1/2 h-3 w-2.5 -translate-x-1/2 rounded-b-sm"
+          />
+          <span
+            aria-hidden
+            className="bg-ink-900/10 absolute top-[calc(100%+0.65rem)] left-1/2 h-1.5 w-6 -translate-x-1/2 rounded-full"
+          />
+        </>
       ) : null}
       {state === "correct" && <StateBadge tone="yes" />}
       {state === "wrong" && <StateBadge tone="retry" />}

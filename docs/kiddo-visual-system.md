@@ -401,9 +401,9 @@ already existed.** Nothing downstream has to be told.
 
 ### The library
 
-Forty-four drawings — twenty-nine from Phase 9, fifteen from Phase 10 —
-chosen by working backwards from the entry level of real activities rather
-than to be a pretty spread. (There is no pig and never will be:
+Forty-eight drawings — twenty-nine from Phase 9, fifteen from Phase 10, four
+from the visual redesign — chosen by working backwards from the entry level of
+real activities rather than to be a pretty spread. (There is no pig and never will be:
 `lib/content/vocabulary.ts` bars the pig family as a teaching example for
 KIDDO's home market, and `tests/safety.test.ts` proves the bar holds.)
 
@@ -413,14 +413,39 @@ KIDDO's home market, and `tests/safety.test.ts` proves the bar holds.)
 | food | apple, egg, cake, banana, strawberry, orange, biscuit | `alphabet-order` (A, E), `counting-objects`, `rhyming-partners` |
 | object | ball, hat, car, balloon, box | `alphabet-order` (B), `rhyming-partners`, `counting-objects` |
 | nature | tree, flower, star, sun | `counting-objects`, `rhyming-partners`, the `spelling` anchor |
-| place | house, farm, sea, pond, nest, burrow, jungle, forest, desert, snow, tree | `home-partners`, `animal-homes`, `rhyming-partners` |
+| place | house, farm, sea, pond, nest, burrow, jungle, forest, desert, snow, tree, mountain, beach, island, volcano | `home-partners`, `animal-homes`, `rhyming-partners`, `land-and-water` |
 
 Phase 10 delivered the drawings Phase 9 named next — **jungle** and **monkey**
 (the last level-one `home-partners` fact) among them — and completed the place
 shelf, so an `animal-homes` options row at level one is never half of each.
+The visual redesign added the last four places as a set, because they had to
+be one: `land-and-water` puts four of its seven places on a board at once, and
+`habitats.ts` had drawn only three of the seven — so the mountain, the beach,
+the island and the volcano were the difference between that activity drawing
+nothing and drawing everything.
+
 Still named and waiting: **G** (one more anchored alphabet run) and **dish**
 (one more drawn rhyming board; **bug** stays a glyph on purpose — a drawn
-ladybird labelled BUG would teach the wrong word).
+ladybird labelled BUG would teach the wrong word). The design package also
+schedules **pear**, **leaf**, **shell**, **butterfly**, **boat**, **kite**,
+**bell** and **clock**; none of them is drawn yet, because none has a board it
+could be attached to without leaving that board half of each.
+
+### The light, and the floor
+
+Every drawing is lit from one direction — upper-left, the same direction
+`canon.ts` lights KIDDO from — and carries it as `Shade`, a flat six-percent
+crescent of ink down the unlit face of its largest round form. It is a veil
+rather than a ramp because an illustration is dealt eight to a board at
+eighteen pixels, and eight copies of a gradient are eight `<defs>` blocks and
+eight ids that can collide; at that size the veil and the ramp are the same
+picture. A flat-sided drawing — a box, a barn, a pine — has no crescent: its
+two faces already meet at an edge, which is what a flat drawing does instead.
+
+Every animal that stands also carries `Ground`, a contact shadow. Before it,
+an animal placed on the grass of Animal Adventure floated above it. The fish,
+the shark, the bird mid-hop and the bee have none, because a shadow under a
+swimming fish falls on nothing.
 
 ---
 

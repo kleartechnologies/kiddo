@@ -1,4 +1,5 @@
 import { PAINT } from "./paint";
+import { Shade } from "./shading";
 
 /**
  * The things that are not alive: two foods and three objects.
@@ -10,6 +11,13 @@ import { PAINT } from "./paint";
  * phone-width stage. That is why nothing here has a face, a scene or a part a
  * child could count twice, and why each sits inside the box rather than filling
  * it corner to corner: a row of them needs the air between.
+ *
+ * A round thing carries `Shade` — the product's one light direction, from
+ * `shading.tsx` — on its largest form. A flat-sided one does not: a crescent
+ * laid across a cardboard box reads as a smudge, and a box already has its two
+ * tones where its two faces meet. The small bright ellipse an apple and an
+ * orange wear is a different mark and stays: that is a shine on a wet skin, not
+ * a stop in a ramp.
  */
 
 export function Apple() {
@@ -27,6 +35,7 @@ export function Apple() {
       <circle cx="35" cy="58" r="27" fill={PAINT.pinkDeep} />
       <circle cx="65" cy="58" r="27" fill={PAINT.pinkDeep} />
       <rect x="35" y="31" width="30" height="54" fill={PAINT.pinkDeep} />
+      <Shade cx={50} cy={58} rx={30} ry={25} />
       <ellipse cx="36" cy="48" rx="7" ry="10" fill={PAINT.pinkSoft} opacity="0.55" transform="rotate(-20 36 48)" />
     </>
   );
@@ -69,6 +78,7 @@ export function Ball() {
         <path d="M18 54 L33 62 L41 58 L36 42 Z" />
         <path d="M50 84 L38 74 L41 58 L59 58 L62 74 Z" />
       </g>
+      <Shade cx={50} cy={50} r={34} />
     </>
   );
 }
@@ -155,6 +165,7 @@ export function Strawberry() {
         d="M50 90 C27 77 20 52 27 41 Q38 30 50 30 Q62 30 73 41 C80 52 73 77 50 90 Z"
         fill={PAINT.pinkDeep}
       />
+      <Shade cx={50} cy={58} rx={22} ry={28} />
       {/* Seeds. */}
       <g fill={PAINT.yellowSoft}>
         <ellipse cx="40" cy="50" rx="2.2" ry="3.2" />
@@ -181,6 +192,7 @@ export function Orange() {
         <circle cx="58" cy="74" r="2" />
         <circle cx="32" cy="64" r="2" />
       </g>
+      <Shade cx={50} cy={56} r={32} />
       <ellipse cx="38" cy="42" rx="7" ry="9" fill={PAINT.yellowSoft} opacity="0.5" transform="rotate(-20 38 42)" />
       {/* Stem and one leaf. */}
       <rect x="47" y="16" width="6" height="11" rx="3" fill={PAINT.wood} />
@@ -204,6 +216,7 @@ export function Biscuit() {
         <circle cx="34" cy="58" r="3.5" />
         <circle cx="55" cy="50" r="3" />
       </g>
+      <Shade cx={50} cy={52} r={33} />
     </>
   );
 }
@@ -212,6 +225,7 @@ export function Balloon() {
   return (
     <>
       <ellipse cx="50" cy="42" rx="27" ry="32" fill={PAINT.pink} />
+      <Shade cx={50} cy={42} rx={27} ry={32} />
       <ellipse cx="40" cy="30" rx="7" ry="10" fill={PAINT.pinkSoft} opacity="0.7" transform="rotate(-18 40 30)" />
       {/* The knot, and a string with a little wave in it. */}
       <path d="M50 72 L44 82 L56 82 Z" fill={PAINT.pinkDeep} />

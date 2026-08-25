@@ -9,6 +9,7 @@ import {
   WorldReaction,
 } from "@/components/games/world/GameWorld";
 import { MagicMotion } from "@/components/kiddo/MagicMotion";
+import { PawPrint } from "@/components/kiddo/world/scenery";
 import { captionOf, spokenOf } from "@/lib/content/challenges";
 import type { ChallengeEngineProps } from "@/lib/content/engine";
 import type { ConnectNode, ConnectPair } from "@/lib/content/types";
@@ -258,7 +259,7 @@ export function ConnectStage({
      path or a ribbon, and where the parts stand. It decides nothing about
      what a node is, says, or does when pressed. See `docs/kiddo-game-worlds.md`. */
   const world = useGameWorld();
-  const { nodes: nodeLook, join: joinLook } = world.spec;
+  const { nodes: nodeLook, join: joinLook, trace: traceLook } = world.spec;
   const stroke = JOIN_STROKES[joinLook];
 
   const boardRef = useRef<HTMLDivElement>(null);
@@ -652,18 +653,40 @@ export function ConnectStage({
                   )}
                 >
                   {travel && side === "left" ? (
-                    /* Plays once, when the join lands, and then stays: a
-                       `playKey` of 1 is "has arrived" for the rest of the board. */
-                    <MagicMotion
-                      motion="walk"
-                      playKey={matched ? 1 : 0}
-                      distance={partnerId ? travelOf(node.id, partnerId) : 0}
-                      rise={partnerId ? riseOf(node.id, partnerId) : 0}
-                    >
-                      <WorldReaction moment="arrive" play delay={index * 0.08}>
-                        <ContentItemView item={node.item} scale="stage" />
-                      </WorldReaction>
-                    </MagicMotion>
+                    /* The walk, and the mark it leaves. The mark sits in a
+                       wrapper that does not move — the picture inside the
+                       walk is carried by a transform, so the wrapper keeps
+                       the box the measurement pass reads — and it is drawn
+                       *behind*, so nothing about the journey changes.
+
+                       Why there is anything here at all: once four animals
+                       have walked home, four empty capsules are left sitting
+                       on the land. A print where each one stood turns them
+                       from four things that went missing into four journeys
+                       that were made. It is never a join: it is a still,
+                       faint mark inside a node rather than anything in the
+                       space between the columns. */
+                    <span className="relative inline-flex">
+                      {matched && traceLook === "paw" ? (
+                        <PawPrint
+                          accent="sage"
+                          className="pointer-events-none absolute bottom-0 left-1/2 h-[38%] w-auto -translate-x-1/2 opacity-40"
+                        />
+                      ) : null}
+                      {/* Plays once, when the join lands, and then stays: a
+                          `playKey` of 1 is "has arrived" for the rest of the
+                          board. */}
+                      <MagicMotion
+                        motion="walk"
+                        playKey={matched ? 1 : 0}
+                        distance={partnerId ? travelOf(node.id, partnerId) : 0}
+                        rise={partnerId ? riseOf(node.id, partnerId) : 0}
+                      >
+                        <WorldReaction moment="arrive" play delay={index * 0.08}>
+                          <ContentItemView item={node.item} scale="stage" />
+                        </WorldReaction>
+                      </MagicMotion>
+                    </span>
                   ) : (
                     <WorldReaction moment="arrive" play delay={index * 0.08}>
                       <ContentItemView item={node.item} scale="stage" />

@@ -14,7 +14,18 @@ import {
   VIEWBOX_COMPACT,
 } from "./canon";
 import { FACES, type Expression } from "./expressions";
-import { Arm, Body, Cheeks, Ear, Effect, Leg, Shadow, type EffectId } from "./parts";
+import {
+  Arm,
+  Body,
+  Cheeks,
+  Ear,
+  Effect,
+  Leg,
+  Nose,
+  Palette,
+  Shadow,
+  type EffectId,
+} from "./parts";
 import { POSES, type Pose } from "./poses";
 import { useBlink } from "./useBlink";
 
@@ -64,6 +75,13 @@ export interface KiddoProps {
 function pivotStyle(x: number, y: number): MotionStyle {
   return { transformBox: "view-box", originX: `${x}px`, originY: `${y}px` };
 }
+
+/**
+ * Where a body leans from when its pose doesn't say: low in the body, just
+ * above the feet, so a lean looks like weight shifting rather than like the
+ * whole drawing being rotated.
+ */
+const TILT_ORIGIN = 205;
 
 export function Kiddo({
   pose = "idle",
@@ -189,7 +207,10 @@ export function Kiddo({
       >
         <Body hue={hue} />
 
-        {/* The face layer. Swapping this is the whole expression system. */}
+        {/* The face layer. Swapping this is the whole expression system.
+            Cheeks go down first: they reach a little under the eyes, and a
+            blush painted over an eye reads as a bruise. */}
+        <Cheeks opacity={face.cheeks} {...face.cheekSize} />
         <motion.g
           style={pivotStyle(100, face.eyeLine)}
           initial={false}
@@ -199,8 +220,8 @@ export function Kiddo({
           {face.eyes}
         </motion.g>
         {face.brows}
+        {face.nose ?? <Nose />}
         {face.mouth}
-        <Cheeks opacity={face.cheeks} />
       </motion.g>
 
     </>
@@ -217,13 +238,14 @@ export function Kiddo({
       aria-label={label}
       aria-hidden={label ? undefined : true}
     >
+      <Palette hue={hue} />
       {!compact && <Shadow />}
 
       <motion.g
         style={
           spec.tilt
             ? pivotStyle(spec.tilt.x, spec.tilt.y)
-            : pivotStyle(BODY_CENTRE.x, 180)
+            : pivotStyle(BODY_CENTRE.x, TILT_ORIGIN)
         }
         initial={false}
         animate={{

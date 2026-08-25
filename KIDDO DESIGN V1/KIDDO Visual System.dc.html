@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #EFE8DC; color: #2C2620; font-family: Nunito, system-ui, sans-serif; }
+  a { color: #C9722E; text-decoration: none; }
+  a:hover { color: #A65A1F; text-decoration: underline; }
+  h1, h2, h3, h4 { font-family: Fredoka, Nunito, system-ui, sans-serif; margin: 0; letter-spacing: -0.01em; }
+  p, ul, ol { margin: 0; }
+  code { background: #F2ECE1; padding: 1px 5px; border-radius: 4px; font-size: 0.88em; }
+  table { border-collapse: collapse; width: 100%; }
+  th { text-align: left; font-size: 12px; font-weight: 800; letter-spacing: 0.08em; text-transform: uppercase; color: #A2988B; padding: 0 12px 8px 0; border-bottom: 1px solid #E3D9C8; }
+  td { font-size: 14.5px; line-height: 1.45; color: #4A4038; padding: 10px 12px 10px 0; border-bottom: 1px solid #EFE7DA; vertical-align: top; }
+</style>
+</helmet>
+
+<div style="width: 1240px; margin: 0 auto; background: #FAF5EC; padding: 64px 72px 96px; box-sizing: border-box;">
+
+  <header style="display: flex; flex-direction: column; gap: 12px; padding-bottom: 44px; border-bottom: 3px solid #2C2620;">
+    <span style="align-self: flex-start; background: #F7EBD6; color: #8A6320; font-size: 12px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 7px 14px; border-radius: 999px;">Compact spec · v1 proposal</span>
+    <h1 style="font-size: 52px; font-weight: 700; line-height: 1.06;">KIDDO visual system</h1>
+    <p style="font-size: 18px; color: #6B6259; max-width: 840px; line-height: 1.5; text-wrap: pretty;">What changes, what does not, and in what order. Nothing here asks for a new engine, a new challenge kind, a new animation vocabulary or a new dependency. Companion files: <strong>KIDDO Character Family</strong> and <strong>KIDDO Child Experience</strong>.</p>
+  </header>
+
+  <section style="padding-top: 48px;">
+    <h2 style="font-size: 30px; font-weight: 600;">1 · Principles</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-top: 20px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">01</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Show the thing, then name it</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">A four-year-old who cannot read the prompt must still know what to do. Illustration carries meaning first; the word confirms it.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">02</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Everything stands somewhere</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">No object floats on a card. A duck sits by water, apples grow on grass, numbers are signs in the ground. The board is a place.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">03</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Motion answers the child</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">Nothing loops, nothing plays because time passed, nothing moves to say “wrong”. Movement is a consequence of a tap and it goes where the tap said.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">04</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Praise finishing, never score</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">No XP, coins, points, scores, streaks, lives, leaderboards or timers. Progress is a flower, an animal, a page. Never a number, never a bar.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">05</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Warm, never alarming</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">No red, no cross, no shake, no scolding face. Retry is apricot and a magnifier: keep looking. Hard is brighter, never darker.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 13px; font-weight: 800; color: #A2988B;">06</p>
+        <p style="font-size: 18px; font-weight: 800; padding-top: 4px;">Data, not screens</p>
+        <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 6px;">A world is a layer list, a character is a canon file, a celebration is a moment token. Adding one is an entry in a table, never a new component.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">2 · Colour</h2>
+    <p style="font-size: 16px; color: #6B6259; padding-top: 8px; max-width: 900px; line-height: 1.5;">Same six families, same names, same one-hue-per-character rule, same file (<code>globals.css</code> <code>@theme</code>). Each <code>base</code> gains chroma so the character reads at 48px. Every other step is re-derived from it.</p>
+    <div style="padding-top: 20px;">
+      <table>
+        <tr><th style="width: 120px;">Token</th><th style="width: 130px;">Today</th><th style="width: 130px;">Proposed</th><th style="width: 90px;"></th><th>Why</th></tr>
+        <tr><td><code>sage-base</code></td><td>#93C8A3</td><td><strong>#86BE7C</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #93C8A3;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #86BE7C;"></span></td><td>KIDDO. Greener and less grey, so the brand hue survives beside a real green.</td></tr>
+        <tr><td><code>apricot-base</code></td><td>#EFA470</td><td><strong>#F08A3C</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #EFA470;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #F08A3C;"></span></td><td>FOXY. A fox has to be orange, not peach.</td></tr>
+        <tr><td><code>blossom-base</code></td><td>#EFA6AB</td><td><strong>#F49BB4</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #EFA6AB;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #F49BB4;"></span></td><td>BIBI. Pink rather than salmon; separates from apricot.</td></tr>
+        <tr><td><code>sprout-base</code></td><td>#BCD37C</td><td><strong>#A8CE4F</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #BCD37C;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #A8CE4F;"></span></td><td>PIP and grass. Yellow-green, so sage and sprout stop being one colour.</td></tr>
+        <tr><td><code>tide-base</code></td><td>#8FBAD9</td><td><strong>#62A6DC</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #8FBAD9;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #62A6DC;"></span></td><td>WALLY, water, sky. Water needs to look wet.</td></tr>
+        <tr><td><code>honey-base</code></td><td>#F6D189</td><td><strong>#F7C55C</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #F6D189;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #F7C55C;"></span></td><td>Keepsakes, sun, the primary button. Warmer gold.</td></tr>
+        <tr><td><code>ink-900</code></td><td>#2E2A32</td><td><strong>#2C2620</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #2E2A32;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #2C2620;"></span></td><td>Every face and every word. Warm-brown black rather than violet-black.</td></tr>
+        <tr><td><code>cream-100</code></td><td>#FBF8F3</td><td><strong>#FAF5EC</strong></td><td><span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #FBF8F3;"></span> <span style="display: inline-block; width: 28px; height: 18px; border-radius: 4px; background: #FAF5EC;"></span></td><td>Paper. One step warmer to sit under the new hues.</td></tr>
+      </table>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 20px;">
+      <div style="background: #FDF3E4; border: 1px solid #F0DDBB; border-radius: 18px; padding: 16px 20px;">
+        <p style="font-size: 15px; font-weight: 800; color: #8A6320;">Re-run the colour-blindness sweep</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 4px;"><code>TELLABLE_PAIRS</code> in <code>accents.ts</code> lists the five pairs that survive protanopia, deuteranopia and tritanopia. Raising chroma changes those distances — the five must be re-measured, not assumed. Every colour-answer board draws from that list, and its tests check it.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+        <p style="font-size: 15px; font-weight: 800;">Environment shades are new, and scene-only</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 4px;">Scenes need depth the six hues cannot give: <code>ridge #B7D9AE</code>, <code>canopy #6BA45C</code>, <code>wood #C98A4E</code>, <code>soil #4A4038</code>. These are never UI surfaces, never text, never a seventh accent family.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">3 · Type, shape, motion</h2>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; padding-top: 20px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 18px; font-weight: 800;">Type — unchanged</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 6px;"><code>Fredoka</code> display, <code>Nunito</code> sans. Two families, no third. Child-facing minimum 16px; a prompt is 20–24px; a celebration title 36–42px. Numerals on a sign are 44px+.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 18px; font-weight: 800;">Shape — unchanged</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 6px;"><code>tile 20px</code> · <code>card 28px</code> · <code>hero 40px</code>. Buttons are full pills with a solid bottom edge — the toy press. Shadows stay warm, never grey.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 18px; font-weight: 800;">Motion — unchanged</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 6px;">The eight Magic Motions and no ninth: <code>pop bounce float slide walk grow sparkle celebrate</code>. Only at the four engine moments: arrive, right, joined, partner.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">4 · Illustration style</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 20px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 17px; font-weight: 800;">Rules that hold</p>
+        <ul style="font-size: 14.5px; color: #6B6259; line-height: 1.6; padding: 8px 0 0 20px;">
+          <li>Flat shapes with two-stop soft shading. No outlines, no rim light, no third stop.</li>
+          <li>One light direction for the whole product: upper-left, 34% / 24%.</li>
+          <li>Silhouette first — every drawing must be identifiable at 48px in one colour.</li>
+          <li>Faces are ink. Only cheeks are warm.</li>
+          <li>No brown, no grey, no red as a UI colour. Wood and soil are scene-only.</li>
+          <li>Every illustration is <code>aria-hidden</code>. The word lives in the accessible name.</li>
+        </ul>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 17px; font-weight: 800;">The one rule that changes</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 6px;"><code>canon.ts</code> RULE 01 forbids gradients and makes every lighter form a white overlay. The reference is soft-shaded, and matching it means a two-stop radial per hue and a real cream fill for bellies and muzzles.</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 8px;"><strong>Cost of keeping RULE 01:</strong> the characters stay flat and read closer to today's. <strong>Cost of changing it:</strong> one paragraph in <code>canon.ts</code>, one <code>&lt;defs&gt;</code> block per character, and slightly larger SVG. This is a decision to take deliberately, not by accident.</p>
+      </div>
+    </div>
+    <div style="background: #FDF3E4; border: 1px solid #F0DDBB; border-radius: 20px; padding: 18px 22px; margin-top: 16px;">
+      <p style="font-size: 17px; font-weight: 800; color: #8A6320;">Scenes, not stickers — the promotion rule stays</p>
+      <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 6px;"><code>art.ts</code> makes a drawing a <em>promotion</em>: an item without one still draws as a glyph, so a pack can write a fact about an octopus on day one. That stays. What changes is the standard for a drawing once it exists — a <code>place.*</code> is a small composition with a ground line (already true), and an <code>animal.*</code> gets a pose and a contact shadow so it can stand on that ground rather than hover over it.</p>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">5 · World identities</h2>
+    <p style="font-size: 16px; color: #6B6259; padding-top: 8px; max-width: 900px; line-height: 1.5;">Three playable worlds plus the meadow default, exactly as <code>worlds.ts</code> declares them. A world is a layer list; nothing below is a new component.</p>
+    <div style="padding-top: 20px;">
+      <table>
+        <tr><th style="width: 150px;">World</th><th style="width: 150px;">Layers</th><th style="width: 130px;">Recurring motifs</th><th style="width: 110px;">Resident</th><th style="width: 100px;">Keepsake</th><th>Composition tokens (unchanged)</th></tr>
+        <tr>
+          <td><strong>Counting Garden</strong><br /><span style="color: #A2988B;">sprout</span></td>
+          <td>sky · far ridge · mid hill · near grass with a hard top edge</td>
+          <td>apple tree, flower clumps, bushes, the pond at the right</td>
+          <td>WALLY, in the pond</td>
+          <td>flower</td>
+          <td><code>prompt: open</code> · <code>tiles: sign</code> · right → <code>sparkle</code></td>
+        </tr>
+        <tr>
+          <td><strong>Animal Adventure</strong><br /><span style="color: #A2988B;">apricot</span></td>
+          <td>sky · far hills · land going away · water down one side</td>
+          <td>burrow mound, paw prints, reeds, dotted trail</td>
+          <td>FOXY, on the land</td>
+          <td>animal (paw print)</td>
+          <td><code>nodes: creature</code> · <code>join: path</code> · arrive → <code>pop</code>, partner → <code>sparkle</code></td>
+        </tr>
+        <tr>
+          <td><strong>Word World</strong><br /><span style="color: #A2988B;">blossom</span></td>
+          <td>cover · left page · spine · right page · ribbon</td>
+          <td>big letters, dashed rules, the bookmark, small page pictures</td>
+          <td>BIBI, on the page</td>
+          <td>page</td>
+          <td><code>nodes: page</code> · <code>join: ribbon</code> · arrive → <code>grow</code>, joined → <code>bounce</code></td>
+        </tr>
+        <tr>
+          <td><strong>Meadow</strong> (default)<br /><span style="color: #A2988B;">sage</span></td>
+          <td>the <code>Screen</code> sky alone</td>
+          <td>none — deliberately</td>
+          <td>KIDDO</td>
+          <td>flower</td>
+          <td>everything as today; a board earns a world, it is not given one</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">6 · Per-mechanic visual systems</h2>
+    <div style="padding-top: 20px;">
+      <table>
+        <tr><th style="width: 120px;">Mechanic</th><th style="width: 300px;">Reads as</th><th style="width: 300px;">States</th><th>Rule that must not break</th></tr>
+        <tr>
+          <td><strong>Activity intro</strong></td>
+          <td>The world before the round starts: ground band, 2–3 props, the resident friend standing in it, and the first board's prompt items already there.</td>
+          <td>Fresh (no picker) · returning (tier picker) · reduced-motion (identical, still).</td>
+          <td>The glimpse comes from <code>introPreviewOf</code>, which returns prompt items and never options. Previewing options previews the answer.</td>
+        </tr>
+        <tr>
+          <td><strong>Connect</strong></td>
+          <td>Characters finding their partner. Left things stand on the land, right things are drawn where they belong; the join is a dotted trail.</td>
+          <td>idle · <strong>invited</strong> (static dashed tide on every unclaimed destination, from first paint) · selected (honey ring) · wrong (apricot, 1.2s, selection clears) · joined (travel, nestle, check, sparkle, paw print left behind).</td>
+          <td>Travel is <code>destination − origin</code> on <strong>both</strong> axes, read from the node actually tapped. No code path moves x without y.</td>
+        </tr>
+        <tr>
+          <td><strong>Choice</strong></td>
+          <td>Objects and creatures standing on a patch of their own world. Wide tiles on a phone, square where the subject is a picture.</td>
+          <td>idle · correct (yes-soft + tick) · wrong (retry-soft + magnifier + one settle) · tried (quieter, still tappable) · dimmed.</td>
+          <td>A tile never disappears. Removing one moves the board and loses the child's place.</td>
+        </tr>
+        <tr>
+          <td><strong>Counting</strong></td>
+          <td>Real things in a place — apples on grass, flowers in a bed, shells by water — and numbers as signs planted in the near ground.</td>
+          <td>Objects <code>pop</code> in one at a time (existing <code>PromptDisplay</code>); the right sign <code>sparkle</code>s.</td>
+          <td>The post is decoration below the sign and never part of the touch target.</td>
+        </tr>
+        <tr>
+          <td><strong>Order</strong> <span style="color: #A2988B;">(spec only)</span></td>
+          <td>Arranging things along something real — stepping stones across water, a shelf, a washing line — rather than numbered dashed boxes.</td>
+          <td>Empty slot (soft depression in the ground) · armed next slot (honey ring) · placed (settles with a small <code>bounce</code>) · complete (the row reads as one picture).</td>
+          <td>Slot order, keyboard order and the sr-only description stay <code>OrderStage</code>'s. The scenery may not renumber anything.</td>
+        </tr>
+        <tr>
+          <td><strong>Match</strong> <span style="color: #A2988B;">(spec only)</span></td>
+          <td>Discovering a relationship: two things meet in the middle and stay together, on a surface that belongs to the world.</td>
+          <td>face-down / unmatched (world-appropriate back) · lifted · matched (pair drifts together, single <code>sparkle</code>) · settled.</td>
+          <td>The invited state that <code>MatchStage</code> already has, applied statically before the first touch — same fix as Connect.</td>
+        </tr>
+      </table>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">7 · Difficulty &amp; celebration</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 20px;">
+      <div>
+        <h3 style="font-size: 20px; font-weight: 600; padding-bottom: 10px;">Easy · Medium · Hard</h3>
+        <table>
+          <tr><th style="width: 84px;">Tier</th><th style="width: 96px;">Mark</th><th>Scene treatment</th></tr>
+          <tr><td><strong>Easy</strong></td><td><code>Check</code></td><td>The world at rest. Fewest props, widest spacing, biggest targets.</td></tr>
+          <tr><td><strong>Medium</strong></td><td><code>ArrowRight</code></td><td>More world: a second tree, a few butterflies, a fuller ground. Same sky.</td></tr>
+          <tr><td><strong>Hard</strong></td><td><code>Lock</code> when locked</td><td>Fullest scene, most life, most colour. Brighter, never darker; no storm, no dusk, no red.</td></tr>
+        </table>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 12px;">Marks are lucide icons at <code>size-4</code>, <code>strokeWidth 2.5</code> — the set <code>TierPicker.tsx</code> already imports. No emoji anywhere in the child-facing chrome; the whole point of the brief is to get away from symbols standing in for pictures.</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 10px;">State is never colour alone. A locked tier is a real focusable button that announces “Hard. Locked.” and does nothing — a locked door still has a handle.</p>
+      </div>
+      <div>
+        <h3 style="font-size: 20px; font-weight: 600; padding-bottom: 10px;">Celebration moments</h3>
+        <table>
+          <tr><th style="width: 84px;">Moment</th><th style="width: 150px;">Light</th><th>What else</th></tr>
+          <tr><td><strong>1</strong> Easy</td><td>one soft glow disc</td><td>Keepsake arrives with a <code>pop</code>.</td></tr>
+          <tr><td><strong>2</strong> Medium</td><td>double glow</td><td>Two still marks. Tier invitation appears if Hard just unlocked.</td></tr>
+          <tr><td><strong>3</strong> Hard</td><td>glow + eight rays</td><td>Three marks, warmer cheeks, widest grin.</td></tr>
+          <tr><td><strong>world</strong></td><td>golden ring + long rays</td><td>The world itself changes behind: the garden blooms, its resident appears, and the title is the world's own line — “Your whole garden is in bloom!”</td></tr>
+        </table>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 12px;">The lift stays the only thing that moves, and it is the same size at every moment. All four are distinguishable as still frames, so the hierarchy survives <code>prefers-reduced-motion</code> intact.</p>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">8 · Responsive &amp; accessibility</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding-top: 20px;">
+      <div>
+        <table>
+          <tr><th style="width: 110px;">Viewport</th><th>Rule</th></tr>
+          <tr><td><strong>360 × 640</strong></td><td>The floor. Scene compresses to a ground band plus one prop; the board never scrolls; celebration fits without scroll. Choice tiles go wide, one per row.</td></tr>
+          <tr><td><strong>390 × 844</strong></td><td>Primary. Full scene, board pinned to the bottom edge, host and bubble above it.</td></tr>
+          <tr><td><strong>768 × 1024</strong></td><td>Scene gains depth layers and side props; the board centres at its natural size rather than stretching. Connect columns widen, rows keep their spacing.</td></tr>
+          <tr><td><strong>1440 × 900</strong></td><td>Short and wide: the scene grows horizontally, never vertically. Content column capped; props fill the margins so the world does not become a strip.</td></tr>
+        </table>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 12px;">Scene props are positioned in percentages against the board, so a layer list works at every size without a breakpoint per world.</p>
+      </div>
+      <div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+          <p style="font-size: 17px; font-weight: 800;">Preserved exactly</p>
+          <ul style="font-size: 14.5px; color: #6B6259; line-height: 1.6; padding: 8px 0 0 20px;">
+            <li>Touch targets 56px+ (<code>tap-target</code>), never reduced for a scene.</li>
+            <li><code>aria-disabled</code>, never the <code>disabled</code> attribute — focus must not jump.</li>
+            <li>One sr-only <code>role="status"</code> for the whole round; it never remounts with the board.</li>
+            <li>Every illustration <code>aria-hidden</code>; the name lives in <code>aria-label</code> / <code>spokenOf</code>.</li>
+            <li>State never colour alone: tick, magnifier, padlock, arrow, paw print.</li>
+            <li>One focus ring — 3px ink, 3px offset — over every scene.</li>
+            <li><code>MotionConfig reducedMotion="user"</code>; every motion has a settled state, and the CSS reduce block already covers plain transitions.</li>
+            <li>Hydration-safe: scenes are deterministic, never <code>Math.random</code>.</li>
+          </ul>
+        </div>
+        <div style="background: #FDF3E4; border: 1px solid #F0DDBB; border-radius: 20px; padding: 18px 22px; margin-top: 14px;">
+          <p style="font-size: 17px; font-weight: 800; color: #8A6320;">Cultural safety — authoritative, untouched</p>
+          <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 6px;"><code>vocabulary.ts</code> and <code>tests/safety.test.ts</code> govern. No pig, piglet, oink, pork, bacon or ham — in a word, a sound, a label or a drawing. No farm machinery as an animal home. Every new illustration goes through the same sweep before it ships.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ showInventory }}" hint-placeholder-val="{{ true }}">
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">9 · Illustration inventory</h2>
+    <p style="font-size: 16px; color: #6B6259; padding-top: 8px; max-width: 900px; line-height: 1.5;">44 <code>ArtId</code>s exist and are drawn today. All 44 are re-drawn to the new standard — same names, same file, no content change. The additions below are the ones the audit and the world scenes actually need.</p>
+    <div style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 14px; padding-top: 20px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 18px;">
+        <p style="font-size: 15px; font-weight: 800;">animal · 17</p>
+        <p style="font-size: 13.5px; color: #6B6259; line-height: 1.5; padding-top: 5px;">cow sheep dog cat fish shark frog mouse chicken duck rabbit bird snake monkey fox bee ladybird</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 18px;">
+        <p style="font-size: 15px; font-weight: 800;">food · 7</p>
+        <p style="font-size: 13.5px; color: #6B6259; line-height: 1.5; padding-top: 5px;">apple egg cake banana strawberry orange biscuit</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 18px;">
+        <p style="font-size: 15px; font-weight: 800;">object · 5</p>
+        <p style="font-size: 13.5px; color: #6B6259; line-height: 1.5; padding-top: 5px;">ball hat car balloon box</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 18px;">
+        <p style="font-size: 15px; font-weight: 800;">nature · 4</p>
+        <p style="font-size: 13.5px; color: #6B6259; line-height: 1.5; padding-top: 5px;">tree flower star sun</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 18px;">
+        <p style="font-size: 15px; font-weight: 800;">place · 11</p>
+        <p style="font-size: 13.5px; color: #6B6259; line-height: 1.5; padding-top: 5px;">house farm sea pond nest burrow jungle forest desert snow tree</p>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; padding-top: 16px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 17px; font-weight: 800;">New — scene layers (not <code>ArtId</code>s)</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 6px;">A separate table from the item library, because a layer is never an answer on a board: <code>ridge</code> · <code>mid-hill</code> · <code>near-ground</code> · <code>water-edge</code> · <code>grass-tuft</code> · <code>flower-clump</code> · <code>reed</code> · <code>bush</code> · <code>canopy-tree</code> · <code>apple-tree</code> · <code>path-dots</code> · <code>book-page</code> · <code>spine</code> · <code>ribbon</code> · <code>page-rule</code>.</p>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 18px 22px;">
+        <p style="font-size: 17px; font-weight: 800;">New — items the audit asked for</p>
+        <p style="font-size: 14.5px; color: #6B6259; line-height: 1.55; padding-top: 6px;">Rhyming pairs missing pictures at Medium (audit P2-9) and the counting garden's own pool: <code>food.pear</code> · <code>nature.leaf</code> · <code>nature.shell</code> · <code>nature.butterfly</code> · <code>object.boat</code> · <code>object.kite</code> · <code>object.bell</code> · <code>object.clock</code> · <code>place.beach</code>. Nine, chosen by working backwards from boards that arrive wordless today — not to round the library up to fifty.</p>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ showReplacement }}" hint-placeholder-val="{{ true }}">
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">10 · Existing visuals to replace</h2>
+    <div style="padding-top: 20px;">
+      <table>
+        <tr><th style="width: 40px;">#</th><th style="width: 260px;">What</th><th style="width: 220px;">Where</th><th>Replace with</th></tr>
+        <tr><td>1</td><td><strong>Emoji glyphs as board subjects</strong></td><td><code>ContentItemView</code> · <code>PictureItem.glyph</code></td><td>Drawn <code>ArtId</code>s. Highest-volume change in the product; the glyph floor stays as the fallback so nothing ever blanks.</td></tr>
+        <tr><td>2</td><td><strong>The empty activity intro</strong></td><td><code>WorldActivityGame</code> intro state</td><td>The world's ground band, props, the resident friend in-scene, and the round's prompt items. Audit P0-1.</td></tr>
+        <tr><td>3</td><td><strong>Four identical celebrations</strong></td><td><code>Celebration.tsx</code></td><td>The four moments in §7 — glow, double glow, rays, ring plus a changed world. Audit P0-2.</td></tr>
+        <tr><td>4</td><td><strong>No first-touch invitation on Connect</strong></td><td><code>ConnectStage</code>, <code>MatchStage</code></td><td>The existing <code>invited</code> look, applied statically from first paint. Audit P0-3.</td></tr>
+        <tr><td>5</td><td><strong>Flat character rig</strong></td><td><code>components/character/*</code></td><td>Canon v2: bigger head, r 15.5 eyes with catchlights, muzzle, open mouth, soft shading, one accessory each.</td></tr>
+        <tr><td>6</td><td><strong>Bare pip boards in the garden's first door</strong></td><td><code>counting.count-the-apples</code> tier 1</td><td>Drawn countable things. Data-only change to the tier plan. Audit P1-4.</td></tr>
+        <tr><td>7</td><td><strong>Emoji-only place tiles</strong></td><td><code>general-knowledge/world.ts</code></td><td>Attach the <code>PLACE_ART</code> that <code>habitats.ts</code> already has. Pure reuse, no new art. Audit P1-6.</td></tr>
+        <tr><td>8</td><td><strong>Unpopulated world doors</strong></td><td><code>WorldScene.tsx</code></td><td>Depth layers plus the world's resident, so a child recognises the place before the name.</td></tr>
+        <tr><td>9</td><td><strong>Four empty capsules after travel</strong></td><td><code>ConnectStage</code> settled state</td><td>A faded paw print where each animal stood. Audit P2-10.</td></tr>
+        <tr><td>10</td><td><strong>Over-reserved prompt bubble</strong></td><td><code>PromptDisplay</code> at 360px</td><td>Cap the reserve so a short prompt does not hold two empty lines. Audit P1-7.</td></tr>
+      </table>
+    </div>
+  </section>
+  </sc-if>
+
+  <sc-if value="{{ showPriority }}" hint-placeholder-val="{{ true }}">
+  <section style="padding-top: 52px;">
+    <h2 style="font-size: 30px; font-weight: 600;">11 · Implementation priority</h2>
+    <p style="font-size: 16px; color: #6B6259; padding-top: 8px; max-width: 900px; line-height: 1.5;">Ordered so each slice ships on its own and the one before it is already verified. This is the audit's own Stage B plan with the character work in front of it, because everything else draws the character.</p>
+    <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 20px;">
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #E3543F; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #C4442F;">P0</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">1</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Character canon v2</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">New <code>canon.ts</code> numbers, five characters redrawn in <code>parts.tsx</code> / <code>Friend.tsx</code>, palette re-tune in <code>globals.css</code>, colour-blindness sweep re-run. Rig, pose table and expression table untouched, so nothing downstream changes. Every other slice renders this.</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #E3543F; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #C4442F;">P0</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">2</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Scene layer system + activity intros</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">One <code>WorldScene</code> layer list per world, consumed by the door, the map banner, the board backdrop and <code>composeIntro</code>. Fixes the emptiest screen in the product and gives the other slices their ground to stand on.</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #E3543F; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #C4442F;">P0</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">3</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Celebration hierarchy + Connect first touch</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">Four moments in <code>Celebration.tsx</code>, world-completion copy driven by the journey (which already knows), and the static <code>invited</code> state in <code>ConnectStage</code> and <code>MatchStage</code>. Small diffs, the two loudest findings in the audit.</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #F0A83C; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #B87A14;">P1</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">4</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Board treatments: Connect, Choice, Counting</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">Creature nodes on land, wide creature tiles, signs in the ground, contact shadows. All through existing look tokens; no engine signature changes. Re-run <code>measure:visual</code> and <code>measure:worlds</code>.</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #F0A83C; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #B87A14;">P1</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">5</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Data-only wins</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">Attach existing <code>PLACE_ART</code> to land-and-water tiles; bias Count the Flowers' pool to garden things; drop bare pips from Count the Apples tier 1; cap the prompt bubble reserve. No new art, four audit findings closed.</p></div>
+      </div>
+      <div style="display: flex; gap: 18px; background: #FFFFFF; border: 1px solid #EDE3D3; border-left: 6px solid #62A6DC; border-radius: 18px; padding: 18px 22px;">
+        <div style="flex: none; width: 60px;"><p style="font-size: 15px; font-weight: 800; color: #2F72A8;">P2</p><p style="font-size: 12px; color: #A2988B; font-weight: 700;">6</p></div>
+        <div><p style="font-size: 17px; font-weight: 800;">Order &amp; Match treatments, then library growth</p><p style="font-size: 14.5px; color: #6B6259; line-height: 1.5; padding-top: 3px;">The two mechanics no world deals today. Then the nine new <code>ArtId</code>s, then — only if it is wanted — the commissioned-art swap through the <code>art: {}</code> hook that already exists on every character.</p></div>
+      </div>
+    </div>
+    <div style="background: #F7EBD6; border-radius: 22px; padding: 22px 26px; margin-top: 20px;">
+      <p style="font-size: 17px; font-weight: 800; color: #8A6320;">What every slice must leave alone</p>
+      <p style="font-size: 15px; color: #6B6259; line-height: 1.55; padding-top: 6px;">Learning mechanics · game rules · the five-level difficulty model and the three tiers · the Journey · accounts · Stripe · Firebase · the four challenge kinds · the four engines' gestures, marking and accessible names · the eight Magic Motions · cultural-safety rules and their sweep · the no-score list. Every check in the existing battery stays green, and new behaviour brings its own test.</p>
+    </div>
+  </section>
+  </sc-if>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1240 },
+  &quot;showInventory&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; },
+  &quot;showReplacement&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; },
+  &quot;showPriority&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      showInventory: this.props.showInventory ?? true,
+      showReplacement: this.props.showReplacement ?? true,
+      showPriority: this.props.showPriority ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

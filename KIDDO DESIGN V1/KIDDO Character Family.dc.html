@@ -1,0 +1,903 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  body { margin: 0; background: #F2ECE1; color: #2C2620; font-family: Nunito, system-ui, sans-serif; }
+  a { color: #C9722E; text-decoration: none; }
+  a:hover { color: #A65A1F; text-decoration: underline; }
+  h1, h2, h3, h4 { font-family: Fredoka, Nunito, system-ui, sans-serif; margin: 0; letter-spacing: -0.01em; }
+  p { margin: 0; }
+</style>
+</helmet>
+
+<div style="width: 1440px; margin: 0 auto; background: #FAF5EC; padding: 64px 72px 88px; box-sizing: border-box;">
+
+  <header style="display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; padding-bottom: 8px;">
+    <span style="display: inline-flex; align-items: center; gap: 8px; background: #F7EBD6; color: #8A6320; font-size: 13px; font-weight: 800; letter-spacing: 0.12em; text-transform: uppercase; padding: 8px 16px; border-radius: 999px;">Proposal · character system v2</span>
+    <h1 style="font-size: 68px; font-weight: 700; line-height: 1.08;">KIDDO Friends</h1>
+    <p style="font-size: 21px; color: #6B6259; max-width: 720px; text-wrap: pretty;">Five characters redrawn as one family: rounder silhouettes, bigger eyes, soft shading and a warmer palette. Same five names, same five hues, same rig moments.</p>
+  </header>
+
+  <section style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 20px; padding-top: 48px;" data-screen-label="Cast">
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 28px; padding: 20px 16px 24px;" data-comment-anchor="cast-kiddo">
+      <svg viewBox="0 0 200 240" style="width: 100%; display: block;" aria-label="KIDDO, a green bear cub, waving" role="img">
+        <defs>
+          <radialGradient id="kiddoSkin" cx="34%" cy="24%" r="86%">
+            <stop offset="0" stop-color="#A6D493" />
+            <stop offset="0.62" stop-color="#8CC077" />
+            <stop offset="1" stop-color="#6BA45C" />
+          </radialGradient>
+          <radialGradient id="kiddoCream" cx="38%" cy="26%" r="84%">
+            <stop offset="0" stop-color="#FBF2DA" />
+            <stop offset="1" stop-color="#EDDCB4" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="231" rx="56" ry="8" fill="#2C2620" opacity="0.07" />
+        <circle cx="55" cy="45" r="24" fill="url(#kiddoSkin)" />
+        <circle cx="145" cy="45" r="24" fill="url(#kiddoSkin)" />
+        <circle cx="55" cy="47" r="13" fill="url(#kiddoCream)" />
+        <circle cx="145" cy="47" r="13" fill="url(#kiddoCream)" />
+        <rect x="64" y="188" width="32" height="40" rx="16" fill="#6BA45C" />
+        <rect x="104" y="188" width="32" height="40" rx="16" fill="#6BA45C" />
+        <rect x="32" y="144" width="25" height="56" rx="12.5" fill="#7CB369" />
+        <g transform="rotate(-42 150 158)"><rect x="138" y="120" width="25" height="60" rx="12.5" fill="#7CB369" /></g>
+        <path d="M100,116 C143,116 160,148 160,180 C160,210 133,226 100,226 C67,226 40,210 40,180 C40,148 57,116 100,116 Z" fill="url(#kiddoSkin)" />
+        <ellipse cx="100" cy="188" rx="35" ry="31" fill="url(#kiddoCream)" />
+        <path d="M70,126 Q101,152 132,130" stroke="#5C9448" stroke-width="7" fill="none" stroke-linecap="round" />
+        <rect x="48" y="158" width="36" height="32" rx="10" fill="#5C9448" />
+        <path d="M66,164 l3.4,6.8 7.6,1.1 -5.5,5.4 1.3,7.5 -6.8,-3.6 -6.8,3.6 1.3,-7.5 -5.5,-5.4 7.6,-1.1 Z" fill="#F7C55C" />
+        <circle cx="100" cy="90" r="58" fill="url(#kiddoSkin)" />
+        <ellipse cx="100" cy="115" rx="28" ry="20" fill="url(#kiddoCream)" />
+        <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="{{ blush }}" />
+        <circle cx="76" cy="92" r="15.5" fill="#2C2620" />
+        <circle cx="124" cy="92" r="15.5" fill="#2C2620" />
+        <circle cx="70" cy="86" r="5.4" fill="#FFFFFF" />
+        <circle cx="118" cy="86" r="5.4" fill="#FFFFFF" />
+        <circle cx="82" cy="99" r="2.6" fill="#FFFFFF" opacity="0.5" />
+        <circle cx="130" cy="99" r="2.6" fill="#FFFFFF" opacity="0.5" />
+        <path d="M65,68 Q76,60 87,65" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <path d="M113,65 Q124,60 135,68" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+        <path d="M85,117 Q100,138 115,117 Z" fill="#3A2C28" />
+        <path d="M92,125 Q100,135 108,125 Z" fill="#EE8095" />
+      </svg>
+      <h3 style="font-size: 27px; font-weight: 700; color: #4E8A3B; padding-top: 4px;">KIDDO</h3>
+      <p style="font-size: 15px; font-weight: 800; color: #2C2620;">The Curious Explorer</p>
+      <p style="font-size: 14px; line-height: 1.45; color: #6B6259; text-align: center; text-wrap: pretty;">Host of every round. A green bear cub with a star satchel.</p>
+      <p style="font-size: 12px; font-weight: 700; color: #A2988B; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 6px;">sage · #86BE7C</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 28px; padding: 20px 16px 24px;" data-comment-anchor="cast-foxy">
+      <svg viewBox="0 0 200 240" style="width: 100%; display: block;" aria-label="FOXY, an orange fox, holding up a paw" role="img">
+        <defs>
+          <radialGradient id="foxySkin" cx="34%" cy="24%" r="86%">
+            <stop offset="0" stop-color="#F9A85E" />
+            <stop offset="0.62" stop-color="#F08A3C" />
+            <stop offset="1" stop-color="#D06A1E" />
+          </radialGradient>
+          <radialGradient id="foxyCream" cx="38%" cy="26%" r="84%">
+            <stop offset="0" stop-color="#FDF4E2" />
+            <stop offset="1" stop-color="#F0E1C0" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="231" rx="54" ry="8" fill="#2C2620" opacity="0.07" />
+        <path d="M46,64 L38,16 Q62,26 76,50 Z" fill="url(#foxySkin)" />
+        <path d="M154,64 L162,16 Q138,26 124,50 Z" fill="url(#foxySkin)" />
+        <path d="M44,32 L38,16 Q50,21 56,33 Z" fill="#8C4A1C" />
+        <path d="M156,32 L162,16 Q150,21 144,33 Z" fill="#8C4A1C" />
+        <path d="M52,44 L46,26 Q60,33 68,48 Z" fill="url(#foxyCream)" />
+        <path d="M148,44 L154,26 Q140,33 132,48 Z" fill="url(#foxyCream)" />
+        <path d="M46,192 Q6,182 14,146 Q20,120 44,124 Q30,150 40,166 Q48,178 58,180 Z" fill="url(#foxySkin)" />
+        <path d="M20,130 Q6,152 16,176 Q24,190 42,190 Q22,172 26,146 Z" fill="url(#foxyCream)" />
+        <rect x="64" y="188" width="32" height="40" rx="16" fill="#D06A1E" />
+        <rect x="104" y="188" width="32" height="40" rx="16" fill="#D06A1E" />
+        <rect x="34" y="146" width="24" height="54" rx="12" fill="#E27C2C" />
+        <g transform="rotate(-52 148 156)"><rect x="136" y="116" width="24" height="58" rx="12" fill="#E27C2C" /></g>
+        <path d="M100,116 C141,116 158,148 158,180 C158,210 132,226 100,226 C68,226 42,210 42,180 C42,148 59,116 100,116 Z" fill="url(#foxySkin)" />
+        <ellipse cx="100" cy="190" rx="33" ry="30" fill="url(#foxyCream)" />
+        <path d="M62,126 Q100,146 138,126 Q126,152 100,154 Q74,152 62,126 Z" fill="#E3543F" />
+        <path d="M96,150 L104,150 L108,176 L100,170 L92,176 Z" fill="#C9422F" />
+        <circle cx="100" cy="90" r="57" fill="url(#foxySkin)" />
+        <path d="M100,140 Q60,132 52,100 Q76,110 100,108 Q124,110 148,100 Q140,132 100,140 Z" fill="url(#foxyCream)" />
+        <ellipse cx="100" cy="118" rx="25" ry="17" fill="url(#foxyCream)" />
+        <ellipse cx="56" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="144" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="{{ blush }}" />
+        <circle cx="76" cy="92" r="15" fill="#2C2620" />
+        <circle cx="124" cy="92" r="15" fill="#2C2620" />
+        <circle cx="70.5" cy="86" r="5.2" fill="#FFFFFF" />
+        <circle cx="118.5" cy="86" r="5.2" fill="#FFFFFF" />
+        <circle cx="81" cy="99" r="2.5" fill="#FFFFFF" opacity="0.5" />
+        <circle cx="129" cy="99" r="2.5" fill="#FFFFFF" opacity="0.5" />
+        <path d="M64,68 Q75,60 86,66" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <path d="M114,66 Q125,60 136,68" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <ellipse cx="100" cy="110" rx="8" ry="6" fill="#2C2620" />
+        <path d="M86,120 Q100,140 114,120 Z" fill="#3A2C28" />
+        <path d="M93,128 Q100,137 107,128 Z" fill="#EE8095" />
+      </svg>
+      <h3 style="font-size: 27px; font-weight: 700; color: #B85F14; padding-top: 4px;">FOXY</h3>
+      <p style="font-size: 15px; font-weight: 800; color: #2C2620;">The Clever Helper</p>
+      <p style="font-size: 14px; line-height: 1.45; color: #6B6259; text-align: center; text-wrap: pretty;">Lives in Animal Adventure. Bandana, big tail, always a step ahead.</p>
+      <p style="font-size: 12px; font-weight: 700; color: #A2988B; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 6px;">apricot · #F08A3C</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 28px; padding: 20px 16px 24px;" data-comment-anchor="cast-bibi">
+      <svg viewBox="0 0 200 240" style="width: 100%; display: block;" aria-label="BIBI, a pink rabbit, waving" role="img">
+        <defs>
+          <radialGradient id="bibiSkin" cx="34%" cy="24%" r="86%">
+            <stop offset="0" stop-color="#FCC0D2" />
+            <stop offset="0.62" stop-color="#F49BB4" />
+            <stop offset="1" stop-color="#E27C99" />
+          </radialGradient>
+          <radialGradient id="bibiInner" cx="40%" cy="24%" r="82%">
+            <stop offset="0" stop-color="#FBD3DE" />
+            <stop offset="1" stop-color="#F0A2B8" />
+          </radialGradient>
+          <radialGradient id="bibiCream" cx="38%" cy="26%" r="84%">
+            <stop offset="0" stop-color="#FEF6F2" />
+            <stop offset="1" stop-color="#F7E2DE" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="231" rx="52" ry="8" fill="#2C2620" opacity="0.07" />
+        <rect x="60" y="8" width="27" height="76" rx="13.5" fill="url(#bibiSkin)" transform="rotate(-8 73 46)" />
+        <rect x="113" y="8" width="27" height="76" rx="13.5" fill="url(#bibiSkin)" transform="rotate(8 127 46)" />
+        <rect x="66" y="18" width="15" height="56" rx="7.5" fill="url(#bibiInner)" transform="rotate(-8 73 46)" />
+        <rect x="119" y="18" width="15" height="56" rx="7.5" fill="url(#bibiInner)" transform="rotate(8 127 46)" />
+        <path d="M126,20 Q112,10 116,24 Q104,20 112,32 Q124,38 132,30 Q142,36 144,24 Q148,12 134,20 Q130,10 126,20 Z" fill="#EE7BA6" />
+        <circle cx="128" cy="25" r="4.5" fill="#E0578C" />
+        <rect x="66" y="190" width="30" height="38" rx="15" fill="#E27C99" />
+        <rect x="104" y="190" width="30" height="38" rx="15" fill="#E27C99" />
+        <rect x="36" y="148" width="23" height="52" rx="11.5" fill="#EE8DA8" />
+        <g transform="rotate(-46 148 158)"><rect x="137" y="122" width="23" height="56" rx="11.5" fill="#EE8DA8" /></g>
+        <path d="M100,118 C139,118 155,148 155,180 C155,209 130,226 100,226 C70,226 45,209 45,180 C45,148 61,118 100,118 Z" fill="url(#bibiSkin)" />
+        <ellipse cx="100" cy="190" rx="31" ry="29" fill="url(#bibiCream)" />
+        <path d="M72,128 Q100,150 130,132" stroke="#E0578C" stroke-width="6" fill="none" stroke-linecap="round" />
+        <rect x="52" y="158" width="34" height="30" rx="9" fill="#EE7BA6" />
+        <path d="M69,180 Q60,172 63,167 Q66,163 69,168 Q72,163 75,167 Q78,172 69,180 Z" fill="#FBD3DE" />
+        <circle cx="100" cy="92" r="56" fill="url(#bibiSkin)" />
+        <ellipse cx="100" cy="116" rx="26" ry="18" fill="url(#bibiCream)" />
+        <ellipse cx="57" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="143" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="{{ blush }}" />
+        <circle cx="77" cy="94" r="15" fill="#2C2620" />
+        <circle cx="123" cy="94" r="15" fill="#2C2620" />
+        <circle cx="71.5" cy="88" r="5.2" fill="#FFFFFF" />
+        <circle cx="117.5" cy="88" r="5.2" fill="#FFFFFF" />
+        <circle cx="82" cy="101" r="2.5" fill="#FFFFFF" opacity="0.5" />
+        <circle cx="128" cy="101" r="2.5" fill="#FFFFFF" opacity="0.5" />
+        <g stroke="#2C2620" stroke-width="3" fill="none" stroke-linecap="round">
+          <path d="M63,84 L56,79" />
+          <path d="M64,77 L58,71" />
+          <path d="M137,84 L144,79" />
+          <path d="M136,77 L142,71" />
+        </g>
+        <ellipse cx="100" cy="107" rx="7.5" ry="5.8" fill="#2C2620" />
+        <path d="M87,118 Q100,137 113,118 Z" fill="#3A2C28" />
+        <path d="M94,126 Q100,134 106,126 Z" fill="#EE8095" />
+      </svg>
+      <h3 style="font-size: 27px; font-weight: 700; color: #C4557E; padding-top: 4px;">BIBI</h3>
+      <p style="font-size: 15px; font-weight: 800; color: #2C2620;">The Kind Encourager</p>
+      <p style="font-size: 14px; line-height: 1.45; color: #6B6259; text-align: center; text-wrap: pretty;">Lives in Word World. Long ears, heart satchel, the one who says you can.</p>
+      <p style="font-size: 12px; font-weight: 700; color: #A2988B; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 6px;">blossom · #F49BB4</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 28px; padding: 20px 16px 24px;" data-comment-anchor="cast-pip">
+      <svg viewBox="0 0 200 240" style="width: 100%; display: block;" aria-label="PIP, a green frog, waving" role="img">
+        <defs>
+          <radialGradient id="pipSkin" cx="34%" cy="24%" r="86%">
+            <stop offset="0" stop-color="#C4E272" />
+            <stop offset="0.62" stop-color="#A8CE4F" />
+            <stop offset="1" stop-color="#82A836" />
+          </radialGradient>
+          <radialGradient id="pipCream" cx="38%" cy="26%" r="84%">
+            <stop offset="0" stop-color="#FBF3D6" />
+            <stop offset="1" stop-color="#EDDFAC" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="231" rx="54" ry="8" fill="#2C2620" opacity="0.07" />
+        <path d="M42,196 Q22,204 20,222 Q20,230 32,230 L64,230 Q54,214 58,200 Z" fill="#82A836" />
+        <path d="M158,196 Q178,204 180,222 Q180,230 168,230 L136,230 Q146,214 142,200 Z" fill="#82A836" />
+        <rect x="30" y="150" width="24" height="52" rx="12" fill="#96BF43" />
+        <g transform="rotate(-50 150 160)"><rect x="139" y="124" width="24" height="56" rx="12" fill="#96BF43" /></g>
+        <path d="M100,120 C144,120 162,150 162,182 C162,212 133,228 100,228 C67,228 38,212 38,182 C38,150 56,120 100,120 Z" fill="url(#pipSkin)" />
+        <ellipse cx="100" cy="192" rx="36" ry="30" fill="url(#pipCream)" />
+        <path d="M76,132 L100,142 L124,132 L118,150 L82,150 Z" fill="#F5C33F" />
+        <circle cx="100" cy="141" r="6" fill="#E0A81E" />
+        <circle cx="100" cy="96" r="55" fill="url(#pipSkin)" />
+        <circle cx="64" cy="56" r="27" fill="url(#pipSkin)" />
+        <circle cx="136" cy="56" r="27" fill="url(#pipSkin)" />
+        <circle cx="64" cy="58" r="20" fill="#FFFFFF" />
+        <circle cx="136" cy="58" r="20" fill="#FFFFFF" />
+        <circle cx="68" cy="60" r="11.5" fill="#2C2620" />
+        <circle cx="132" cy="60" r="11.5" fill="#2C2620" />
+        <circle cx="63" cy="55" r="4.2" fill="#FFFFFF" />
+        <circle cx="127" cy="55" r="4.2" fill="#FFFFFF" />
+        <path d="M42,32 Q56,22 72,28" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <path d="M128,28 Q144,22 158,32" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <ellipse cx="52" cy="98" rx="12" ry="9" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="148" cy="98" rx="12" ry="9" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="92" cy="88" rx="3" ry="2.4" fill="#2C2620" />
+        <ellipse cx="108" cy="88" rx="3" ry="2.4" fill="#2C2620" />
+        <path d="M68,98 Q100,140 132,98 Z" fill="#3A2C28" />
+        <path d="M86,116 Q100,132 114,116 Z" fill="#EE8095" />
+      </svg>
+      <h3 style="font-size: 27px; font-weight: 700; color: #6C8F22; padding-top: 4px;">PIP</h3>
+      <p style="font-size: 15px; font-weight: 800; color: #2C2620;">The Happy Go-Learner</p>
+      <p style="font-size: 14px; line-height: 1.45; color: #6B6259; text-align: center; text-wrap: pretty;">Eyes on top, widest grin in the cast. Turns up wherever there is water.</p>
+      <p style="font-size: 12px; font-weight: 700; color: #A2988B; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 6px;">sprout · #A8CE4F</p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 4px; background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 28px; padding: 20px 16px 24px;" data-comment-anchor="cast-wally">
+      <svg viewBox="0 0 200 240" style="width: 100%; display: block;" aria-label="WALLY, a blue whale, waving a flipper" role="img">
+        <defs>
+          <radialGradient id="wallySkin" cx="34%" cy="22%" r="86%">
+            <stop offset="0" stop-color="#8FC6EE" />
+            <stop offset="0.62" stop-color="#62A6DC" />
+            <stop offset="1" stop-color="#3E82BC" />
+          </radialGradient>
+          <radialGradient id="wallyCream" cx="38%" cy="26%" r="84%">
+            <stop offset="0" stop-color="#FBF5E6" />
+            <stop offset="1" stop-color="#EAE0C6" />
+          </radialGradient>
+        </defs>
+        <ellipse cx="100" cy="231" rx="56" ry="8" fill="#2C2620" opacity="0.07" />
+        <path d="M100,14 Q92,26 100,34 Q108,26 100,14 Z" fill="#62A6DC" />
+        <circle cx="86" cy="24" r="5" fill="#8FC6EE" />
+        <circle cx="115" cy="20" r="6.5" fill="#8FC6EE" />
+        <path d="M40,214 Q16,206 8,220 Q22,232 46,226 Z" fill="#4E93CC" />
+        <path d="M160,214 Q184,206 192,220 Q178,232 154,226 Z" fill="#4E93CC" />
+        <path d="M46,152 Q18,150 14,178 Q12,198 34,200 Q30,176 50,164 Z" fill="#4E93CC" />
+        <g transform="rotate(-38 154 160)"><path d="M154,146 Q186,132 194,158 Q198,178 174,182 Q168,160 148,158 Z" fill="#4E93CC" /></g>
+        <path d="M100,42 C148,42 168,86 168,140 C168,196 140,228 100,228 C60,228 32,196 32,140 C32,86 52,42 100,42 Z" fill="url(#wallySkin)" />
+        <path d="M100,132 C130,132 148,158 148,186 C148,212 126,228 100,228 C74,228 52,212 52,186 C52,158 70,132 100,132 Z" fill="url(#wallyCream)" />
+        <path d="M56,124 Q100,146 144,124 Q134,150 100,152 Q66,150 56,124 Z" fill="#E3543F" />
+        <path d="M96,148 L104,148 L108,174 L100,168 L92,174 Z" fill="#C9422F" />
+        <circle cx="74" cy="98" r="17" fill="#FFFFFF" />
+        <circle cx="126" cy="98" r="17" fill="#FFFFFF" />
+        <circle cx="77" cy="100" r="10" fill="#2C2620" />
+        <circle cx="123" cy="100" r="10" fill="#2C2620" />
+        <circle cx="73" cy="95" r="3.6" fill="#FFFFFF" />
+        <circle cx="119" cy="95" r="3.6" fill="#FFFFFF" />
+        <path d="M58,72 Q74,64 90,71" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <path d="M110,71 Q126,64 142,72" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+        <ellipse cx="52" cy="116" rx="12" ry="8.5" fill="#F0937C" opacity="{{ blush }}" />
+        <ellipse cx="148" cy="116" rx="12" ry="8.5" fill="#F0937C" opacity="{{ blush }}" />
+        <path d="M82,116 Q100,140 118,116 Z" fill="#3A2C28" />
+        <path d="M91,127 Q100,136 109,127 Z" fill="#EE8095" />
+      </svg>
+      <h3 style="font-size: 27px; font-weight: 700; color: #2F72A8; padding-top: 4px;">WALLY</h3>
+      <p style="font-size: 15px; font-weight: 800; color: #2C2620;">The Calm &amp; Wise Friend</p>
+      <p style="font-size: 14px; line-height: 1.45; color: #6B6259; text-align: center; text-wrap: pretty;">Lives in Counting Garden's pond. Spout on top, scarf, no hurry at all.</p>
+      <p style="font-size: 12px; font-weight: 700; color: #A2988B; letter-spacing: 0.06em; text-transform: uppercase; padding-top: 6px;">tide · #62A6DC</p>
+    </div>
+
+  </section>
+
+  <section style="padding-top: 64px;" data-screen-label="Palette">
+    <h2 style="font-size: 34px; font-weight: 600;">The palette, re-tuned</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">Same six hue families, same names, same one-hue-per-character rule. Each <strong>base</strong> gains chroma so a fox reads as orange and a whale reads as blue at 48px. <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">soft</code> / <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">deep</code> / <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">ink</code> steps follow. Ink warms from #2E2A32 to #2C2620; paper warms from #FBF8F3 to #FAF5EC.</p>
+    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; padding-top: 28px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #93C8A3;"></div><div style="flex: 1; background: #86BE7C;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">sage</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#93C8A3 → #86BE7C</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">KIDDO. Greener, less grey.</p>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #EFA470;"></div><div style="flex: 1; background: #F08A3C;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">apricot</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#EFA470 → #F08A3C</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">FOXY. Actually orange.</p>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #EFA6AB;"></div><div style="flex: 1; background: #F49BB4;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">blossom</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#EFA6AB → #F49BB4</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">BIBI. Pink, not salmon.</p>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #BCD37C;"></div><div style="flex: 1; background: #A8CE4F;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">sprout</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#BCD37C → #A8CE4F</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">PIP. Now clearly not sage.</p>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #8FBAD9;"></div><div style="flex: 1; background: #62A6DC;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">tide</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#8FBAD9 → #62A6DC</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">WALLY, water, sky.</p>
+        </div>
+      </div>
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; overflow: hidden;">
+        <div style="display: flex; height: 76px;"><div style="flex: 1; background: #F6D189;"></div><div style="flex: 1; background: #F7C55C;"></div></div>
+        <div style="padding: 12px 14px 16px;">
+          <p style="font-size: 15px; font-weight: 800;">honey</p>
+          <p style="font-size: 13px; color: #A2988B; padding-top: 2px;">#F6D189 → #F7C55C</p>
+          <p style="font-size: 13px; color: #6B6259; padding-top: 6px;">Keepsakes, stars, sun.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <sc-if value="{{ showLegacy }}" hint-placeholder-val="{{ true }}">
+  <section style="padding-top: 64px;" data-screen-label="Before and after">
+    <h2 style="font-size: 34px; font-weight: 600;">What changed</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">Left is KIDDO exactly as <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">components/character</code> draws it today, from <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">canon.ts</code>: hue #93C8A3, lighter forms as white overlays, ink face, no gradients, no outlines.</p>
+    <div style="display: grid; grid-template-columns: 260px 260px 1fr; gap: 32px; align-items: start; padding-top: 28px;">
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 24px; padding: 20px;">
+        <p style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #A2988B; padding-bottom: 8px;">Today · in the repo</p>
+        <svg viewBox="0 0 200 230" style="width: 100%; display: block;" aria-label="KIDDO as currently drawn in the repository" role="img">
+          <circle cx="60" cy="52" r="26" fill="#93C8A3" />
+          <circle cx="140" cy="52" r="26" fill="#93C8A3" />
+          <circle cx="60" cy="52" r="14" fill="#FFFFFF" opacity="0.38" />
+          <circle cx="140" cy="52" r="14" fill="#FFFFFF" opacity="0.38" />
+          <rect x="70" y="160" width="22" height="46" rx="11" fill="#93C8A3" />
+          <rect x="108" y="160" width="22" height="46" rx="11" fill="#93C8A3" />
+          <g transform="rotate(24 54 112)"><rect x="43" y="106" width="22" height="52" rx="11" fill="#93C8A3" /></g>
+          <g transform="rotate(-118 150 114)"><rect x="139" y="108" width="22" height="52" rx="11" fill="#93C8A3" /></g>
+          <ellipse cx="100" cy="130" rx="52" ry="48" fill="#93C8A3" />
+          <ellipse cx="100" cy="142" rx="30" ry="28" fill="#FFFFFF" opacity="0.34" />
+          <circle cx="100" cy="86" r="50" fill="#93C8A3" />
+          <ellipse cx="100" cy="104" rx="22" ry="16" fill="#FFFFFF" opacity="0.55" />
+          <ellipse cx="62" cy="100" rx="10" ry="7" fill="#E88C74" opacity="0.32" />
+          <ellipse cx="138" cy="100" rx="10" ry="7" fill="#E88C74" opacity="0.32" />
+          <circle cx="82" cy="84" r="7" fill="#2E2A32" />
+          <circle cx="118" cy="84" r="7" fill="#2E2A32" />
+          <path d="M90,104 Q100,113 110,104" stroke="#2E2A32" stroke-width="4" fill="none" stroke-linecap="round" />
+        </svg>
+      </div>
+
+      <div style="background: #FFFFFF; border: 2px solid #86BE7C; border-radius: 24px; padding: 20px;">
+        <p style="font-size: 12px; font-weight: 800; letter-spacing: 0.1em; text-transform: uppercase; color: #4E8A3B; padding-bottom: 8px;">Proposed · v2</p>
+        <svg viewBox="0 0 200 230" style="width: 100%; display: block;" aria-label="KIDDO redesigned" role="img">
+          <defs>
+            <radialGradient id="cmpSkin" cx="34%" cy="24%" r="86%">
+              <stop offset="0" stop-color="#A6D493" />
+              <stop offset="0.62" stop-color="#8CC077" />
+              <stop offset="1" stop-color="#6BA45C" />
+            </radialGradient>
+            <radialGradient id="cmpCream" cx="38%" cy="26%" r="84%">
+              <stop offset="0" stop-color="#FBF2DA" />
+              <stop offset="1" stop-color="#EDDCB4" />
+            </radialGradient>
+          </defs>
+          <circle cx="55" cy="42" r="24" fill="url(#cmpSkin)" />
+          <circle cx="145" cy="42" r="24" fill="url(#cmpSkin)" />
+          <circle cx="55" cy="44" r="13" fill="url(#cmpCream)" />
+          <circle cx="145" cy="44" r="13" fill="url(#cmpCream)" />
+          <rect x="64" y="180" width="32" height="38" rx="16" fill="#6BA45C" />
+          <rect x="104" y="180" width="32" height="38" rx="16" fill="#6BA45C" />
+          <rect x="32" y="140" width="25" height="54" rx="12.5" fill="#7CB369" />
+          <g transform="rotate(-42 150 154)"><rect x="138" y="118" width="25" height="58" rx="12.5" fill="#7CB369" /></g>
+          <path d="M100,112 C143,112 160,144 160,175 C160,204 133,219 100,219 C67,219 40,204 40,175 C40,144 57,112 100,112 Z" fill="url(#cmpSkin)" />
+          <ellipse cx="100" cy="182" rx="35" ry="30" fill="url(#cmpCream)" />
+          <circle cx="100" cy="87" r="58" fill="url(#cmpSkin)" />
+          <ellipse cx="100" cy="112" rx="28" ry="20" fill="url(#cmpCream)" />
+          <ellipse cx="55" cy="106" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <ellipse cx="145" cy="106" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="89" r="15.5" fill="#2C2620" />
+          <circle cx="124" cy="89" r="15.5" fill="#2C2620" />
+          <circle cx="70" cy="83" r="5.4" fill="#FFFFFF" />
+          <circle cx="118" cy="83" r="5.4" fill="#FFFFFF" />
+          <path d="M65,65 Q76,57 87,62" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <path d="M113,62 Q124,57 135,65" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <ellipse cx="100" cy="103" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M85,114 Q100,135 115,114 Z" fill="#3A2C28" />
+          <path d="M92,122 Q100,132 108,122 Z" fill="#EE8095" />
+        </svg>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 14px;">
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 16px; font-weight: 800;">Head takes more of the frame</p>
+          <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 3px;">r 50 → 58 in the same 200-unit box. Head-to-body reads closer to 1:1, which is what makes a character read as a child rather than a mascot.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 16px; font-weight: 800;">Eyes more than double</p>
+          <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 3px;">r 7 → 15.5, with a white catchlight and a second soft glint. Brows are added as separate strokes so an expression can change without moving the eyes.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 16px; font-weight: 800;">A muzzle, a nose and an open mouth</p>
+          <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 3px;">Today the face is two dots and a line. The mouth now opens with a tongue, which is where nearly all of the warmth in the reference comes from.</p>
+        </div>
+        <div style="background: #FDF3E4; border: 1px solid #F0DDBB; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 16px; font-weight: 800; color: #8A6320;">Two canon rules this breaks — decide before build</p>
+          <p style="font-size: 15px; color: #6B6259; line-height: 1.5; padding-top: 3px;"><strong>RULE 01</strong> says no gradients and lighter forms as white overlay. v2 uses a two-stop radial per hue and a real cream fill; that is the whole difference between flat and soft. <strong>characters.ts</strong> says KIDDO “belongs to no species”. The reference draws a bear cub. Both are cheap to keep instead — say the word and I'll flatten the fills and drop the bear ears.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <section style="padding-top: 64px;" data-screen-label="Expressions">
+    <h2 style="font-size: 34px; font-weight: 600;">Expressions</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">A face is still eyes + optional brows + a mouth, so the ten entries in <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">expressions.tsx</code> port over unchanged. Six shown here, in the moments the product actually uses. Nothing in the set reads as angry, scolding or disappointed.</p>
+    <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 16px; padding-top: 28px;">
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="92" r="15.5" fill="#2C2620" /><circle cx="124" cy="92" r="15.5" fill="#2C2620" />
+          <circle cx="70" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="118" cy="86" r="5.4" fill="#FFFFFF" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M87,117 Q100,132 113,117 Z" fill="#3A2C28" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">happy</p>
+        <p style="font-size: 12px; color: #A2988B;">idle, default</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="92" r="15.5" fill="#2C2620" /><circle cx="124" cy="92" r="15.5" fill="#2C2620" />
+          <circle cx="70" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="118" cy="86" r="5.4" fill="#FFFFFF" />
+          <path d="M63,64 Q76,54 89,62" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <path d="M113,68 Q124,63 135,70" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <ellipse cx="100" cy="122" rx="7" ry="6" fill="#3A2C28" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">curious</p>
+        <p style="font-size: 12px; color: #A2988B;">asking, point</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="13" ry="9.5" fill="#F0937C" opacity="0.62" /><ellipse cx="145" cy="109" rx="13" ry="9.5" fill="#F0937C" opacity="0.62" />
+          <path d="M62,92 Q76,76 90,92" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+          <path d="M110,92 Q124,76 138,92" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M82,116 Q100,142 118,116 Z" fill="#3A2C28" />
+          <path d="M91,128 Q100,138 109,128 Z" fill="#EE8095" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">excited</p>
+        <p style="font-size: 12px; color: #A2988B;">correct answer</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="92" r="15.5" fill="#2C2620" /><circle cx="124" cy="92" r="15.5" fill="#2C2620" />
+          <circle cx="70" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="118" cy="86" r="5.4" fill="#FFFFFF" />
+          <path d="M63,70 Q76,66 89,71" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <path d="M111,71 Q124,66 137,70" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M88,120 Q100,128 112,120" stroke="#3A2C28" stroke-width="5" fill="none" stroke-linecap="round" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">encouraging</p>
+        <p style="font-size: 12px; color: #A2988B;">try again</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="80" cy="92" r="15.5" fill="#2C2620" /><circle cx="128" cy="92" r="15.5" fill="#2C2620" />
+          <circle cx="74" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="122" cy="86" r="5.4" fill="#FFFFFF" />
+          <path d="M64,72 Q77,62 90,68" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <path d="M116,66 Q129,61 140,68" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+          <ellipse cx="103" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M92,122 L114,120" stroke="#3A2C28" stroke-width="5" fill="none" stroke-linecap="round" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">thinking</p>
+        <p style="font-size: 12px; color: #A2988B;">loading, hint</p>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 20px; padding: 12px 12px 16px; text-align: center;">
+        <svg viewBox="34 12 132 124" style="width: 100%; display: block;" aria-hidden="true">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="13" ry="9.5" fill="#F0937C" opacity="0.62" /><ellipse cx="145" cy="109" rx="13" ry="9.5" fill="#F0937C" opacity="0.62" />
+          <path d="M62,94 Q76,74 90,94" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+          <path d="M110,94 Q124,74 138,94" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M78,114 Q100,148 122,114 Z" fill="#3A2C28" />
+          <path d="M89,128 Q100,140 111,128 Z" fill="#EE8095" />
+          <path d="M40,58 l2.6,5.2 5.8,0.9 -4.2,4.1 1,5.7 -5.2,-2.7 -5.2,2.7 1,-5.7 -4.2,-4.1 5.8,-0.9 Z" fill="#F7C55C" />
+          <path d="M160,52 l2.2,4.4 4.9,0.7 -3.6,3.5 0.9,4.9 -4.4,-2.3 -4.4,2.3 0.9,-4.9 -3.6,-3.5 4.9,-0.7 Z" fill="#F7C55C" />
+        </svg>
+        <p style="font-size: 14px; font-weight: 800; padding-top: 6px;">celebrating</p>
+        <p style="font-size: 12px; color: #A2988B;">round finished</p>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="padding-top: 64px;" data-screen-label="In scene">
+    <h2 style="font-size: 34px; font-weight: 600;">Embedded in a scene, not pasted on top</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">The rig's four pivots are unchanged, so these are the existing <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">point</code>, <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">wonder</code> and <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">celebrate</code> poses. What is new is that the character stands on the world's ground, overlaps its props, and casts a contact shadow onto it.</p>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; padding-top: 28px;">
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 24px; overflow: hidden;">
+        <svg viewBox="0 0 320 220" style="width: 100%; display: block;" aria-label="KIDDO pointing at apples on a tree in the Counting Garden" role="img">
+          <rect x="0" y="0" width="320" height="220" fill="#DCEEF9" />
+          <circle cx="272" cy="34" r="20" fill="#F7C55C" />
+          <ellipse cx="60" cy="40" rx="34" ry="15" fill="#FFFFFF" opacity="0.85" />
+          <ellipse cx="82" cy="34" rx="22" ry="13" fill="#FFFFFF" opacity="0.85" />
+          <path d="M-10,170 Q60,132 140,158 Q220,182 330,146 L330,220 L-10,220 Z" fill="#A8CE4F" opacity="0.55" />
+          <path d="M-10,186 Q80,160 170,180 Q250,196 330,172 L330,220 L-10,220 Z" fill="#8CC077" />
+          <rect x="238" y="112" width="13" height="70" rx="6" fill="#C98A4E" />
+          <circle cx="244" cy="98" r="42" fill="#6BA45C" />
+          <circle cx="214" cy="118" r="26" fill="#7CB369" />
+          <circle cx="276" cy="118" r="26" fill="#7CB369" />
+          <circle cx="226" cy="92" r="9" fill="#E3543F" /><circle cx="262" cy="80" r="9" fill="#E3543F" /><circle cx="270" cy="116" r="9" fill="#E3543F" /><circle cx="216" cy="130" r="9" fill="#E3543F" />
+          <ellipse cx="106" cy="204" rx="42" ry="7" fill="#2C2620" opacity="0.1" />
+          <g transform="translate(46 62) scale(0.62)">
+            <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+            <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+            <rect x="64" y="188" width="32" height="40" rx="16" fill="#6BA45C" /><rect x="104" y="188" width="32" height="40" rx="16" fill="#6BA45C" />
+            <rect x="32" y="144" width="25" height="56" rx="12.5" fill="#7CB369" />
+            <g transform="rotate(-88 150 152)"><rect x="138" y="140" width="25" height="58" rx="12.5" fill="#7CB369" /></g>
+            <path d="M100,116 C143,116 160,148 160,180 C160,210 133,226 100,226 C67,226 40,210 40,180 C40,148 57,116 100,116 Z" fill="#8CC077" />
+            <ellipse cx="100" cy="188" rx="35" ry="31" fill="#F4E7C5" />
+            <circle cx="100" cy="90" r="58" fill="#8CC077" />
+            <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+            <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+            <circle cx="82" cy="92" r="15.5" fill="#2C2620" /><circle cx="130" cy="92" r="15.5" fill="#2C2620" />
+            <circle cx="76" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="124" cy="86" r="5.4" fill="#FFFFFF" />
+            <path d="M68,64 Q80,55 92,61" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+            <path d="M118,61 Q130,55 142,64" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+            <ellipse cx="103" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+            <ellipse cx="103" cy="122" rx="7.5" ry="6.5" fill="#3A2C28" />
+          </g>
+        </svg>
+        <div style="padding: 14px 18px 18px;">
+          <p style="font-size: 15px; font-weight: 800;">point · “How many apples?”</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">The arm reaches into the tree the question is about. Contact shadow on the grass, not a drop shadow on a card.</p>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 24px; overflow: hidden;">
+        <svg viewBox="0 0 320 220" style="width: 100%; display: block;" aria-label="FOXY peering into a burrow in Animal Adventure" role="img">
+          <rect x="0" y="0" width="320" height="220" fill="#DCEEF9" />
+          <ellipse cx="252" cy="42" rx="36" ry="16" fill="#FFFFFF" opacity="0.85" />
+          <path d="M-10,164 Q70,124 160,150 Q240,172 330,138 L330,220 L-10,220 Z" fill="#86BE7C" opacity="0.5" />
+          <path d="M-10,182 Q90,156 180,178 Q250,194 330,168 L330,220 L-10,220 Z" fill="#A8CE4F" />
+          <path d="M196,192 Q232,120 274,192 Z" fill="#8CC077" />
+          <path d="M222,192 a15,17 0 0 1 30,0 Z" fill="#4A4038" />
+          <g stroke="#6BA45C" stroke-width="4" stroke-linecap="round" fill="none">
+            <path d="M188,186 v-13" /><path d="M198,182 v-16" /><path d="M282,186 v-14" />
+          </g>
+          <circle cx="290" cy="152" r="7" fill="#F49BB4" /><circle cx="290" cy="152" r="3" fill="#F7C55C" />
+          <ellipse cx="112" cy="200" rx="40" ry="7" fill="#2C2620" opacity="0.1" />
+          <g transform="translate(52 58) scale(0.62)">
+            <path d="M46,64 L38,16 Q62,26 76,50 Z" fill="#F08A3C" /><path d="M154,64 L162,16 Q138,26 124,50 Z" fill="#F08A3C" />
+            <path d="M44,32 L38,16 Q50,21 56,33 Z" fill="#8C4A1C" /><path d="M156,32 L162,16 Q150,21 144,33 Z" fill="#8C4A1C" />
+            <path d="M46,192 Q6,182 14,146 Q20,120 44,124 Q30,150 40,166 Q48,178 58,180 Z" fill="#F08A3C" />
+            <path d="M20,130 Q6,152 16,176 Q24,190 42,190 Q22,172 26,146 Z" fill="#F7EBD2" />
+            <rect x="64" y="188" width="32" height="40" rx="16" fill="#D06A1E" /><rect x="104" y="188" width="32" height="40" rx="16" fill="#D06A1E" />
+            <rect x="34" y="146" width="24" height="54" rx="12" fill="#E27C2C" />
+            <g transform="rotate(-96 148 152)"><rect x="136" y="140" width="24" height="56" rx="12" fill="#E27C2C" /></g>
+            <path d="M100,116 C141,116 158,148 158,180 C158,210 132,226 100,226 C68,226 42,210 42,180 C42,148 59,116 100,116 Z" fill="#F08A3C" />
+            <ellipse cx="100" cy="190" rx="33" ry="30" fill="#F7EBD2" />
+            <path d="M62,126 Q100,146 138,126 Q126,152 100,154 Q74,152 62,126 Z" fill="#E3543F" />
+            <circle cx="100" cy="90" r="57" fill="#F08A3C" />
+            <ellipse cx="100" cy="118" rx="25" ry="17" fill="#F7EBD2" />
+            <ellipse cx="56" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" /><ellipse cx="144" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" />
+            <circle cx="80" cy="96" r="15" fill="#2C2620" /><circle cx="128" cy="96" r="15" fill="#2C2620" />
+            <circle cx="74.5" cy="90" r="5.2" fill="#FFFFFF" /><circle cx="122.5" cy="90" r="5.2" fill="#FFFFFF" />
+            <path d="M66,70 Q78,60 90,68" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+            <path d="M116,68 Q128,60 140,70" stroke="#2C2620" stroke-width="4" fill="none" stroke-linecap="round" />
+            <ellipse cx="102" cy="112" rx="8" ry="6" fill="#2C2620" />
+            <ellipse cx="102" cy="126" rx="7" ry="6" fill="#3A2C28" />
+          </g>
+        </svg>
+        <div style="padding: 14px 18px 18px;">
+          <p style="font-size: 15px; font-weight: 800;">wonder · “Who lives in here?”</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Body tilt toward the burrow, ears forward. The prop is the question; the pose is the invitation.</p>
+        </div>
+      </div>
+
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 24px; overflow: hidden;">
+        <svg viewBox="0 0 320 220" style="width: 100%; display: block;" aria-label="BIBI celebrating on an open storybook page in Word World" role="img">
+          <rect x="0" y="0" width="320" height="220" fill="#F7DDA8" />
+          <rect x="10" y="14" width="146" height="192" rx="16" fill="#FFFCF4" />
+          <rect x="164" y="14" width="146" height="192" rx="16" fill="#FFFCF4" />
+          <rect x="156" y="14" width="8" height="192" fill="#EFE6D4" />
+          <rect x="248" y="0" width="14" height="46" rx="3" fill="#F49BB4" />
+          <path d="M186,168 Q214,156 242,168" stroke="#F0DDBB" stroke-width="4" fill="none" stroke-linecap="round" />
+          <path d="M186,186 Q214,174 242,186" stroke="#F0DDBB" stroke-width="4" fill="none" stroke-linecap="round" />
+          <text x="200" y="80" font-family="Fredoka, Nunito, sans-serif" font-size="42" font-weight="700" fill="#C4557E">C</text>
+          <text x="232" y="80" font-family="Fredoka, Nunito, sans-serif" font-size="42" font-weight="700" fill="#2F72A8">a</text>
+          <text x="262" y="80" font-family="Fredoka, Nunito, sans-serif" font-size="42" font-weight="700" fill="#6C8F22">t</text>
+          <path d="M62,54 l3,6 6.6,1 -4.8,4.7 1.1,6.6 -5.9,-3.1 -5.9,3.1 1.1,-6.6 -4.8,-4.7 6.6,-1 Z" fill="#F7C55C" />
+          <path d="M126,74 l2.4,4.8 5.3,0.8 -3.9,3.7 0.9,5.3 -4.7,-2.5 -4.7,2.5 0.9,-5.3 -3.9,-3.7 5.3,-0.8 Z" fill="#F7C55C" />
+          <ellipse cx="86" cy="198" rx="38" ry="6" fill="#2C2620" opacity="0.09" />
+          <g transform="translate(28 56) scale(0.6)">
+            <rect x="60" y="8" width="27" height="76" rx="13.5" fill="#F49BB4" transform="rotate(-14 73 46)" />
+            <rect x="113" y="8" width="27" height="76" rx="13.5" fill="#F49BB4" transform="rotate(14 127 46)" />
+            <rect x="66" y="18" width="15" height="56" rx="7.5" fill="#F5BACB" transform="rotate(-14 73 46)" />
+            <rect x="119" y="18" width="15" height="56" rx="7.5" fill="#F5BACB" transform="rotate(14 127 46)" />
+            <path d="M126,20 Q112,10 116,24 Q104,20 112,32 Q124,38 132,30 Q142,36 144,24 Q148,12 134,20 Q130,10 126,20 Z" fill="#EE7BA6" />
+            <rect x="60" y="188" width="30" height="38" rx="15" fill="#E27C99" transform="rotate(-14 75 207)" />
+            <rect x="110" y="188" width="30" height="38" rx="15" fill="#E27C99" transform="rotate(12 125 207)" />
+            <rect x="20" y="92" width="26" height="72" rx="13" fill="#EE8DA8" transform="rotate(-18 33 128)" />
+            <rect x="154" y="92" width="26" height="72" rx="13" fill="#EE8DA8" transform="rotate(18 167 128)" />
+            <path d="M100,118 C139,118 155,148 155,180 C155,209 130,226 100,226 C70,226 45,209 45,180 C45,148 61,118 100,118 Z" fill="#F49BB4" />
+            <ellipse cx="100" cy="190" rx="31" ry="29" fill="#FCF1EC" />
+            <circle cx="100" cy="92" r="56" fill="#F49BB4" />
+            <ellipse cx="100" cy="116" rx="26" ry="18" fill="#FCF1EC" />
+            <ellipse cx="57" cy="110" rx="12.5" ry="9" fill="#F0937C" opacity="0.62" /><ellipse cx="143" cy="110" rx="12.5" ry="9" fill="#F0937C" opacity="0.62" />
+            <path d="M63,94 Q77,78 91,94" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+            <path d="M109,94 Q123,78 137,94" stroke="#2C2620" stroke-width="7" fill="none" stroke-linecap="round" />
+            <ellipse cx="100" cy="107" rx="7.5" ry="5.8" fill="#2C2620" />
+            <path d="M84,116 Q100,146 116,116 Z" fill="#3A2C28" />
+            <path d="M92,128 Q100,138 108,128 Z" fill="#EE8095" />
+          </g>
+        </svg>
+        <div style="padding: 14px 18px 18px;">
+          <p style="font-size: 15px; font-weight: 800;">celebrate · a rhyme found</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Standing <em>on</em> the page, ears trailing the lift. Two confetti marks, not a shower.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section style="padding-top: 64px;" data-screen-label="Together">
+    <h2 style="font-size: 34px; font-weight: 600;">Together as friends</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">The five at one scale, on one ground plane, with four depth layers behind them — far ridge, mid trees, near ground, foreground grass. This is the group shot the landing page and the world-completion moment both want.</p>
+    <div style="border: 1px solid #EDE3D3; border-radius: 28px; overflow: hidden; margin-top: 28px;">
+      <svg viewBox="0 0 1290 380" style="width: 100%; display: block;" aria-label="KIDDO, FOXY, BIBI, PIP and WALLY standing together in a meadow" role="img">
+        <defs>
+          <linearGradient id="grpSky" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#CFE8F7" />
+            <stop offset="1" stop-color="#E8F4E2" />
+          </linearGradient>
+        </defs>
+        <rect x="0" y="0" width="1290" height="380" fill="url(#grpSky)" />
+        <circle cx="1122" cy="58" r="30" fill="#F7C55C" opacity="0.85" />
+        <ellipse cx="180" cy="62" rx="62" ry="24" fill="#FFFFFF" opacity="0.8" />
+        <ellipse cx="222" cy="52" rx="40" ry="20" fill="#FFFFFF" opacity="0.8" />
+        <ellipse cx="860" cy="48" rx="52" ry="20" fill="#FFFFFF" opacity="0.7" />
+        <path d="M-20,206 Q180,150 400,186 Q640,224 900,168 Q1120,124 1310,178 L1310,380 L-20,380 Z" fill="#B7D9AE" />
+        <g fill="#7FA875">
+          <path d="M120,206 l30,-70 30,70 Z" /><path d="M138,206 h24 v20 h-24 Z" />
+          <path d="M986,190 l26,-62 26,62 Z" /><path d="M1000,190 h24 v20 h-24 Z" />
+        </g>
+        <circle cx="330" cy="176" r="46" fill="#8FBC86" /><rect x="322" y="200" width="16" height="34" rx="7" fill="#B08454" />
+        <circle cx="742" cy="168" r="40" fill="#8FBC86" /><rect x="735" y="190" width="14" height="30" rx="6" fill="#B08454" />
+        <path d="M-20,252 Q220,214 500,246 Q760,274 1030,230 Q1180,206 1310,236 L1310,380 L-20,380 Z" fill="#A8CE4F" />
+        <path d="M-20,300 Q260,272 560,296 Q860,318 1310,282 L1310,380 L-20,380 Z" fill="#8CC077" />
+
+        <ellipse cx="196" cy="346" rx="76" ry="12" fill="#2C2620" opacity="0.1" />
+        <g transform="translate(96 108) scale(1)">
+          <circle cx="55" cy="45" r="24" fill="#8CC077" /><circle cx="145" cy="45" r="24" fill="#8CC077" />
+          <circle cx="55" cy="47" r="13" fill="#F4E7C5" /><circle cx="145" cy="47" r="13" fill="#F4E7C5" />
+          <rect x="64" y="188" width="32" height="40" rx="16" fill="#6BA45C" /><rect x="104" y="188" width="32" height="40" rx="16" fill="#6BA45C" />
+          <rect x="32" y="144" width="25" height="56" rx="12.5" fill="#7CB369" />
+          <g transform="rotate(-42 150 158)"><rect x="138" y="120" width="25" height="60" rx="12.5" fill="#7CB369" /></g>
+          <path d="M100,116 C143,116 160,148 160,180 C160,210 133,226 100,226 C67,226 40,210 40,180 C40,148 57,116 100,116 Z" fill="#8CC077" />
+          <ellipse cx="100" cy="188" rx="35" ry="31" fill="#F4E7C5" />
+          <path d="M70,126 Q101,152 132,130" stroke="#5C9448" stroke-width="7" fill="none" stroke-linecap="round" />
+          <rect x="48" y="158" width="36" height="32" rx="10" fill="#5C9448" />
+          <circle cx="100" cy="90" r="58" fill="#8CC077" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="#F4E7C5" />
+          <ellipse cx="55" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="145" cy="109" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="92" r="15.5" fill="#2C2620" /><circle cx="124" cy="92" r="15.5" fill="#2C2620" />
+          <circle cx="70" cy="86" r="5.4" fill="#FFFFFF" /><circle cx="118" cy="86" r="5.4" fill="#FFFFFF" />
+          <ellipse cx="100" cy="106" rx="8.5" ry="6.4" fill="#2C2620" />
+          <path d="M85,117 Q100,138 115,117 Z" fill="#3A2C28" /><path d="M92,125 Q100,135 108,125 Z" fill="#EE8095" />
+        </g>
+
+        <ellipse cx="426" cy="352" rx="70" ry="11" fill="#2C2620" opacity="0.1" />
+        <g transform="translate(330 122) scale(0.95)">
+          <path d="M46,64 L38,16 Q62,26 76,50 Z" fill="#F08A3C" /><path d="M154,64 L162,16 Q138,26 124,50 Z" fill="#F08A3C" />
+          <path d="M44,32 L38,16 Q50,21 56,33 Z" fill="#8C4A1C" /><path d="M156,32 L162,16 Q150,21 144,33 Z" fill="#8C4A1C" />
+          <path d="M46,192 Q6,182 14,146 Q20,120 44,124 Q30,150 40,166 Q48,178 58,180 Z" fill="#F08A3C" />
+          <path d="M20,130 Q6,152 16,176 Q24,190 42,190 Q22,172 26,146 Z" fill="#F7EBD2" />
+          <rect x="64" y="188" width="32" height="40" rx="16" fill="#D06A1E" /><rect x="104" y="188" width="32" height="40" rx="16" fill="#D06A1E" />
+          <rect x="34" y="146" width="24" height="54" rx="12" fill="#E27C2C" />
+          <g transform="rotate(-52 148 156)"><rect x="136" y="116" width="24" height="58" rx="12" fill="#E27C2C" /></g>
+          <path d="M100,116 C141,116 158,148 158,180 C158,210 132,226 100,226 C68,226 42,210 42,180 C42,148 59,116 100,116 Z" fill="#F08A3C" />
+          <ellipse cx="100" cy="190" rx="33" ry="30" fill="#F7EBD2" />
+          <path d="M62,126 Q100,146 138,126 Q126,152 100,154 Q74,152 62,126 Z" fill="#E3543F" />
+          <circle cx="100" cy="90" r="57" fill="#F08A3C" />
+          <ellipse cx="100" cy="118" rx="25" ry="17" fill="#F7EBD2" />
+          <ellipse cx="56" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" /><ellipse cx="144" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" />
+          <circle cx="76" cy="92" r="15" fill="#2C2620" /><circle cx="124" cy="92" r="15" fill="#2C2620" />
+          <circle cx="70.5" cy="86" r="5.2" fill="#FFFFFF" /><circle cx="118.5" cy="86" r="5.2" fill="#FFFFFF" />
+          <ellipse cx="100" cy="110" rx="8" ry="6" fill="#2C2620" />
+          <path d="M86,120 Q100,140 114,120 Z" fill="#3A2C28" /><path d="M93,128 Q100,137 107,128 Z" fill="#EE8095" />
+        </g>
+
+        <ellipse cx="648" cy="356" rx="64" ry="10" fill="#2C2620" opacity="0.1" />
+        <g transform="translate(558 132) scale(0.9)">
+          <rect x="60" y="8" width="27" height="76" rx="13.5" fill="#F49BB4" transform="rotate(-8 73 46)" />
+          <rect x="113" y="8" width="27" height="76" rx="13.5" fill="#F49BB4" transform="rotate(8 127 46)" />
+          <rect x="66" y="18" width="15" height="56" rx="7.5" fill="#F5BACB" transform="rotate(-8 73 46)" />
+          <rect x="119" y="18" width="15" height="56" rx="7.5" fill="#F5BACB" transform="rotate(8 127 46)" />
+          <path d="M126,20 Q112,10 116,24 Q104,20 112,32 Q124,38 132,30 Q142,36 144,24 Q148,12 134,20 Q130,10 126,20 Z" fill="#EE7BA6" />
+          <rect x="66" y="190" width="30" height="38" rx="15" fill="#E27C99" /><rect x="104" y="190" width="30" height="38" rx="15" fill="#E27C99" />
+          <rect x="36" y="148" width="23" height="52" rx="11.5" fill="#EE8DA8" />
+          <g transform="rotate(-46 148 158)"><rect x="137" y="122" width="23" height="56" rx="11.5" fill="#EE8DA8" /></g>
+          <path d="M100,118 C139,118 155,148 155,180 C155,209 130,226 100,226 C70,226 45,209 45,180 C45,148 61,118 100,118 Z" fill="#F49BB4" />
+          <ellipse cx="100" cy="190" rx="31" ry="29" fill="#FCF1EC" />
+          <path d="M72,128 Q100,150 130,132" stroke="#E0578C" stroke-width="6" fill="none" stroke-linecap="round" />
+          <rect x="52" y="158" width="34" height="30" rx="9" fill="#EE7BA6" />
+          <circle cx="100" cy="92" r="56" fill="#F49BB4" />
+          <ellipse cx="100" cy="116" rx="26" ry="18" fill="#FCF1EC" />
+          <ellipse cx="57" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" /><ellipse cx="143" cy="110" rx="11.5" ry="8" fill="#F0937C" opacity="0.5" />
+          <circle cx="77" cy="94" r="15" fill="#2C2620" /><circle cx="123" cy="94" r="15" fill="#2C2620" />
+          <circle cx="71.5" cy="88" r="5.2" fill="#FFFFFF" /><circle cx="117.5" cy="88" r="5.2" fill="#FFFFFF" />
+          <ellipse cx="100" cy="107" rx="7.5" ry="5.8" fill="#2C2620" />
+          <path d="M87,118 Q100,137 113,118 Z" fill="#3A2C28" /><path d="M94,126 Q100,134 106,126 Z" fill="#EE8095" />
+        </g>
+
+        <ellipse cx="868" cy="358" rx="66" ry="10" fill="#2C2620" opacity="0.1" />
+        <g transform="translate(780 136) scale(0.88)">
+          <path d="M42,196 Q22,204 20,222 Q20,230 32,230 L64,230 Q54,214 58,200 Z" fill="#82A836" />
+          <path d="M158,196 Q178,204 180,222 Q180,230 168,230 L136,230 Q146,214 142,200 Z" fill="#82A836" />
+          <rect x="30" y="150" width="24" height="52" rx="12" fill="#96BF43" />
+          <g transform="rotate(-50 150 160)"><rect x="139" y="124" width="24" height="56" rx="12" fill="#96BF43" /></g>
+          <path d="M100,120 C144,120 162,150 162,182 C162,212 133,228 100,228 C67,228 38,212 38,182 C38,150 56,120 100,120 Z" fill="#A8CE4F" />
+          <ellipse cx="100" cy="192" rx="36" ry="30" fill="#F4EBC0" />
+          <path d="M76,132 L100,142 L124,132 L118,150 L82,150 Z" fill="#F5C33F" />
+          <circle cx="100" cy="96" r="55" fill="#A8CE4F" />
+          <circle cx="64" cy="56" r="27" fill="#A8CE4F" /><circle cx="136" cy="56" r="27" fill="#A8CE4F" />
+          <circle cx="64" cy="58" r="20" fill="#FFFFFF" /><circle cx="136" cy="58" r="20" fill="#FFFFFF" />
+          <circle cx="68" cy="60" r="11.5" fill="#2C2620" /><circle cx="132" cy="60" r="11.5" fill="#2C2620" />
+          <circle cx="63" cy="55" r="4.2" fill="#FFFFFF" /><circle cx="127" cy="55" r="4.2" fill="#FFFFFF" />
+          <ellipse cx="52" cy="98" rx="12" ry="9" fill="#F0937C" opacity="0.5" /><ellipse cx="148" cy="98" rx="12" ry="9" fill="#F0937C" opacity="0.5" />
+          <ellipse cx="92" cy="88" rx="3" ry="2.4" fill="#2C2620" /><ellipse cx="108" cy="88" rx="3" ry="2.4" fill="#2C2620" />
+          <path d="M68,98 Q100,140 132,98 Z" fill="#3A2C28" /><path d="M86,116 Q100,132 114,116 Z" fill="#EE8095" />
+        </g>
+
+        <ellipse cx="1086" cy="352" rx="72" ry="11" fill="#2C2620" opacity="0.1" />
+        <g transform="translate(996 128) scale(0.92)">
+          <path d="M100,14 Q92,26 100,34 Q108,26 100,14 Z" fill="#62A6DC" />
+          <circle cx="86" cy="24" r="5" fill="#8FC6EE" /><circle cx="115" cy="20" r="6.5" fill="#8FC6EE" />
+          <path d="M40,214 Q16,206 8,220 Q22,232 46,226 Z" fill="#4E93CC" />
+          <path d="M160,214 Q184,206 192,220 Q178,232 154,226 Z" fill="#4E93CC" />
+          <path d="M46,152 Q18,150 14,178 Q12,198 34,200 Q30,176 50,164 Z" fill="#4E93CC" />
+          <g transform="rotate(-38 154 160)"><path d="M154,146 Q186,132 194,158 Q198,178 174,182 Q168,160 148,158 Z" fill="#4E93CC" /></g>
+          <path d="M100,42 C148,42 168,86 168,140 C168,196 140,228 100,228 C60,228 32,196 32,140 C32,86 52,42 100,42 Z" fill="#62A6DC" />
+          <path d="M100,132 C130,132 148,158 148,186 C148,212 126,228 100,228 C74,228 52,212 52,186 C52,158 70,132 100,132 Z" fill="#F4ECD8" />
+          <path d="M56,124 Q100,146 144,124 Q134,150 100,152 Q66,150 56,124 Z" fill="#E3543F" />
+          <circle cx="74" cy="98" r="17" fill="#FFFFFF" /><circle cx="126" cy="98" r="17" fill="#FFFFFF" />
+          <circle cx="77" cy="100" r="10" fill="#2C2620" /><circle cx="123" cy="100" r="10" fill="#2C2620" />
+          <circle cx="73" cy="95" r="3.6" fill="#FFFFFF" /><circle cx="119" cy="95" r="3.6" fill="#FFFFFF" />
+          <ellipse cx="52" cy="116" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" /><ellipse cx="148" cy="116" rx="12" ry="8.5" fill="#F0937C" opacity="0.5" />
+          <path d="M82,116 Q100,140 118,116 Z" fill="#3A2C28" /><path d="M91,127 Q100,136 109,127 Z" fill="#EE8095" />
+        </g>
+
+        <g fill="#6BA45C">
+          <path d="M40,380 q10,-40 20,0 Z" /><path d="M70,380 q8,-30 16,0 Z" />
+          <path d="M520,380 q10,-36 20,0 Z" /><path d="M1200,380 q10,-42 20,0 Z" /><path d="M1240,380 q8,-30 16,0 Z" />
+        </g>
+        <g><circle cx="264" cy="366" r="7" fill="#F49BB4" /><circle cx="264" cy="366" r="3" fill="#F7C55C" />
+        <circle cx="960" cy="372" r="7" fill="#F7C55C" /><circle cx="960" cy="372" r="3" fill="#FFFCF4" /></g>
+      </svg>
+    </div>
+  </section>
+
+  <sc-if value="{{ showConstruction }}" hint-placeholder-val="{{ true }}">
+  <section style="padding-top: 64px;" data-screen-label="Construction">
+    <h2 style="font-size: 34px; font-weight: 600;">Construction canon v2</h2>
+    <p style="font-size: 17px; color: #6B6259; padding-top: 8px; max-width: 900px; text-wrap: pretty;">One 200 × 240 box, five characters. Every number below is shared, which is what makes them a family rather than five drawings — and it is the same kind of file <code style="background: #F2ECE1; padding: 2px 6px; border-radius: 5px; font-size: 15px;">canon.ts</code> already is.</p>
+    <div style="display: grid; grid-template-columns: 380px 1fr; gap: 40px; align-items: start; padding-top: 28px;">
+      <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 24px; padding: 24px;">
+        <svg viewBox="0 0 200 250" style="width: 100%; display: block;" aria-label="Construction diagram: head circle, eye line, body mass and pivots" role="img">
+          <g stroke="#DCD2C2" stroke-width="1" stroke-dasharray="4 4">
+            <line x1="0" y1="90" x2="200" y2="90" /><line x1="0" y1="92" x2="200" y2="92" />
+            <line x1="100" y1="0" x2="100" y2="250" />
+            <line x1="0" y1="180" x2="200" y2="180" />
+          </g>
+          <circle cx="100" cy="90" r="58" fill="none" stroke="#62A6DC" stroke-width="2" />
+          <path d="M100,116 C143,116 160,148 160,180 C160,210 133,226 100,226 C67,226 40,210 40,180 C40,148 57,116 100,116 Z" fill="none" stroke="#A8CE4F" stroke-width="2" />
+          <circle cx="76" cy="92" r="15.5" fill="none" stroke="#F08A3C" stroke-width="2" />
+          <circle cx="124" cy="92" r="15.5" fill="none" stroke="#F08A3C" stroke-width="2" />
+          <ellipse cx="100" cy="115" rx="28" ry="20" fill="none" stroke="#F49BB4" stroke-width="2" />
+          <g fill="#2C2620">
+            <circle cx="46" cy="150" r="4" /><circle cx="154" cy="150" r="4" />
+            <circle cx="80" cy="188" r="4" /><circle cx="120" cy="188" r="4" />
+          </g>
+          <g font-family="Nunito, sans-serif" font-size="9" font-weight="800" fill="#6B6259">
+            <text x="4" y="86">eye line y 92</text>
+            <text x="4" y="176">belly line y 180</text>
+            <text x="120" y="36" fill="#2F72A8">head r 58</text>
+            <text x="8" y="212" fill="#6C8F22">body 120 wide</text>
+            <text x="30" y="146">shoulder</text>
+            <text x="126" y="204">hip</text>
+          </g>
+        </svg>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px;">
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">Head r 58 · eyes r 15.5</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Eye spacing 48, eye line y 92. PIP and WALLY use white sclera with a r 10–11.5 pupil; the other three use solid ink with a catchlight.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">Four pivots, unchanged</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Shoulders (46,150) / (154,150), hips (80,188) / (120,188). Every pose in <code style="font-size: 13px;">poses.ts</code> still tweens.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">One identity marker each</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Round ears · pointed ears + tail · long ears + bow · eyes-on-top · spout. Each survives a 48px silhouette test with no colour at all.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">One accessory each</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Star satchel · red bandana · heart satchel · yellow bowtie · red scarf. The accessory is how a child tells two greens apart in a group shot.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">Shading: two stops, one direction</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Radial from 34% / 24%, light → base → deep. Every character lit from the same upper-left. No third stop, no rim light, no outline.</p>
+        </div>
+        <div style="background: #FFFFFF; border: 1px solid #EDE3D3; border-radius: 18px; padding: 16px 20px;">
+          <p style="font-size: 15px; font-weight: 800;">Compact below 64px</p>
+          <p style="font-size: 14px; color: #6B6259; line-height: 1.45; padding-top: 3px;">Crop to <code style="font-size: 13px;">34 12 132 124</code> — the head and the marker. Limbs, accessory and shading drop; the flat base hue carries it.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+  </sc-if>
+
+  <section style="padding-top: 64px;" data-screen-label="Handoff">
+    <div style="background: #F7EBD6; border-radius: 28px; padding: 32px 36px;">
+      <h2 style="font-size: 28px; font-weight: 600; color: #8A6320;">Honest note on production</h2>
+      <p style="font-size: 16px; color: #6B6259; line-height: 1.55; padding-top: 10px; max-width: 1000px; text-wrap: pretty;">Everything on this page is hand-written SVG, so it ships as-is inside <code style="background: #FDF7EC; padding: 2px 6px; border-radius: 5px; font-size: 15px;">components/character</code> with no new dependency, no raster assets and no build step — the rig, the pose table and the expression table all survive. What SVG cannot reach is the reference's <strong>fur texture and painterly edges</strong>. If you want that specific finish, these drawings become the model sheet a commissioned illustrator works from, and <code style="background: #FDF7EC; padding: 2px 6px; border-radius: 5px; font-size: 15px;">characters.ts</code>'s existing <code style="background: #FDF7EC; padding: 2px 6px; border-radius: 5px; font-size: 15px;">art: {}</code> field is already the hook that swaps them in per size.</p>
+      <p style="font-size: 16px; color: #6B6259; line-height: 1.55; padding-top: 12px; max-width: 1000px; text-wrap: pretty;">I cannot generate illustrated artwork — everything here is drawn as vector shapes by hand. Say the word if you'd like the flat-fill version to compare, or a different species read on any of the five.</p>
+    </div>
+  </section>
+
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;$preview&quot;: { &quot;width&quot;: 1440 },
+  &quot;blushStrength&quot;: { &quot;editor&quot;: &quot;range&quot;, &quot;default&quot;: 0.5, &quot;min&quot;: 0, &quot;max&quot;: 1, &quot;step&quot;: 0.05, &quot;tsType&quot;: &quot;number&quot;, &quot;section&quot;: &quot;Character&quot; },
+  &quot;showLegacy&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; },
+  &quot;showConstruction&quot;: { &quot;editor&quot;: &quot;boolean&quot;, &quot;default&quot;: true, &quot;tsType&quot;: &quot;boolean&quot;, &quot;section&quot;: &quot;Sections&quot; }
+}">
+class Component extends DCLogic {
+  renderVals() {
+    return {
+      blush: this.props.blushStrength ?? 0.5,
+      showLegacy: this.props.showLegacy ?? true,
+      showConstruction: this.props.showConstruction ?? true,
+    };
+  }
+}
+</script>
+</body>
+</html>

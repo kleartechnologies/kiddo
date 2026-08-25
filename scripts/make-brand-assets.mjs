@@ -89,7 +89,7 @@ save(join(ROOT, "src/app/opengraph-image.png"), await shoot('[data-asset="og"]',
   })()`);
   const favicon = [
     '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">',
-    '  <rect width="64" height="64" rx="14" fill="#fbf8f3"/>',
+    '  <rect width="64" height="64" rx="14" fill="#faf5ec"/>',
     `  <svg x="7" y="7" width="50" height="50" viewBox="${inner.viewBox}">${inner.body}</svg>`,
     "</svg>",
     "",

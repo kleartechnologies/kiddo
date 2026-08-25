@@ -1,3 +1,4 @@
+import { OpenBook } from "@/components/kiddo/world/scenery";
 import { GAME_WORLDS } from "@/lib/worlds/worlds";
 import type { GameWorldDefinition } from "../definitions";
 
@@ -10,32 +11,17 @@ import type { GameWorldDefinition } from "../definitions";
  * cards — and a rhyme found is a ribbon drawn across the spine between them.
  *
  * The pages are plain: no ruled lines, because a rule under a word reads as
- * a place to write or a line to join, and neither is true here.
+ * a place to write or a line to join, and neither is true here. The door's
+ * book has them, and that is the only difference between the two — the book
+ * itself is `OpenBook`, drawn once for both.
  *
  * Pictures `grow` onto the page as it opens; a pair found `bounce`s on the
  * left and `sparkle`s on the right. Nothing else moves.
  */
 
-function BookBackdrop() {
-  return (
-    <div className="absolute inset-0 rounded-hero">
-      {/* The cover, just showing round the pages. */}
-      <div className="bg-honey-base/60 absolute inset-0 rounded-hero shadow-soft" />
-      {/* Two pages. */}
-      <div className="bg-paper absolute top-2 bottom-2 left-2 right-1/2 rounded-l-card rounded-r-sm" />
-      <div className="bg-paper absolute top-2 right-2 bottom-2 left-1/2 rounded-r-card rounded-l-sm" />
-      {/* The spine. */}
-      <div className="bg-edge absolute top-2 bottom-2 left-1/2 w-px -translate-x-1/2" />
-      <div className="bg-ink-900/5 absolute top-2 bottom-2 left-1/2 w-6 -translate-x-1/2 rounded-full" />
-      {/* The ribbon keeping the place. */}
-      <div className="bg-blossom-base absolute top-0 right-[10%] h-[18%] w-3 rounded-b-sm" />
-    </div>
-  );
-}
-
 export const WORDS_WORLD: GameWorldDefinition = {
   spec: GAME_WORLDS.words,
-  backdrop: <BookBackdrop />,
+  backdrop: <OpenBook inset="tight" />,
   padding: "px-4 py-5 sm:px-7 sm:py-7",
   /* The page turns: the book arrives from the side the next page is on. */
   entrance: {

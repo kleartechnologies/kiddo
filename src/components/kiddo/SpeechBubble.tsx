@@ -18,6 +18,14 @@ import { cn } from "@/lib/cn";
  * another in a single grid cell, invisible and `aria-hidden`, so the height is
  * whatever the longest line wraps to *at this width* — no number, no
  * breakpoint, and nothing a screen reader meets twice.
+ *
+ * What a caller reserves is what the bubble costs. The height is the tallest
+ * thing in `reserve`, so one long line — a hint written as a sentence — sizes
+ * every board it is reserved on, whether or not it is ever said. That is the
+ * bargain and it is not negotiable from this end: a caller that reserves less
+ * than it can say gets a bubble that changes height mid-round, which is the
+ * one thing this grid exists to prevent. Reserve every line that can be said,
+ * in full, and shorten the words themselves if the bubble is too tall.
  */
 export function SpeechBubble({
   children,

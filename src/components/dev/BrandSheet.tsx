@@ -45,6 +45,18 @@ export function BrandSheet() {
         <GroundThing cover="flowers" accent="blossom" className="absolute bottom-[6%] left-[8%] w-[3%]" />
         <GroundThing cover="flowers" accent="honey" className="absolute bottom-[4%] right-[10%] w-[3%]" />
 
+        {/* KIDDO is on the ground, not on the stack. Standing him beside the
+            cards was tried twice and there is no room for him there: the
+            headline's longest line ends at 492px and the first card starts at
+            604px, so a 178px figure in that gap covers either type or a card
+            label — and a cropped label is the one mistake a social card
+            cannot recover from once it is a PNG. Down here he has the whole
+            width of the empty grass, he is below the cards rather than in
+            front of them, and nothing overlaps anything. */}
+        <div className="absolute bottom-[3%] left-[42%]">
+          <CharacterFigure id="kiddo" size="xl" pose="wave" alive={false} className="!size-[168px]" />
+        </div>
+
         <div className="absolute inset-0 flex items-center justify-between px-16">
           <div className="flex max-w-[470px] flex-col gap-6">
             <KiddoWordmark size="lg" className="!text-7xl" />
@@ -74,9 +86,6 @@ export function BrandSheet() {
                 </li>
               ))}
             </ul>
-            <div className="absolute -bottom-9 -left-[5rem]">
-              <CharacterFigure id="kiddo" size="xl" pose="wave" alive={false} className="!size-[190px]" />
-            </div>
           </div>
         </div>
       </div>

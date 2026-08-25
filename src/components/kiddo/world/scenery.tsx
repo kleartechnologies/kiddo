@@ -8,10 +8,15 @@ import type { GroundCover, Sparkle, WorldMotif } from "@/lib/world/themes";
 /**
  * Everything KIDDO World is drawn out of.
  *
- * One file, one vocabulary: a cloud, a sun, a rainbow, a hill, a flower, a
- * leaf, a pebble and a faint subject mark. `KiddoWorldBackground` arranges
- * them; none of them knows where it is or what theme it belongs to, which is
- * what stops the scenery growing a per-screen special case.
+ * One file, one vocabulary. The first half is the weather and the ground
+ * every world shares — a cloud, a sun, a rainbow, a hill, a flower, a leaf, a
+ * pebble and a faint subject mark. The second half is the named scene layers
+ * a *place* is built from, listed where they begin further down.
+ *
+ * `KiddoWorldBackground` arranges the first half and `WorldScene` and the
+ * world profiles arrange the second; none of them knows where it is or what
+ * theme it belongs to, which is what stops the scenery growing a per-screen
+ * special case.
  *
  * The rules every piece here follows, because the cards are the thing the
  * child is meant to look at:
@@ -406,5 +411,358 @@ export function MotifMark({
         </g>
       )}
     </svg>
+  );
+}
+
+/* --------------------------------------------------------------------------
+   Scene layers
+
+   Everything above is weather and ground: the pieces every world is built
+   from. Everything below belongs to a *place* — the garden's apple tree and
+   pond, the adventure's water edge, reeds, trail and burrow, the book's
+   pages, spine and ribbon.
+
+   They live here rather than beside the screens that use them because each
+   one is drawn at least twice: once on the world's door in `WorldScene`, and
+   once behind the board in `games/world/worlds/*`. Two drawings of one pond
+   is how a world quietly stops being one place.
+
+   The named layers, and where each is drawn:
+
+     ridge, mid-hill  `Hills`        far · mid
+     near-ground      a ground band  the screen's own, so it can hold content
+     water-edge       `WaterEdge`    a shore down one side
+     pond             `Pond`         a pool the resident can stand in
+     grass-tuft       `GroundThing`  cover="leaves" / "pebbles"
+     flower-clump     `GroundThing`  cover="flowers"
+     reed             `Reed`         at the water's edge
+     bush             `Bush`         kind="bush"
+     canopy-tree      `Bush`         kind="tree"
+     apple-tree       `AppleTree`    the garden's own tree, and countable
+     path-dots        `PathDots`     a trail, never a join a child can tap
+     paw-print        `PawPrint`     where an animal has been
+     burrow           `Burrow`       a mound with a way in
+     book-page,
+     spine, ribbon    `OpenBook`     one book, both sizes
+     page-rule        `PageRule`     the door's book only — see `words.tsx`
+
+   One rule holds across all of them: no scene layer may look like something
+   to press. A dotted trail is drawn thinner and paler than a join, a burrow
+   never sits where a home node could, and a pond is a wash rather than a
+   filled shape.
+   -------------------------------------------------------------------------- */
+
+/**
+ * The garden's tree, with fruit in it.
+ *
+ * Distinct from `Bush kind="tree"` because it carries a second hue, and
+ * because the fruit is the thing the Counting Garden spends its day asking
+ * about — a tree with five apples in it is the world stating its own subject.
+ */
+export function AppleTree({
+  fruit = "apricot",
+  className,
+  style,
+}: Placed & {
+  fruit?: Accent;
+}) {
+  const leaf = ACCENT_VARS.sprout;
+  const skin = ACCENT_VARS[fruit];
+
+  return (
+    <svg viewBox="0 0 80 80" className={className} style={style} aria-hidden>
+      <path
+        d="M40,80 V48"
+        stroke={leaf.deep}
+        strokeWidth="6"
+        strokeLinecap="round"
+        fill="none"
+      />
+      <circle cx="40" cy="30" r="24" fill={leaf.base} />
+      <circle cx="22" cy="40" r="15" fill={leaf.base} />
+      <circle cx="58" cy="40" r="15" fill={leaf.base} />
+      <g fill={skin.deep}>
+        <circle cx="30" cy="26" r="5" />
+        <circle cx="48" cy="20" r="5" />
+        <circle cx="52" cy="40" r="5" />
+        <circle cx="24" cy="46" r="5" />
+        <circle cx="40" cy="42" r="5" />
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * A pool, in two halves.
+ *
+ * `whole` is the pond on its own. `near` is only the water in front, drawn
+ * over whatever stands in the pool so it reads as *in* rather than *on* — the
+ * caller places the same box twice with its resident between the two. That is
+ * the entire trick, and it is the reason WALLY can live in the garden without
+ * a whale-shaped hole cut out of the water.
+ *
+ * Stretched, like the hills: a pond is a puddle of colour with nothing round
+ * or lettered in it, so the caller sets both its width and its depth and the
+ * water fills whatever shape the bank happens to be.
+ */
+export function Pond({
+  half = "whole",
+  className,
+  style,
+}: Placed & {
+  half?: "whole" | "near";
+}) {
+  const water = ACCENT_VARS.tide;
+
+  return (
+    <svg
+      viewBox="0 0 120 56"
+      preserveAspectRatio="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      {half === "whole" ? (
+        <g fill={water.base}>
+          <ellipse cx="60" cy="28" rx="58" ry="26" opacity="0.4" />
+          <ellipse cx="60" cy="24" rx="45" ry="17" opacity="0.28" />
+        </g>
+      ) : (
+        <>
+          <path d="M2,28 A58,26 0 0 0 118,28 Z" fill={water.base} opacity="0.5" />
+          <g
+            stroke={water.deep}
+            strokeWidth="2"
+            strokeLinecap="round"
+            fill="none"
+            opacity="0.45"
+          >
+            <path d="M20,38 q6,-4 12,0 t12,0" />
+            <path d="M64,45 q6,-4 12,0 t12,0" />
+          </g>
+        </>
+      )}
+    </svg>
+  );
+}
+
+/**
+ * Water reaching in from one side, with the shore curving away from it.
+ *
+ * Stretched (`preserveAspectRatio="none"`) like the hills are, and for the
+ * same reason: it is a long organic edge with nothing round in it, so it
+ * should fill whatever width it is given rather than be cropped to its middle.
+ */
+export function WaterEdge({
+  side = "right",
+  className,
+  style,
+}: Placed & {
+  side?: "left" | "right";
+}) {
+  const water = ACCENT_VARS.tide;
+
+  return (
+    <svg
+      viewBox="0 0 100 30"
+      preserveAspectRatio="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      <g transform={side === "left" ? "translate(100,0) scale(-1,1)" : undefined}>
+        <path d="M8,0 C20,8 12,18 22,30 H100 V0 Z" fill={water.base} opacity="0.45" />
+        <g
+          stroke={water.deep}
+          strokeWidth="1.5"
+          fill="none"
+          opacity="0.5"
+        >
+          <path d="M40,12 q6,-4 12,0 t12,0" />
+          <path d="M62,22 q6,-4 12,0 t12,0" />
+        </g>
+      </g>
+    </svg>
+  );
+}
+
+/**
+ * Reeds at the water's edge. Three blades and one head.
+ *
+ * The one piece of scenery that stands taller than it is wide, which is what
+ * it is for: a band of water and a band of grass meeting in a straight line
+ * reads as two stripes until something breaks the join.
+ */
+export function Reed({
+  accent = "sprout",
+  className,
+  style,
+}: Placed & {
+  accent?: Accent;
+}) {
+  const hue = ACCENT_VARS[accent];
+
+  return (
+    <svg viewBox="0 0 28 48" className={className} style={style} aria-hidden>
+      <g
+        stroke={hue.deep}
+        strokeWidth="3"
+        strokeLinecap="round"
+        fill="none"
+      >
+        <path d="M14,48 C13,36 13,26 14,16" />
+        <path d="M14,48 C10,38 7,32 4,26" />
+        <path d="M14,48 C18,38 21,32 24,28" />
+      </g>
+      <rect x="10.5" y="4" width="7" height="16" rx="3.5" fill={ACCENT_VARS.honey.deep} />
+    </svg>
+  );
+}
+
+/**
+ * A trail of dots across the ground.
+ *
+ * Deliberately thin, dotted and pale. The Connect board draws a join between
+ * two things a child may tap, and this must never be mistaken for one — so it
+ * is drawn at a weight no join uses, and no world puts it on a Connect board.
+ */
+export function PathDots({ className, style }: Placed) {
+  return (
+    <svg
+      viewBox="0 0 100 30"
+      preserveAspectRatio="none"
+      className={className}
+      style={style}
+      aria-hidden
+    >
+      <path
+        d="M4,26 C24,20 30,8 56,10 S80,6 96,4"
+        stroke={ACCENT_VARS.honey.deep}
+        strokeWidth="2.2"
+        strokeDasharray="0.1 6"
+        strokeLinecap="round"
+        fill="none"
+        opacity="0.7"
+      />
+    </svg>
+  );
+}
+
+/** Where an animal has been. Four toes and a pad, pressed into the ground. */
+export function PawPrint({
+  accent = "apricot",
+  className,
+  style,
+}: Placed & {
+  accent?: Accent;
+}) {
+  return (
+    <svg viewBox="0 0 40 40" className={className} style={style} aria-hidden>
+      <g fill={ACCENT_VARS[accent].deep} opacity="0.8">
+        <ellipse cx="11" cy="12" rx="4" ry="5" />
+        <ellipse cx="29" cy="12" rx="4" ry="5" />
+        <ellipse cx="5" cy="22" rx="3.5" ry="4" />
+        <ellipse cx="35" cy="22" rx="3.5" ry="4" />
+        <path d="M20,18 C27,18 32,25 32,31 C32,35 28,37 24,36 C21,35 19,35 16,36 C12,37 8,35 8,31 C8,25 13,18 20,18 Z" />
+      </g>
+    </svg>
+  );
+}
+
+/** A mound with a way into it. Somebody lives here. */
+export function Burrow({ className, style }: Placed) {
+  const hue = ACCENT_VARS.honey;
+
+  return (
+    <svg viewBox="0 0 80 40" className={className} style={style} aria-hidden>
+      <path d="M4,40 C4,18 20,6 40,6 C60,6 76,18 76,40 Z" fill={hue.base} />
+      <path
+        d="M22,40 C22,28 30,22 40,22 C50,22 58,28 58,40 Z"
+        fill={hue.deep}
+        opacity="0.8"
+      />
+    </svg>
+  );
+}
+
+/**
+ * The book, lying open: cover, two pages, the spine, and the ribbon.
+ *
+ * `wide` is the door's book, inset as a proportion so it stays a book at any
+ * card size. `tight` is the board's, inset by a fixed amount so the pages are
+ * as large as the panel allows and the words on them have room. Same book,
+ * same ribbon, same side — a child should not meet two different books.
+ */
+export function OpenBook({
+  inset = "wide",
+  className,
+}: {
+  inset?: "wide" | "tight";
+  className?: string;
+}) {
+  const wide = inset === "wide";
+  const edge = wide ? "top-[8%] bottom-[8%]" : "top-2 bottom-2";
+
+  return (
+    <div className={cn("absolute inset-0", !wide && "rounded-hero", className)} aria-hidden>
+      {/* The cover, just showing round the pages. Square-cornered on a door,
+          because the door, the banner and the landing card each clip to their
+          own radius — and a rounded cover inside a tighter corner leaves four
+          slivers of the page behind showing through. */}
+      <div
+        className={cn(
+          "bg-honey-base/55 absolute inset-0",
+          !wide && "rounded-hero shadow-soft",
+        )}
+      />
+      {/* Two pages. */}
+      <div
+        className={cn(
+          "bg-paper absolute right-1/2 rounded-l-card rounded-r-sm",
+          edge,
+          wide ? "left-[6%]" : "left-2",
+        )}
+      />
+      <div
+        className={cn(
+          "bg-paper absolute left-1/2 rounded-r-card rounded-l-sm",
+          edge,
+          wide ? "right-[6%]" : "right-2",
+        )}
+      />
+      {/* The spine, and the shadow the fold throws either side of it. */}
+      <div className={cn("bg-edge absolute left-1/2 w-px -translate-x-1/2", edge)} />
+      <div
+        className={cn(
+          "bg-ink-900/5 absolute left-1/2 -translate-x-1/2 rounded-full",
+          edge,
+          wide ? "w-[4%]" : "w-6",
+        )}
+      />
+      {/* The ribbon keeping the place. */}
+      <div
+        className={cn(
+          "bg-blossom-base absolute top-0 rounded-b-sm",
+          wide ? "right-[14%] h-[22%] w-[3.5%]" : "right-[10%] h-[18%] w-3",
+        )}
+      />
+    </div>
+  );
+}
+
+/**
+ * A dashed rule on a page.
+ *
+ * The door's book only. Inside Word World the pages are left plain, because a
+ * rule under a word reads as a place to write or a line to join, and there
+ * neither is true. On the door there is nothing to join, and the rules are
+ * what say *book* at thumbnail size.
+ */
+export function PageRule({ className }: { className?: string }) {
+  return (
+    <div
+      aria-hidden
+      className={cn("border-edge/80 absolute border-b border-dashed", className)}
+    />
   );
 }

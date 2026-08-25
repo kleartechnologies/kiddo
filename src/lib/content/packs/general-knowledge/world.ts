@@ -1,4 +1,5 @@
-import { defineQuizActivity, except, pic, type Question, type Sym } from "./shared";
+import { illustratedAtLevel, type ArtId } from "@/lib/content/art";
+import { defineQuizActivity, drawn, except, pic, type Question, type Sym } from "./shared";
 
 /**
  * The shape of the world outside, and how to stay safe in it.
@@ -28,7 +29,43 @@ const LAND = {
 
 type LandKey = keyof typeof LAND;
 
-export const LAND_TILES: readonly Sym[] = Object.values(LAND);
+/**
+ * The same seven places, drawn.
+ *
+ * All seven or none, and that is the whole reason the library grew: a board
+ * here offers four of the seven at once, and two drawings among four glyphs is
+ * a pattern a child can answer from without reading the question. `habitats.ts`
+ * had the sea, the forest and the desert already; the mountain, the beach, the
+ * island and the volcano were drawn so that this table could exist.
+ */
+const LAND_ART: Readonly<Record<LandKey, ArtId>> = {
+  sea: "place.sea",
+  mountain: "place.mountain",
+  beach: "place.beach",
+  island: "place.island",
+  desert: "place.desert",
+  forest: "place.forest",
+  volcano: "place.volcano",
+};
+
+const DRAWN_LAND = Object.fromEntries(
+  (Object.keys(LAND) as LandKey[]).map((key) => [
+    key,
+    { key: LAND[key].key, item: drawn(LAND[key], LAND_ART[key]) },
+  ]),
+) as Record<LandKey, Sym>;
+
+/**
+ * Which set of tiles a level is dealt from.
+ *
+ * The scaffold, and the same one every other illustrated activity uses: the
+ * pictures belong to the entry level and leave as the board gets harder, so a
+ * child who has learnt the places by their drawings has to name them by their
+ * words at level two. Nothing else about the board changes — same keys, same
+ * labels, same glyphs underneath.
+ */
+const tilesAt = (level: 1 | 2 | 3): Record<LandKey, Sym> =>
+  illustratedAtLevel(level) ? DRAWN_LAND : LAND;
 
 /**
  * Naming boards get the same `avoid` the property boards have, because a
@@ -74,13 +111,14 @@ export const landAndWater = defineQuizActivity({
   host: "wally",
   questions: [
     ...NAMES.map(({ key, level, avoid }): Question => {
-      const answer = LAND[key];
-      const barred = (avoid ?? []).map((other) => LAND[other]);
+      const tiles = tilesAt(level);
+      const answer = tiles[key];
+      const barred = (avoid ?? []).map((other) => tiles[other]);
       return {
         level,
         ask: `Which one is ${answer.key}?`,
         answer,
-        distractors: except(LAND_TILES, answer, ...barred),
+        distractors: except(Object.values(tiles), answer, ...barred),
         because: `That is ${answer.key}.`,
         hint: "Look at what each place is made of.",
         idea: `land:${key}`,
@@ -88,16 +126,17 @@ export const landAndWater = defineQuizActivity({
       };
     }),
     ...PROPERTIES.map((fact): Question => {
-      const answer = LAND[fact.key];
+      const tiles = tilesAt(fact.level);
+      const answer = tiles[fact.key];
       const barred = new Set<string>([
         answer.key,
-        ...(fact.avoid ?? []).map((key) => LAND[key].key),
+        ...(fact.avoid ?? []).map((key) => tiles[key].key),
       ]);
       return {
         level: fact.level,
         ask: fact.ask,
         answer,
-        distractors: LAND_TILES.filter((tile) => !barred.has(tile.key)),
+        distractors: Object.values(tiles).filter((tile) => !barred.has(tile.key)),
         because: fact.because,
         hint: fact.hint,
         idea: fact.idea,

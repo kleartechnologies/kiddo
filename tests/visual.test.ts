@@ -51,6 +51,10 @@ const DRAWINGS = [
   "src/components/kiddo/artwork/illustrations/things.tsx",
   "src/components/kiddo/artwork/illustrations/nature.tsx",
   "src/components/kiddo/artwork/illustrations/places.tsx",
+  /* The shared marks — the light and the floor — hold to the same rules as the
+     drawings that reach for them, or the rules would have a hole in them the
+     width of the whole library. */
+  "src/components/kiddo/artwork/illustrations/shading.tsx",
 ];
 
 /** The activities on the picture ladder: five from Phase 9, two from 10. */

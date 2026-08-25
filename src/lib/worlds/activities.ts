@@ -136,8 +136,13 @@ const DOORS: readonly WorldActivitySpec[] = [
     intro: "Let's count in the garden!",
     done: "You counted every single one!",
     plans: {
-      /* Small groups, pictures on the tiles. */
-      1: { slots: five(1, ["math.counting-objects", "math.counting"]) },
+      /* Small groups, and every one of them a group of *things*. The pip
+         boards `math.counting` deals are the same question with the apples
+         taken away, and the garden's first door is the one place in the
+         product where that trade is worst: a child walking into a world
+         called Count the Apples should be counting apples. The pips are
+         still dealt at the tiers below, where a block of them is the point. */
+      1: { slots: five(1, ["math.counting-objects"]) },
       /* Bigger groups, wider answer pools. */
       2: { slots: five(2, ["math.counting-objects", "math.counting"]) },
       /* The biggest groups, and mixed groups: count only the circles. */
@@ -276,9 +281,15 @@ const DOORS: readonly WorldActivitySpec[] = [
     done: "Land, sea and sky — you found them all!",
     plans: {
       1: {
+        /* Land and water at *its* entry level, not at the top of its ladder.
+           It was the one activity in the product whose easiest door dealt its
+           hardest boards, and the cost was not only difficulty: the pictures
+           belong to level one, so an Easy round here could arrive with no
+           KIDDO drawing anywhere on it — the only door in the product that
+           could. Medium and Hard are untouched. */
         slots: [
           ...five(2, ["general-knowledge.animal-homes", "general-knowledge.animal-diet"]).slice(0, 3),
-          ...five(3, ["general-knowledge.land-and-water"]).slice(0, 2),
+          ...five(1, ["general-knowledge.land-and-water"]).slice(0, 2),
         ],
       },
       /* Everything at the top of its ladder. */

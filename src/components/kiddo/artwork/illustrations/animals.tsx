@@ -1,12 +1,23 @@
 import { PAINT } from "./paint";
+import { Ground, Shade } from "./shading";
 
 /**
  * The animals the level-one boards are built from.
  *
  * Every one is drawn face-on in the same 100-unit box, from flat shapes with
  * ink only for features, so a row of them reads as one family rather than nine
- * stickers. Nothing has an outline, nothing has a gradient, and nothing has a
- * shadow — the same three rules the character rig follows.
+ * stickers. Nothing has an outline and nothing has a gradient.
+ *
+ * Two marks are shared, and both come from `shading.tsx`. `Shade` is the unlit
+ * face of the largest round form, so the light on an animal is the light on
+ * KIDDO — upper-left, once, for the whole product. `Ground` is a contact
+ * shadow, and it is what stops an animal hovering over the land it is standing
+ * on: an animal in the Animal Adventure world is placed on grass, and before
+ * this every one of them floated a few pixels above it.
+ *
+ * Only what stands gets a floor. The fish and the shark are in water, the bird
+ * is drawn mid-hop and the bee is in the air, so those four have no `Ground` —
+ * a shadow under a swimming fish is a shadow cast on nothing.
  *
  * The hues are chosen to be *tellable apart*, not to be accurate. A dog is
  * apricot and a cat is honey because a board can hold both, and two animals
@@ -21,6 +32,7 @@ import { PAINT } from "./paint";
 export function Cow() {
   return (
     <>
+      <Ground y={88} rx={24} />
       {/* Ears first, so the head sits on top of them. */}
       <ellipse cx="16" cy="46" rx="12" ry="9" fill={PAINT.paper} />
       <ellipse cx="84" cy="46" rx="12" ry="9" fill={PAINT.paper} />
@@ -30,6 +42,7 @@ export function Cow() {
       <ellipse cx="32" cy="21" rx="7" ry="5" fill={PAINT.yellow} />
       <ellipse cx="68" cy="21" rx="7" ry="5" fill={PAINT.yellow} />
       <ellipse cx="50" cy="54" rx="33" ry="30" fill={PAINT.paper} />
+      <Shade cx={50} cy={54} rx={33} ry={30} />
       {/* The patch. The one thing that makes a white oval a cow. */}
       <ellipse cx="32" cy="36" rx="14" ry="10" fill={PAINT.inkSoft} />
       <ellipse cx="70" cy="33" rx="8" ry="6" fill={PAINT.inkSoft} />
@@ -45,6 +58,7 @@ export function Cow() {
 export function Sheep() {
   return (
     <>
+      <Ground y={84} rx={25} />
       {/* The fleece is six overlapping circles, because a cloud outline drawn
           as one path stops looking woolly the moment it is 48px wide. */}
       <g fill={PAINT.cream} stroke={PAINT.stone} strokeWidth="2.5">
@@ -65,6 +79,9 @@ export function Sheep() {
         <circle cx="72" cy="62" r="16" />
         <circle cx="50" cy="60" r="20" />
       </g>
+      {/* The light, kept inside the fleece: the crescent sits well within the
+          outermost circles, so it can never show past the wool. */}
+      <Shade cx={50} cy={50} rx={26} ry={25} />
       <ellipse cx="30" cy="58" rx="8" ry="6" fill={PAINT.inkSoft} transform="rotate(-20 30 58)" />
       <ellipse cx="70" cy="58" rx="8" ry="6" fill={PAINT.inkSoft} transform="rotate(20 70 58)" />
       <ellipse cx="50" cy="62" rx="15" ry="17" fill={PAINT.inkSoft} />
@@ -78,11 +95,13 @@ export function Sheep() {
 export function Dog() {
   return (
     <>
+      <Ground y={84} rx={24} />
       {/* Long ears, hanging past the jaw. The whole difference between this
           silhouette and the cat's. */}
       <ellipse cx="19" cy="56" rx="11" ry="22" fill={PAINT.wood} />
       <ellipse cx="81" cy="56" rx="11" ry="22" fill={PAINT.wood} />
       <circle cx="50" cy="50" r="31" fill={PAINT.orange} />
+      <Shade cx={50} cy={50} r={31} />
       <ellipse cx="50" cy="66" rx="19" ry="14" fill={PAINT.cream} />
       <ellipse cx="50" cy="59" rx="6.5" ry="5" fill={PAINT.ink} />
       <path
@@ -101,6 +120,7 @@ export function Dog() {
 export function Cat() {
   return (
     <>
+      <Ground y={90} rx={24} />
       <path d="M24 36 L26 10 L48 26 Z" fill={PAINT.yellowDeep} />
       <path d="M76 36 L74 10 L52 26 Z" fill={PAINT.yellowDeep} />
       <path d="M30 32 L31 18 L43 27 Z" fill={PAINT.pinkSoft} />
@@ -112,6 +132,7 @@ export function Cat() {
         <ellipse cx="34" cy="32" rx="3.5" ry="6" transform="rotate(-25 34 32)" />
         <ellipse cx="66" cy="32" rx="3.5" ry="6" transform="rotate(25 66 32)" />
       </g>
+      <Shade cx={50} cy={54} r={31} />
       <circle cx="38" cy="50" r="4.5" fill={PAINT.ink} />
       <circle cx="62" cy="50" r="4.5" fill={PAINT.ink} />
       <path d="M50 60 l-5 -4 h10 Z" fill={PAINT.pinkDeep} />
@@ -135,6 +156,7 @@ export function Fish() {
     <>
       <path d="M72 50 L96 32 L96 68 Z" fill={PAINT.blueDeep} />
       <ellipse cx="47" cy="50" rx="34" ry="23" fill={PAINT.blue} />
+      <Shade cx={47} cy={50} rx={34} ry={23} />
       <path d="M40 28 q10 -12 20 0 Z" fill={PAINT.blueDeep} />
       <path d="M62 50 q-3 12 -14 16" fill="none" stroke={PAINT.blueDeep} strokeWidth="3" strokeLinecap="round" />
       <circle cx="29" cy="45" r="6" fill={PAINT.paper} />
@@ -161,6 +183,7 @@ export function Shark() {
         strokeWidth="3.4"
         strokeLinecap="round"
       />
+      <Shade cx={52} cy={52} rx={38} ry={21} />
       <circle cx="30" cy="48" r="3.6" fill={PAINT.ink} />
     </>
   );
@@ -169,6 +192,7 @@ export function Shark() {
 export function Frog() {
   return (
     <>
+      <Ground y={87} rx={30} />
       <circle cx="30" cy="28" r="14" fill={PAINT.green} />
       <circle cx="70" cy="28" r="14" fill={PAINT.green} />
       <circle cx="30" cy="27" r="8.5" fill={PAINT.paper} />
@@ -179,6 +203,7 @@ export function Frog() {
       <ellipse cx="80" cy="76" rx="13" ry="8" fill={PAINT.greenDeep} />
       <ellipse cx="50" cy="58" rx="33" ry="26" fill={PAINT.green} />
       <ellipse cx="50" cy="66" rx="20" ry="15" fill={PAINT.greenSoft} />
+      <Shade cx={50} cy={58} rx={33} ry={26} />
       <path
         d="M32 56 q18 16 36 0"
         fill="none"
@@ -193,6 +218,7 @@ export function Frog() {
 export function Mouse() {
   return (
     <>
+      <Ground y={88} rx={24} />
       <circle cx="24" cy="34" r="16" fill={PAINT.stone} />
       <circle cx="76" cy="34" r="16" fill={PAINT.stone} />
       <circle cx="24" cy="34" r="9.5" fill={PAINT.pinkSoft} />
@@ -206,6 +232,7 @@ export function Mouse() {
         strokeLinecap="round"
       />
       <ellipse cx="48" cy="58" rx="30" ry="27" fill={PAINT.stone} />
+      <Shade cx={48} cy={58} rx={30} ry={27} />
       <circle cx="37" cy="54" r="4" fill={PAINT.ink} />
       <circle cx="59" cy="54" r="4" fill={PAINT.ink} />
       <ellipse cx="48" cy="70" rx="6" ry="4.5" fill={PAINT.pinkDeep} />
@@ -220,6 +247,7 @@ export function Mouse() {
 export function Chicken() {
   return (
     <>
+      <Ground y={96} rx={18} />
       {/* Comb and wattle. Without them a white bird is a duck, a goose or a
           dove; with them every child in the room says chicken. */}
       <g fill={PAINT.pinkDeep}>
@@ -232,9 +260,11 @@ export function Chicken() {
       <path d="M16 62 q-14 -22 -6 -34 q10 10 16 20 Z" fill={PAINT.stone} />
       <ellipse cx="44" cy="62" rx="30" ry="24" fill={PAINT.paper} stroke={PAINT.stone} strokeWidth="2.5" />
       <ellipse cx="38" cy="64" rx="15" ry="12" fill={PAINT.cream} />
+      <Shade cx={44} cy={62} rx={30} ry={24} />
       <ellipse cx="60" cy="36" rx="17" ry="16" fill={PAINT.paper} stroke={PAINT.stone} strokeWidth="2.5" />
       {/* Head drawn again without the stroke, so the neck seam disappears. */}
       <ellipse cx="60" cy="36" rx="15" ry="14" fill={PAINT.paper} />
+      <Shade cx={60} cy={36} rx={15} ry={14} />
       <path d="M75 38 L90 42 L75 46 Z" fill={PAINT.yellow} />
       <circle cx="64" cy="33" r="3.6" fill={PAINT.ink} />
       <g stroke={PAINT.yellowDeep} strokeWidth="3.5" strokeLinecap="round">
@@ -248,6 +278,7 @@ export function Chicken() {
 export function Duck() {
   return (
     <>
+      <Ground y={87} rx={24} />
       {/* A curl of feathers on top, so a yellow circle reads as a duck and
           not as a chick. */}
       <path d="M50 14 q10 -8 16 2 q-8 -2 -10 5 Z" fill={PAINT.yellowDeep} />
@@ -261,6 +292,7 @@ export function Duck() {
         strokeWidth="2.4"
         strokeLinecap="round"
       />
+      <Shade cx={50} cy={52} r={31} />
       <circle cx="30" cy="58" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="70" cy="58" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="38" cy="44" r="4" fill={PAINT.ink} />
@@ -272,12 +304,14 @@ export function Duck() {
 export function Rabbit() {
   return (
     <>
+      <Ground y={93} rx={22} />
       {/* The ears are the silhouette. Long, upright, pink inside. */}
       <ellipse cx="36" cy="26" rx="10" ry="22" fill={PAINT.cream} stroke={PAINT.stone} strokeWidth="2.5" />
       <ellipse cx="64" cy="26" rx="10" ry="22" fill={PAINT.cream} stroke={PAINT.stone} strokeWidth="2.5" />
       <ellipse cx="36" cy="28" rx="4.5" ry="14" fill={PAINT.pinkSoft} />
       <ellipse cx="64" cy="28" rx="4.5" ry="14" fill={PAINT.pinkSoft} />
       <circle cx="50" cy="62" r="28" fill={PAINT.cream} />
+      <Shade cx={50} cy={62} r={28} />
       <circle cx="32" cy="70" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="68" cy="70" r="6" fill={PAINT.blush} opacity="0.3" />
       <ellipse cx="50" cy="70" rx="5" ry="4" fill={PAINT.pink} />
@@ -303,6 +337,7 @@ export function Bird() {
       <path d="M50 12 q9 -6 13 3 q-7 -1 -9 5 Z" fill={PAINT.blueDeep} />
       <circle cx="50" cy="52" r="30" fill={PAINT.blue} />
       <ellipse cx="50" cy="68" rx="16" ry="11" fill={PAINT.blueSoft} />
+      <Shade cx={50} cy={52} r={30} />
       <path d="M42 52 L58 52 L50 63 Z" fill={PAINT.yellowDeep} />
       <circle cx="38" cy="42" r="4" fill={PAINT.ink} />
       <circle cx="62" cy="42" r="4" fill={PAINT.ink} />
@@ -313,6 +348,7 @@ export function Bird() {
 export function Snake() {
   return (
     <>
+      <Ground cx={42} y={92} rx={32} />
       {/* The body is one green wave, thick enough to be a shape rather than
           a line, with the head raised at its end. */}
       <path
@@ -323,6 +359,7 @@ export function Snake() {
         strokeLinecap="round"
       />
       <circle cx="74" cy="46" r="17" fill={PAINT.green} />
+      <Shade cx={74} cy={46} r={17} />
       <circle cx="30" cy="74" r="4" fill={PAINT.greenDeep} />
       <circle cx="56" cy="74" r="4" fill={PAINT.greenDeep} />
       <circle cx="68" cy="42" r="3.5" fill={PAINT.ink} />
@@ -341,6 +378,7 @@ export function Snake() {
 export function Monkey() {
   return (
     <>
+      <Ground y={87} rx={25} />
       {/* Ears wide out to the sides: the monkey silhouette. */}
       <circle cx="16" cy="50" r="11" fill={PAINT.wood} />
       <circle cx="84" cy="50" r="11" fill={PAINT.wood} />
@@ -354,6 +392,7 @@ export function Monkey() {
         d="M50 78 C31 78 25 62 30 47 A15 15 0 0 1 50 41 A15 15 0 0 1 70 47 C75 62 69 78 50 78 Z"
         fill={PAINT.cream}
       />
+      <Shade cx={50} cy={52} r={31} />
       <circle cx="31" cy="63" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="69" cy="63" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="40" cy="53" r="4" fill={PAINT.ink} />
@@ -373,6 +412,7 @@ export function Monkey() {
 export function Fox() {
   return (
     <>
+      <Ground y={89} rx={23} />
       {/* The pointed ears are the silhouette. */}
       <path d="M20 44 L25 10 L48 32 Z" fill={PAINT.orange} />
       <path d="M80 44 L75 10 L52 32 Z" fill={PAINT.orange} />
@@ -381,6 +421,7 @@ export function Fox() {
       <circle cx="50" cy="56" r="29" fill={PAINT.orange} />
       {/* The white muzzle that makes a fox a fox and not an orange cat. */}
       <ellipse cx="50" cy="72" rx="20" ry="13" fill={PAINT.cream} />
+      <Shade cx={50} cy={56} r={29} />
       <circle cx="29" cy="61" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="71" cy="61" r="6" fill={PAINT.blush} opacity="0.3" />
       <circle cx="39" cy="50" r="4" fill={PAINT.ink} />
@@ -412,6 +453,7 @@ export function Bee() {
         strokeLinecap="round"
       />
       <circle cx="50" cy="54" r="30" fill={PAINT.yellow} />
+      <Shade cx={50} cy={54} r={30} />
       {/* The stripes: what makes a yellow circle a bee. */}
       <path
         d="M22 63 q28 13 56 0"
@@ -445,6 +487,7 @@ export function Bee() {
 export function Ladybird() {
   return (
     <>
+      <Ground y={93} rx={23} />
       {/* Antennae, then the head, then the shell over its shoulders. */}
       <path
         d="M41 16 q-5 -7 -13 -8 M59 16 q5 -7 13 -8"
@@ -461,6 +504,7 @@ export function Ladybird() {
       {/* The shell: a dome of spots, split down the middle. */}
       <circle cx="50" cy="60" r="30" fill={PAINT.pinkDeep} />
       <path d="M50 32 V90" stroke={PAINT.ink} strokeWidth="3" />
+      <Shade cx={50} cy={60} r={30} />
       <g fill={PAINT.ink}>
         <circle cx="36" cy="50" r="5" />
         <circle cx="64" cy="50" r="5" />

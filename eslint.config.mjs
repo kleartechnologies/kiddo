@@ -14,6 +14,9 @@ const eslintConfig = defineConfig([
     "next-env.d.ts",
     // The character sheet from Claude Design. Reference art, not source.
     "Character Vector Construction/**",
+    // The approved visual design package. Prototypes and a design-tool
+    // runtime, both vendored as reference; neither is product source.
+    "KIDDO DESIGN V1/**",
   ]),
 ]);
 

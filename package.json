@@ -23,7 +23,8 @@
     "measure:parents": "node scripts/measure-parents.mjs",
     "measure:landing": "node scripts/measure-landing.mjs",
     "measure:account": "node scripts/measure-account.mjs",
-    "test:rules": "node scripts/test-rules.mjs"
+    "test:rules": "node scripts/test-rules.mjs",
+    "measure:join": "node scripts/measure-join.mjs"
   },
   "dependencies": {
     "firebase": "^12.18.0",

@@ -62,9 +62,17 @@ Deploy with `firebase deploy --only firestore:rules` (needs `firebase login`).
 
 ## Authentication flow
 
+There are two doors and one door frame. `/join` is where a parent who has
+just chosen a plan makes an account (`JoinGate`, then Stripe, then
+`/welcome`); `/parents` is where a parent who already has one signs in
+(`ParentGate`). Both render the same `AuthCard` against the same session
+store, so there is one authentication system and one set of sentences.
+
 1. `/parents` → `ParentGate` reads `useSession()`.
-2. `signed-out` → `AuthCard` (email + password; Create account / Sign in
-   toggle; failures mapped to plain sentences, never Firebase codes).
+2. `signed-out` → `AuthCard` (email + password, and — when creating an
+   account — a confirm-password field checked before Firebase is called;
+   Create account / Sign in toggle; failures mapped to plain sentences,
+   never Firebase codes).
 3. On auth: `ensureUser` writes `users/{uid}`; `findChild(uid)`.
    - no child → `needs-child` → `ChildOnboarding` ("What's your child's
      name?", prefilled from the device's name if any) → `createChildProfile`.
@@ -72,7 +80,10 @@ Deploy with `firebase deploy --only firestore:rules` (needs `firebase login`).
    - Firestore unreachable → `trouble` (retry / sign out). Never guesses
      "no child", which would invite a duplicate profile.
 4. `ready` → the unchanged `ParentDashboard`, now reading the cloud journey,
-   with `AccountRow` (email, sync status, Sign out, Delete account) inside it.
+   with `AccountRow` (email, sync status, Sign out, Delete account) and
+   `BillingRow` (plan, one-word status, what happens next, "Manage
+   subscription") inside it. Signing out lives here and only here: the
+   child's screens have no account UI at all.
 5. Page reload: the hint key starts the SDK immediately; Firebase restores
    the session; status goes `loading → signed-in → ready` with a quiet
    "Opening the parent area…" line in between, no modal, no spinner screen.

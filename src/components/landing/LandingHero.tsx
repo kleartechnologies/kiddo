@@ -1,11 +1,11 @@
 import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
-import { PLANS } from "@/lib/billing/subscription";
+import { PLANS, YEARLY_SAVING_PERCENT } from "@/lib/billing/subscription";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { cn } from "@/lib/cn";
-import { KIDDO_HOME } from "@/lib/routes";
+import { PRICING } from "@/lib/routes";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 import { WORLD_PLACES } from "@/lib/worlds/places";
 
@@ -45,20 +45,20 @@ export function LandingHero() {
         </p>
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
           <ButtonLink
-            href={KIDDO_HOME}
+            href={PRICING}
             size="lg"
             iconRight
             icon={<ArrowRight className="size-6" aria-hidden />}
             data-landing-cta
           >
-            Start the adventure
+            Start KIDDO
           </ButtonLink>
           <ButtonLink href="#how-it-works" variant="soft" size="md">
             See how KIDDO works
           </ButtonLink>
         </div>
         <p className="text-ink-500 text-sm">
-          {`One subscription, ${PLANS.monthly.price} a ${PLANS.monthly.per} or ${PLANS.yearly.price} a ${PLANS.yearly.per}, opens every world. Cancel anytime. Works in the browser on phones, tablets and laptops.`}
+          {`One subscription, ${PLANS.monthly.price} a ${PLANS.monthly.per} or ${PLANS.yearly.price} a ${PLANS.yearly.per} (${YEARLY_SAVING_PERCENT}% less), opens every world. Cancel anytime. Works in the browser on phones, tablets and laptops.`}
         </p>
       </div>
 

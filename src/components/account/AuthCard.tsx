@@ -10,9 +10,10 @@ import type { AuthFailure } from "@/lib/cloud/types";
 
 /**
  * Where a parent signs in or creates the account their child will play
- * under. One card, two modes, the same two boxes — the only difference is
- * the sentence and the button, because a parent who has an account and one
- * who does not are asked for the same things.
+ * under. One card, three modes: sign in, create an account, and the
+ * forgotten-password detour. Creating asks for the password twice, because
+ * it is the only field on the page that cannot be checked by reading it
+ * back; signing in asks once, because a wrong one simply does not work.
  *
  * Errors are sentences, not codes, and they sit in a live region next to
  * the boxes rather than in a toast that vanishes.
@@ -32,13 +33,17 @@ const WORDS: Record<AuthFailure, string> = {
   unknown: "Something went wrong. Please try again.",
 };
 
-type Mode = "signin" | "signup" | "forgot";
+/** Not an auth failure — the two password boxes simply differ. */
+const MISMATCH = "Those two passwords don’t match.";
+
+export type Mode = "signin" | "signup" | "forgot";
 
 export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
   const [mode, setMode] = useState<Mode>(initialMode);
   const [sent, setSent] = useState<string | null>(null);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const id = useId();
@@ -60,6 +65,13 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
       else setSent(email.trim());
       return;
     }
+    if (creating && password !== confirm) {
+      /* Caught here rather than by Firebase: the two boxes are KIDDO's
+         idea, and a mistyped confirmation is not an auth failure. */
+      setBusy(false);
+      setError(MISMATCH);
+      return;
+    }
     const failure = creating ? await signUp(email, password) : await signIn(email, password);
     setBusy(false);
     if (failure) setError(WORDS[failure]);
@@ -69,6 +81,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
     setMode(next);
     setError(null);
     setSent(null);
+    setConfirm("");
   }
 
   if (forgot && sent) {
@@ -163,6 +176,25 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
             </p>
           )}
         </div>
+        )}
+        {creating && (
+          <div className="flex flex-col gap-2">
+            <label htmlFor={`${id}-confirm`} className="text-ink-700 text-base font-semibold">
+              Confirm password
+            </label>
+            <input
+              id={`${id}-confirm`}
+              type="password"
+              name="confirm-password"
+              autoComplete="new-password"
+              required
+              minLength={6}
+              value={confirm}
+              onChange={(event) => setConfirm(event.target.value)}
+              className="bg-paper border-edge text-ink-900 placeholder:text-ink-300 min-h-14 rounded-tile border-2 px-4 text-lg"
+              data-auth-confirm
+            />
+          </div>
         )}
 
         <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-auth-error>

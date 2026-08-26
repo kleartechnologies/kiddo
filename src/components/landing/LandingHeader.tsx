@@ -3,7 +3,7 @@ import { ArrowRight } from "lucide-react";
 
 import { KiddoWordmark } from "@/components/kiddo/KiddoWordmark";
 import { cn } from "@/lib/cn";
-import { KIDDO_HOME, LANDING, PARENTS, PRIVACY } from "@/lib/routes";
+import { LANDING, PARENTS, PRICING, PRIVACY } from "@/lib/routes";
 
 /**
  * The public header: the brand, three quiet links and one door into KIDDO.
@@ -12,10 +12,15 @@ import { KIDDO_HOME, LANDING, PARENTS, PRIVACY } from "@/lib/routes";
  * left, one round button on the right — so walking from the landing page
  * into the product does not feel like changing websites. The difference is
  * who it speaks to: the links are for a grown-up reading, and on a phone
- * they fold away so the one thing left is the way in.
+ * they fold away so the one thing left is the way back in.
+ *
+ * That one thing is "Sign in", not "Open KIDDO": a parent who arrives here
+ * has either not paid yet — in which case the page below is what they came
+ * for — or has an account, and the parent area is where it lives.
  */
 const LINKS = [
   { href: "#how-it-works", label: "How it works" },
+  { href: PRICING, label: "Pricing" },
   { href: PARENTS, label: "For parents" },
   { href: PRIVACY, label: "Privacy" },
 ] as const;
@@ -45,11 +50,11 @@ export function LandingHeader({ className }: { className?: string }) {
           ))}
         </ul>
         <Link
-          href={KIDDO_HOME}
-          data-open-kiddo
+          href={PARENTS}
+          data-landing-signin
           className="bg-paper border-edge text-ink-900 hover:bg-cream-50 inline-flex min-h-12 shrink-0 items-center gap-2 rounded-full border px-4 text-sm font-semibold shadow-soft transition-colors sm:min-h-14 sm:px-5 sm:text-base"
         >
-          Open KIDDO
+          Sign in
           <ArrowRight className="size-4 sm:size-5" aria-hidden />
         </Link>
       </nav>

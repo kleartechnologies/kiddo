@@ -166,6 +166,18 @@ describe("subscription (server-owned)", () => {
     await assertFails(getDoc(doc(db, "stripeEvents/evt_1")));
     await assertFails(getDocs(collection(db, "stripeEvents")));
   });
+
+  it("the join notices are closed to every client, signed in or not", async () => {
+    // A landing-page notice must be a purchase that really happened, so no
+    // client may add one — and since a join is somebody else's purchase,
+    // no client may read one either. The server serves them at
+    // /api/social/recent, from two fields that identify nobody.
+    for (const db of [as(ALICE), nobody()]) {
+      await assertFails(setDoc(doc(db, "joinEvents/sub_1"), { at: 1, plan: "yearly" }));
+      await assertFails(getDoc(doc(db, "joinEvents/sub_1")));
+      await assertFails(getDocs(collection(db, "joinEvents")));
+    }
+  });
 });
 
 describe("children", () => {

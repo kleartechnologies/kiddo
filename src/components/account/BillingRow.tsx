@@ -5,17 +5,18 @@ import { useId, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { PLANS, describeSubscription } from "@/lib/billing/subscription";
+import { PLANS, describeSubscription, hasAccess, statusLabel } from "@/lib/billing/subscription";
 import { openBillingPortal, useSession } from "@/lib/cloud/session";
 
 import { useCheckoutReturn } from "./checkoutReturn";
 
 /**
- * Billing, in one line and one button. The plan and what happens next
- * (renews / ends, and when) come from the server's copy of the
- * subscription; everything a parent might want to *change* — card,
- * cancel, invoices — happens in Stripe's own portal, so KIDDO never draws
- * a card form.
+ * Billing, in one line and one button: which plan, monthly or yearly,
+ * what state it is in, and what happens next (renews / ends, and when) —
+ * all from the server's copy of the subscription. Everything a parent
+ * might want to *change* — card, cancel, invoices — happens in Stripe's
+ * own Customer Portal behind "Manage subscription", so KIDDO never draws a
+ * card form and never has to be told about a cancellation twice.
  */
 export function BillingRow() {
   const session = useSession();
@@ -56,9 +57,17 @@ export function BillingRow() {
           <h2 id={`${id}-billing`} className="font-display text-lg font-semibold sm:text-xl">
             Your subscription
           </h2>
-          <p className="text-ink-700 flex items-center gap-2 text-base" data-billing-plan={sub.plan ?? "unknown"}>
+          <p className="text-ink-700 flex flex-wrap items-center gap-2 text-base" data-billing-plan={sub.plan ?? "unknown"}>
             <CreditCard className="size-4 shrink-0" aria-hidden />
             {plan ? `${plan.name} · ${plan.price}/${plan.per}` : "KIDDO subscription"}
+            <span
+              className={`rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase ${
+                hasAccess(sub, now) ? "bg-sage-soft text-sage-ink" : "bg-apricot-soft text-apricot-ink"
+              }`}
+              data-billing-status={sub.status}
+            >
+              {statusLabel(sub, now)}
+            </span>
           </p>
           <p className="text-ink-500 text-sm" data-billing-line>
             {describeSubscription(sub, now)}

@@ -62,6 +62,14 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // joinEvents/{stripeSubscriptionId} — "a family joined", as a time and
+    // a plan and nothing else. Written by the webhook through the Admin SDK
+    // and read only by the server, which serves it at /api/social/recent.
+    // No client touches it, so no client can add a join that did not happen.
+    match /joinEvents/{subscriptionId} {
+      allow read, write: if false;
+    }
+
     // children/{childId} — a profile owned by one parent. parentId is fixed
     // at creation and can never be changed, so a child cannot be moved to
     // another account from the client.

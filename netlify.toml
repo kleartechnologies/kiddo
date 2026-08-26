@@ -1,0 +1,21 @@
+# KIDDO on Netlify.
+#
+# Netlify detects Next.js and installs its Next.js Runtime, which serves the
+# prerendered pages from the CDN and turns each route handler under
+# src/app/api into a serverless function. Only what it cannot infer is set
+# here; everything else is left to the runtime's defaults.
+#
+# No secrets belong in this file. Every value KIDDO needs at runtime —
+# FIREBASE_SERVICE_ACCOUNT, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, the two
+# price ids, and the NEXT_PUBLIC_* identifiers — is set under
+# Site configuration → Environment variables, where it is never committed.
+
+[build]
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  # firebase-admin 14 requires Node >= 22 and next 16 requires >= 20.9.
+  # Netlify's default has moved over time, so the floor is pinned rather
+  # than assumed: a lower default would fail the build on the Admin SDK.
+  NODE_VERSION = "22"

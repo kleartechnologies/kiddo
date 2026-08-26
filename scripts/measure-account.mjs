@@ -25,7 +25,7 @@
  *                        opens the portal; past_due closes the parent area
  *                        with a way to fix the card, and the child's open
  *                        page is not interrupted
- *    7 yearly            a second parent chooses Annual
+ *    7 yearly            a second parent chooses Yearly
  *    8 password reset    forgot → sent → link → new password → sign in;
  *                        an expired link has its own state
  *    9 verification      the account card offers resend / check
@@ -195,6 +195,12 @@ section("2 · create an account");
   await tap("[data-auth-switch]");
   await type("[data-auth-email]", "parent@example.com");
   await type("[data-auth-password]", "secret1");
+  /* The confirmation is checked here, before Firebase is asked anything. */
+  await type("[data-auth-confirm]", "secret2");
+  await tap("[data-auth-submit]");
+  const mismatch = await until(`/don.t match/.test(document.querySelector("[data-auth-error]")?.textContent || "")`);
+  report(`two different passwords are refused before the account is made (${mismatch})`, mismatch ? [] : ["mismatch accepted"]);
+  await type("[data-auth-confirm]", "secret1");
   await tap("[data-auth-submit]");
   const gated = await until(`document.querySelector("[data-parent-gate]")?.dataset.parentGate === "needs-subscription"`);
   const onboarding = await exists("[data-onboarding]");
@@ -218,7 +224,7 @@ section("3 · the gate");
   const problems = [];
   if (g.status !== "none") problems.push(`status ${g.status}`);
   if (g.plans.length !== 2) problems.push(`${g.plans.length} plans`);
-  if (g.plans[0]?.id !== "yearly" || !/Annual/.test(g.plans[0].text) || !/RM59\.90\/year/.test(g.plans[0].text) || !/Best value/i.test(g.plans[0].text)) problems.push(`yearly card "${g.plans[0]?.text}"`);
+  if (g.plans[0]?.id !== "yearly" || !/Yearly/.test(g.plans[0].text) || !/RM59\.90\/year/.test(g.plans[0].text) || !/Best value/i.test(g.plans[0].text)) problems.push(`yearly card "${g.plans[0]?.text}"`);
   if (g.plans[1]?.id !== "monthly" || !/Monthly/.test(g.plans[1].text) || !/RM9\.90\/month/.test(g.plans[1].text)) problems.push(`monthly card "${g.plans[1]?.text}"`);
   if (!g.plans[0]?.selected) problems.push("yearly not preselected");
   if (g.start !== "Start KIDDO") problems.push(`button "${g.start}"`);
@@ -267,9 +273,11 @@ section("5 · monthly plan → checkout → confirming → onboarding → dashbo
   const plan = await attr("[data-billing-row]", "data-billing-row");
   const planName = await text("[data-billing-plan]");
   const line = await text("[data-billing-line]");
+  const chip = await text("[data-billing-status]");
   const problems = [];
   if (!ready) problems.push("no dashboard");
   if (plan !== "active") problems.push(`billing row ${plan}`);
+  if (chip !== "Active") problems.push(`status chip "${chip}"`);
   if (!/Monthly · RM9\.90\/month/.test(planName ?? "")) problems.push(`plan "${planName}"`);
   if (!/Monthly plan, RM9\.90 a month\. Renews on/.test(line ?? "")) problems.push(`line "${line}"`);
   report(`dashboard: ${planName} — ${line}`, problems);
@@ -333,6 +341,7 @@ section("7 · yearly plan, second parent");
   await tap("[data-auth-switch]");
   await type("[data-auth-email]", "second@example.com");
   await type("[data-auth-password]", "secret2");
+  await type("[data-auth-confirm]", "secret2");
   await tap("[data-auth-submit]");
   await until(`document.querySelector("[data-plan='yearly']")`);
   await tap("[data-subscription-start]");
@@ -343,7 +352,7 @@ section("7 · yearly plan, second parent");
   await until(`document.querySelector("[data-parent-gate='ready']")`);
   const planName = await text("[data-billing-plan]");
   const confirmed = await exists("[data-checkout-confirmed]");
-  report(`yearly: onboarding (${onboarding}) → "${planName}", confirmation shown (${confirmed})`, /Annual · RM59\.90\/year/.test(planName ?? "") ? [] : [`plan "${planName}"`]);
+  report(`yearly: onboarding (${onboarding}) → "${planName}", confirmation shown (${confirmed})`, /Yearly · RM59\.90\/year/.test(planName ?? "") ? [] : [`plan "${planName}"`]);
   await shoot("07-yearly-dashboard");
 }
 

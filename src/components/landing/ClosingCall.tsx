@@ -2,7 +2,7 @@ import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ButtonLink } from "@/components/ui/Button";
-import { KIDDO_HOME } from "@/lib/routes";
+import { PRICING } from "@/lib/routes";
 
 /** The last thing on the page says the first thing again, with KIDDO next to it. */
 export function ClosingCall() {
@@ -17,16 +17,17 @@ export function ClosingCall() {
           Ready when you are.
         </h2>
         <p className="text-ink-700 max-w-xl text-lg leading-relaxed text-pretty">
-          Hand over the tablet, pick a world together, and let your child take it from there.
-          Three worlds and nine doors are open today, and more are on the way.
+          Choose a plan, create your account, and hand over the tablet. Three worlds and
+          nine doors are open today, and more are on the way.
         </p>
         <ButtonLink
-          href={KIDDO_HOME}
+          href={PRICING}
+          data-landing-closing-cta
           size="lg"
           iconRight
           icon={<ArrowRight className="size-6" aria-hidden />}
         >
-          Start the adventure
+          Start KIDDO
         </ButtonLink>
       </div>
     </section>

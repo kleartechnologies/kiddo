@@ -17,7 +17,14 @@ import { MAX_CHILD_NAME_LENGTH } from "@/lib/profile/child";
  * device is carried into the new profile by the journey store when the
  * profile is created (see `bindJourneyToCloud`).
  */
-export function ChildOnboarding() {
+export function ChildOnboarding({
+  heading: Heading = "h1",
+  title = "Welcome to KIDDO",
+}: {
+  /** `h2` where the page already has its own heading — see `/welcome`. */
+  heading?: "h1" | "h2";
+  title?: string;
+} = {}) {
   const [name, setName] = useState(() => suggestedChildName() ?? "");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,9 +52,9 @@ export function ChildOnboarding() {
           <Smile className="size-6" aria-hidden />
         </span>
         <div className="space-y-1">
-          <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-            Welcome to KIDDO
-          </h1>
+          <Heading id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
+            {title}
+          </Heading>
           <p className="text-ink-700 text-base leading-snug">
             One last thing: what’s your child’s first name? KIDDO uses it to say hello. Only the first word is kept.
           </p>

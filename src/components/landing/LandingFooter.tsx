@@ -1,7 +1,7 @@
 import Link from "next/link";
 
 import { KiddoWordmark } from "@/components/kiddo/KiddoWordmark";
-import { KIDDO_HOME, PARENTS, PRIVACY } from "@/lib/routes";
+import { PARENTS, PRICING, PRIVACY } from "@/lib/routes";
 
 /**
  * The bottom of the public pages: the brand again, the three places a
@@ -9,7 +9,7 @@ import { KIDDO_HOME, PARENTS, PRIVACY } from "@/lib/routes";
  * expands on. Nothing here is a form or a feed.
  */
 const LINKS = [
-  { href: KIDDO_HOME, label: "Open KIDDO" },
+  { href: PRICING, label: "Pricing" },
   { href: PARENTS, label: "For parents" },
   { href: PRIVACY, label: "Privacy" },
 ] as const;

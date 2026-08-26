@@ -8,19 +8,25 @@ is deliberately not done, and what a real launch still needs.
 
 | Route       | Audience | Indexed | Notes                                                      |
 | ----------- | -------- | ------- | ---------------------------------------------------------- |
-| `/`         | Parents  | yes     | Landing page. Built from the real worlds, doors and rounds |
+| `/`         | Parents  | yes     | Landing page, ending in pricing. Built from the real worlds, doors and rounds |
 | `/privacy`  | Parents  | yes     | What KIDDO stores, verified against the code               |
 | `/parents`  | Parents  | yes     | Dashboard; footnote links to `/privacy`                    |
+| `/join`     | Parents  | **no**  | Plan → account → Stripe Checkout (step 1 of 2)             |
+| `/welcome`  | Parents  | **no**  | Post-payment welcome and the child's name (step 2 of 2)    |
 | `/play`     | Children | yes     | KIDDO World (moved from `/`); PWA `start_url`              |
 | `/worlds/*` | Children | yes     | Worlds and activities, unchanged                           |
 | `/play/*`   | Children | yes     | Standalone games, unchanged                                |
 | `/playground/*`, `/character` | Internal | **no** | `robots: noindex` on every page + `robots.txt` disallow |
 
-Navigation is one deliberate link in each direction: landing → Open KIDDO /
-Start the adventure → `/play`; `/play` → For grown-ups → `/parents`;
-`/parents` → Open KIDDO → `/play`; `/parents` → What KIDDO stores → `/privacy`;
-`/privacy` and `/` share the same header (wordmark → `/`, For parents, Privacy,
-Open KIDDO). Route strings live in `src/lib/routes.ts`.
+Navigation is one deliberate link in each direction. The landing page's own
+call to action is `Start KIDDO` → `#pricing` on the same page, and only
+choosing a plan leaves it: `#pricing` → Start Yearly / Start Monthly →
+`/join?plan=…` → Stripe → `/welcome` → Enter KIDDO → `/play`. A parent who
+already has an account uses `Sign in` in the header → `/parents`. Then
+`/play` → For grown-ups → `/parents`; `/parents` → Open KIDDO → `/play`;
+`/parents` → What KIDDO stores → `/privacy`; `/privacy` and `/` share the
+same header (wordmark → `/`, For parents, Pricing, Privacy, Sign in).
+Route strings live in `src/lib/routes.ts`.
 
 ## Checklist
 
@@ -68,7 +74,7 @@ Open KIDDO). Route strings live in `src/lib/routes.ts`.
 - [x] `viewport-fit=cover` added so `Screen`'s `env(safe-area-inset-*)`
       padding is non-zero on notched phones once KIDDO is installed
 - [x] Smoke test at 360×640, 390×844, 430×932, 768×1024, 1440×900:
-      landing → CTA → `/play` → Let's go → activity → full round →
+      landing → CTA → pricing → `/play` → Let's go → activity → full round →
       celebration → world (doors done/next/new) → `/play` → parents
       (dashboard reflects the round) → privacy → landing. No console output,
       no sideways scroll, no failed requests, fonts loaded
@@ -130,7 +136,29 @@ try"; `/privacy` describes Stripe and billing data.
 - [ ] Run the manual Stripe test-mode steps in `docs/kiddo-billing.md`
       (not possible here: no credentials). No real payment has been made.
 - [ ] `firebase deploy --only firestore:rules` (rules changed again: the
-      `subscription` field and `stripeEvents` collection).
+      `subscription` field, `stripeEvents` and `joinEvents`).
+
+### Phase 8D — the way in: landing → pricing → account → payment (26 Aug 2026)
+
+KIDDO is no longer opened and entered; it is subscribed to. The landing
+page states the problem (an hour on YouTube), the alternative, what is
+inside, and then the two plans; `Start KIDDO` scrolls to pricing rather
+than opening a signup modal. Choosing a plan leads to `/join` (account,
+with password confirmation) and straight on to Stripe Checkout, then to
+`/welcome` — "Welcome to KIDDO! 🎉", the child's name, `Enter KIDDO`. The
+prior `/parents` road is unchanged and still works for returning parents.
+
+No new backend: the same session store, the same `/api/billing/*` routes,
+the same signed webhook, the same rules. What is new is `joinEvents` — two
+fields, `at` and `plan`, written by the webhook on a real subscription
+becoming active — and `GET /api/social/recent`, which is the only source
+of the landing page's "another family joined" notices. Nothing generates
+one; with no Firebase Admin the answer is an empty list and the page shows
+no notices at all. See `docs/kiddo-billing.md`.
+
+- [ ] Verify on the real project that a test-mode purchase produces exactly
+      one `joinEvents` document and one notice (manual step 7 in
+      `docs/kiddo-billing.md`).
 
 ### NOT YET IMPLEMENTED
 

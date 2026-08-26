@@ -55,7 +55,6 @@ const SHAPE_POOL: LevelTable<readonly ShapeName[]> = {
 export const shapeNamesActivity = defineGeneratedActivity({
   id: "shape-names",
   packId: "shapes",
-  title: "Which shape?",
   category: "shapes",
   activityType: "shape-recognition",
   kind: "choice",
@@ -182,7 +181,6 @@ function manyShapeBoard(
 export const colourNamesActivity = defineGeneratedActivity({
   id: "colour-names",
   packId: "shapes",
-  title: "Which colour?",
   category: "colours",
   activityType: "colour-recognition",
   kind: "choice",

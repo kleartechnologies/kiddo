@@ -1,6 +1,9 @@
 import { notFound } from "next/navigation";
 
 import { WorldActivityGame } from "@/components/worlds/WorldActivityGame";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+import { doorKey } from "@/lib/i18n/names";
 import { findWorldActivity, WORLD_ACTIVITIES } from "@/lib/worlds/activities";
 
 /**
@@ -21,7 +24,9 @@ export async function generateMetadata(
   props: PageProps<"/worlds/[worldId]/[activity]">,
 ) {
   const { worldId, activity } = await props.params;
-  return { title: findWorldActivity(worldId, activity)?.title ?? "Play" };
+  const door = findWorldActivity(worldId, activity);
+  /* English, at build time — see the world map's title beside this one. */
+  return { title: door ? translate(DEFAULT_LOCALE, doorKey(door, "title")) : "Play" };
 }
 
 export default async function WorldActivityRoute(

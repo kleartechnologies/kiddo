@@ -1,15 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
 import { JoinGate } from "@/components/account/JoinGate";
-import { KiddoWordmark } from "@/components/kiddo/KiddoWordmark";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { T } from "@/components/i18n/T";
+import { WordmarkLink } from "@/components/kiddo/WordmarkLink";
 import { Screen } from "@/components/ui/Screen";
 import { isPlan, type Plan } from "@/lib/billing/subscription";
-import { LANDING } from "@/lib/routes";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 
 export const metadata: Metadata = {
-  title: "Start KIDDO",
-  description: "Choose a plan and create your KIDDO parent account.",
+  title: translate(DEFAULT_LOCALE, "meta.join.title"),
+  description: translate(DEFAULT_LOCALE, "meta.join.description"),
   robots: { index: false },
 };
 
@@ -29,12 +31,13 @@ export default async function JoinPage(props: PageProps<"/join">) {
   return (
     <Screen width="narrow" detail="quiet">
       <header className="flex items-center justify-between gap-3">
-        <Link href={LANDING} aria-label="KIDDO home" className="-mx-2 flex min-h-14 items-center rounded-2xl px-2">
-          <KiddoWordmark size="sm" />
-        </Link>
-        <span className="bg-ink-900/5 text-ink-700 rounded-full px-3 py-1 text-xs font-semibold tracking-wide whitespace-nowrap uppercase">
-          Step 1 of 2
-        </span>
+        <WordmarkLink />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="bg-ink-900/5 text-ink-700 rounded-full px-3 py-1 text-xs font-semibold tracking-wide whitespace-nowrap uppercase">
+            <T k="page.step1" />
+          </span>
+          <LanguageSwitcher />
+        </div>
       </header>
 
       <main className="flex flex-1 flex-col gap-6 py-6 select-text sm:py-8">

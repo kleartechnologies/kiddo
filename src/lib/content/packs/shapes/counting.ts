@@ -137,7 +137,6 @@ function nearNumbers(answer: number, size: number, count: number, rng: Rng): Sym
 export const countingActivity = defineGeneratedActivity({
   id: "counting",
   packId: "shapes",
-  title: "How many?",
   category: "shapes",
   activityType: "counting",
   kind: "choice",
@@ -193,7 +192,6 @@ const CLASSIFY_TILES: LevelTable<number> = { 2: 3, 3: 4 };
 export const classifyActivity = defineGeneratedActivity({
   id: "classify",
   packId: "shapes",
-  title: "Shape and colour",
   category: "shapes",
   activityType: "classifying",
   kind: "choice",

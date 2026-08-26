@@ -120,7 +120,6 @@ function recognitionPool(level: Level): readonly string[] {
 export const letterRecognitionActivity = defineGeneratedActivity({
   id: "letter-recognition",
   packId: "english",
-  title: "Knowing letters",
   category: "english",
   activityType: "letter-recognition",
   kind: "choice",
@@ -190,7 +189,6 @@ function caseBoard(answer: string, rng: Rng, toLower: boolean) {
 export const letterCaseActivity = defineGeneratedActivity({
   id: "letter-case",
   packId: "english",
-  title: "Big and little letters",
   category: "english",
   activityType: "letter-case",
   kind: "choice",

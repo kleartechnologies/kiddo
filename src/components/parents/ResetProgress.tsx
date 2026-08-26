@@ -4,6 +4,7 @@ import { RotateCcw } from "lucide-react";
 import { useId, useRef, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
+import { useT } from "@/lib/i18n/useLocale";
 import { resetJourney } from "@/lib/journey/useJourney";
 
 /**
@@ -24,7 +25,7 @@ export function ResetProgress({ childName }: { childName: string | null }) {
   const [done, setDone] = useState(false);
   const titleId = useId();
   const bodyId = useId();
-  const who = childName ? `${childName}’s` : "your child’s";
+  const t = useT();
 
   return (
     <div className="flex flex-col gap-3">
@@ -39,11 +40,15 @@ export function ResetProgress({ childName }: { childName: string | null }) {
         data-reset-open
         className="min-h-12 self-start"
       >
-        Reset progress
+        {t("parents.reset.open")}
       </Button>
 
       <p aria-live="polite" className="text-ink-500 text-sm" data-reset-status>
-        {done ? `${childName ?? "Your child"}’s journey has been reset. Every activity is new again.` : ""}
+        {done
+          ? childName
+            ? t("parents.reset.doneNamed", { name: childName })
+            : t("parents.reset.done")
+          : ""}
       </p>
 
       <dialog
@@ -68,16 +73,17 @@ export function ResetProgress({ childName }: { childName: string | null }) {
         >
           <div className="space-y-2">
             <h2 id={titleId} className="font-display text-2xl font-semibold">
-              Reset {who} journey?
+              {childName
+                ? t("parents.reset.confirmNamed", { name: childName })
+                : t("parents.reset.confirm")}
             </h2>
             <p id={bodyId} className="text-ink-700 text-base leading-snug">
-              All discovered activities and keepsakes will be cleared. Every
-              world will start fresh. This cannot be undone.
+              {t("parents.reset.body")}
             </p>
           </div>
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Button variant="quiet" size="sm" type="submit" value="cancel" autoFocus className="min-h-12" data-reset-cancel>
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="primary"
@@ -87,7 +93,7 @@ export function ResetProgress({ childName }: { childName: string | null }) {
               className="min-h-12 bg-apricot-base text-apricot-ink shadow-[0_5px_0_0_var(--color-apricot-deep)] hover:bg-apricot-base/95"
               data-reset-confirm
             >
-              Reset progress
+              {t("parents.reset.open")}
             </Button>
           </div>
         </form>

@@ -50,7 +50,6 @@ const NAMING: readonly { key: BodyKey; level: 1 | 2 | 3 }[] = [
 
 export const bodyParts = defineQuizActivity({
   id: "body-parts",
-  title: "All About My Body",
   activityType: "body-parts",
   ageRange: { min: 3, max: 6 },
   host: "kiddo",
@@ -114,7 +113,6 @@ const SENSES: readonly { key: BodyKey; ask: string; because: string; hint: strin
 
 export const senses = defineQuizActivity({
   id: "senses",
-  title: "My Five Senses",
   activityType: "senses",
   ageRange: { min: 4, max: 6 },
   host: "pip",
@@ -237,7 +235,6 @@ function conceptOf(chosen: readonly Doing[]): string {
 export const bodyPartners = defineGeneratedActivity({
   id: "body-partners",
   packId: "general-knowledge",
-  title: "What Each Part Does",
   category: "general-knowledge",
   activityType: "body-parts",
   kind: "connect",
@@ -296,7 +293,6 @@ const TREATS = [HABITS.sweets, HABITS.cake, HABITS.chocolate];
 
 export const healthyHabits = defineQuizActivity({
   id: "healthy-habits",
-  title: "Looking After Myself",
   activityType: "healthy-habits",
   ageRange: { min: 4, max: 6 },
   host: "kiddo",

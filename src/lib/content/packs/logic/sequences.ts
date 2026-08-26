@@ -132,7 +132,6 @@ function pickWrong(
 export const sequencesActivity = defineGeneratedActivity({
   id: "sequences",
   packId: "logic",
-  title: "What comes next",
   category: "logic",
   activityType: "sequences",
   kind: "choice",

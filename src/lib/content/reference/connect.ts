@@ -69,7 +69,6 @@ const idOf = (item: PictureItem) => item.label.toLowerCase();
 export const connectReferenceActivity = defineGeneratedActivity({
   id: "animal-food",
   packId: "discovery",
-  title: "Animals and their food",
   category: "discovery",
   activityType: "animal-diet",
   kind: "connect",

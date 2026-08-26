@@ -7,6 +7,7 @@ import { Play } from "lucide-react";
 
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { popIn, tappableCard } from "@/lib/motion";
 import type { Game } from "@/lib/games/types";
 import { GameArtwork } from "./artwork/GameArtwork";
@@ -58,6 +59,7 @@ import { GameArtwork } from "./artwork/GameArtwork";
  * own ring and its own place in the order.
  */
 export function GameCard({ game }: { game: Game }) {
+  const t = useT();
   const accent = ACCENTS[game.accent];
 
   return (
@@ -90,7 +92,7 @@ export function GameCard({ game }: { game: Game }) {
               "line-clamp-2 min-h-[2lh]",
             )}
           >
-            {game.title}
+            {t(game.title)}
           </h3>
           <p
             data-kiddo-card-tagline
@@ -100,7 +102,7 @@ export function GameCard({ game }: { game: Game }) {
               "line-clamp-2 min-h-[2lh]",
             )}
           >
-            {game.tagline}
+            {t(game.tagline)}
           </p>
 
           {/* Pushed to the floor of the card, so it is at one height across

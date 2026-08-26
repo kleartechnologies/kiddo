@@ -1,4 +1,5 @@
 import type { Accent, AgeRange, CharacterId } from "@/lib/games/types";
+import type { MessageKey } from "@/lib/i18n/messages";
 import type { ArtId } from "./art";
 import type { Level } from "./difficulty";
 import type { Rng } from "./rng";
@@ -351,6 +352,18 @@ export interface CountItem extends ItemBase {
   kind: "count";
   value: number;
   accent?: Accent;
+  /**
+   * What a screen reader hears instead of "4 dots" — "4 titik".
+   *
+   * The one item whose spoken name is not its label. `labelOf` gives a group
+   * of dots the bare numeral, because a tile with four dots drawn on it and a
+   * "4" printed under it reads as two answers; `spokenOf` gives the whole of
+   * what is on screen, counted. That counting is language, so when a round is
+   * said in another one this is where the count lands. Never written by a
+   * pack: `localizeItem` stamps it, `spokenOf` reads it, and in English it is
+   * never set at all.
+   */
+  spoken?: string;
 }
 
 /**
@@ -603,8 +616,14 @@ export type ChallengeOf<K extends ChallengeKind> = Challenge & {
 export interface ActivityBase {
   id: ActivityId;
   packId: PackId;
-  /** Grown-up facing: "Adding to 10". The child is never shown this. */
-  title: string;
+  /**
+   * Grown-up facing: "Adding to 10". The child is never shown this.
+   *
+   * A key, not the words — and derived from the id by `conceptKey` rather
+   * than written beside the questions, so the parent dashboard can name a
+   * lesson in the language its reader chose. See `lib/i18n/names`.
+   */
+  title: MessageKey;
   category: ContentCategory;
   activityType: ActivityType;
   /** The one engine shape this activity speaks. */

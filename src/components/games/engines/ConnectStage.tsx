@@ -14,6 +14,8 @@ import { captionOf, spokenOf } from "@/lib/content/challenges";
 import type { ChallengeEngineProps } from "@/lib/content/engine";
 import type { ConnectNode, ConnectPair } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
+import type { Translate } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import { springSoft } from "@/lib/motion";
 import { ContentItemView } from "./ContentItemView";
 import { PromptDisplay } from "./PromptDisplay";
@@ -232,11 +234,13 @@ function srLabelOf(
   node: ConnectNode,
   partner: ConnectNode | null,
   selected: boolean,
+  t: Translate,
 ): string {
   const name = spokenOf(node.item);
-  if (partner) return `${name}, joined to ${spokenOf(partner.item)}`;
-  if (selected) return `${name}, chosen. Now choose the one it goes with.`;
-  return `${name}, not joined yet. Choose it.`;
+  if (partner)
+    return t("stage.connect.joined", { name, partner: spokenOf(partner.item) });
+  if (selected) return t("stage.connect.selected", { name });
+  return t("stage.connect.idle", { name });
 }
 
 export function ConnectStage({
@@ -251,6 +255,7 @@ export function ConnectStage({
   onSelectRight,
   travel = false,
 }: ConnectStageProps) {
+  const t = useT();
   const { left, right } = challenge.payload;
   const reduced = useReducedMotion();
 
@@ -578,7 +583,7 @@ export function ConnectStage({
               }
               aria-pressed={matched ? undefined : selected}
               aria-disabled={matched || !accepting}
-              aria-label={srLabelOf(node, partner, selected)}
+              aria-label={srLabelOf(node, partner, selected, t)}
               style={joined >= 0 ? { zIndex: 20 + joined } : undefined}
               onPointerDown={handlePointerDown(side, node.id)}
               onPointerMove={handlePointerMove}

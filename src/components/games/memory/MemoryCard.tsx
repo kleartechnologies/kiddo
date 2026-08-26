@@ -8,6 +8,7 @@ import { useSound } from "@/lib/audio/useAudio";
 import { getCharacter } from "@/data/characters";
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { springy } from "@/lib/motion";
 import type { MemoryCardData } from "@/lib/games/memory";
 
@@ -60,18 +61,19 @@ export function MemoryCard({
 }: MemoryCardProps) {
   const reduced = useReducedMotion();
   const play = useSound();
+  const t = useT();
   const character = getCharacter(card.characterId);
   const locked = matched || !interactive;
 
   /* Everything the card is doing, said in words. Matching is never left to
      colour alone: a found pair says so here and wears a tick. */
   const label = matched
-    ? `${character.name}, found`
+    ? t("game.memory-match.card.found", { name: character.name })
     : missed
-      ? `${character.name}, not a pair`
+      ? t("game.memory-match.card.notPair", { name: character.name })
       : faceUp
-        ? `${character.name}`
-        : `Card ${index + 1}, face down`;
+        ? character.name
+        : t("game.memory-match.card.faceDown", { number: index + 1 });
 
   const face = (
     <CardFace card={card} name={character.name} matched={matched} missed={missed} />

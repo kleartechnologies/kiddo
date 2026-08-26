@@ -129,7 +129,6 @@ const TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 3 };
 export const pluralsActivity = defineGeneratedActivity({
   id: "plurals",
   packId: "english",
-  title: "One and more than one",
   category: "english",
   activityType: "singular-plural",
   kind: "choice",

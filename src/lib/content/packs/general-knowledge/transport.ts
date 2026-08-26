@@ -54,7 +54,6 @@ const NAMES: readonly { key: VehicleKey; level: 1 | 2 | 3 }[] = [
 
 export const vehicleNames = defineQuizActivity({
   id: "vehicle-names",
-  title: "Things That Go",
   activityType: "transport",
   ageRange: { min: 3, max: 6 },
   host: "wally",
@@ -154,7 +153,6 @@ const TRAVEL: readonly {
 
 export const vehicleTravel = defineQuizActivity({
   id: "vehicle-travel",
-  title: "How Does It Travel?",
   activityType: "transport",
   ageRange: { min: 4, max: 6 },
   host: "pip",

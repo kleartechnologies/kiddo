@@ -57,7 +57,6 @@ const ORDER: Record<ShapeSize, number> = { small: 0, medium: 1, large: 2 };
 export const sizeActivity = defineGeneratedActivity({
   id: "size",
   packId: "shapes",
-  title: "Big and small",
   category: "shapes",
   activityType: "size-comparison",
   kind: "choice",
@@ -264,7 +263,6 @@ const PROPERTY_TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 4 };
 export const propertiesActivity = defineGeneratedActivity({
   id: "properties",
   packId: "shapes",
-  title: "What is it made of?",
   category: "shapes",
   activityType: "shape-properties",
   kind: "choice",

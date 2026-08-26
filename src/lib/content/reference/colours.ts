@@ -50,7 +50,6 @@ function ask(name: string, others: readonly string[], level: Level): ChallengeSp
 export const coloursActivity = defineStaticActivity({
   id: "colours",
   packId: "discovery",
-  title: "Naming colours",
   category: "colours",
   activityType: "colours",
   kind: "choice",

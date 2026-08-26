@@ -7,6 +7,7 @@ import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { SpeechBubble } from "@/components/kiddo/SpeechBubble";
 import { Screen } from "@/components/ui/Screen";
 import { sessionHasAccess, useSession } from "@/lib/cloud/session";
+import { useT } from "@/lib/i18n/useLocale";
 import { PARENTS } from "@/lib/routes";
 
 /**
@@ -24,6 +25,7 @@ import { PARENTS } from "@/lib/routes";
  */
 export function PlayGate({ children }: { children: ReactNode }) {
   const session = useSession();
+  const t = useT();
   const [opened, setOpened] = useState(false);
   const allowed = sessionHasAccess(session);
   /* Derived, not effected: the first render that is allowed latches open. */
@@ -41,11 +43,13 @@ export function PlayGate({ children }: { children: ReactNode }) {
     <Screen width="narrow">
       <main className="flex flex-1 flex-col items-center justify-center gap-6 text-center" data-play-gate="closed">
         <SpeechBubble tail="bottom" className="max-w-md">
-          <p className="font-display text-2xl font-semibold sm:text-3xl">Ask a grown-up to open KIDDO!</p>
+          <p className="font-display text-2xl font-semibold sm:text-3xl">
+            {t("play.gate.askGrownUp")}
+          </p>
         </SpeechBubble>
         <CharacterFigure id="kiddo" size="xl" />
         <ButtonLink href={PARENTS} size="lg" variant="soft" data-play-gate-parents>
-          For grown-ups
+          {t("play.gate.forGrownUps")}
         </ButtonLink>
       </main>
     </Screen>

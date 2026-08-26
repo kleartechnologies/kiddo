@@ -3,7 +3,6 @@ import {
   applyActionCode as firebaseApplyActionCode,
   confirmPasswordReset as firebaseConfirmPasswordReset,
   createUserWithEmailAndPassword,
-  deleteUser,
   getAuth,
   onAuthStateChanged,
   sendEmailVerification,
@@ -15,9 +14,7 @@ import {
   type User,
 } from "firebase/auth";
 import {
-  addDoc,
   collection,
-  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -34,9 +31,11 @@ import {
 
 import { NO_SUBSCRIPTION, parseSubscription } from "@/lib/billing/subscription";
 import { parseJourney } from "@/lib/journey/journey";
+import { childSlotIds } from "@/lib/cloud/children";
 import type { CloudBackend, ParentUser } from "@/lib/cloud/types";
 import { CloudError, type AuthFailure } from "@/lib/cloud/types";
 
+import { appCheckHeader, startAppCheck } from "./appCheck";
 import { firebaseConfig } from "./config";
 
 /**
@@ -70,6 +69,10 @@ function services(): { auth: Auth; db: Firestore } {
     const config = firebaseConfig();
     if (!config) throw new CloudError("unknown", "Firebase is not configured on this build.");
     app = getApps()[0] ?? initializeApp(config);
+    /* Before anything else talks to Firebase: App Check attaches an
+       attestation to the SDK's own calls, so the console can refuse the
+       ones that did not come from KIDDO. A no-op when unconfigured. */
+    startAppCheck(app);
     auth = getAuth(app);
     db = getFirestore(app);
   }
@@ -173,13 +176,24 @@ export const firebaseBackend: CloudBackend = {
   createChild: (parentId, name) =>
     guarded(async () => {
       const { db } = services();
-      const ref = await addDoc(collection(db, "children"), {
+      /* The id is not Firestore's to choose: `firestore.rules` only lets a
+         parent create a child at one of their own slots, and that is what
+         caps how many children one account can hold. Pick the first free
+         one — a deleted child's slot comes back. */
+      const mine = await getDocs(query(collection(db, "children"), where("parentId", "==", parentId)));
+      const taken = new Set(mine.docs.map((existing) => existing.id));
+      const id = childSlotIds(parentId).find((slot) => !taken.has(slot));
+      /* Unreachable from KIDDO's own onboarding, which creates one child.
+         A parent who really has six is told the same thing as any other
+         write that could not happen, rather than nothing at all. */
+      if (!id) throw new CloudError("unknown", "child-limit-reached");
+      await setDoc(doc(db, "children", id), {
         parentId,
         name,
         createdAt: serverTimestamp(),
         updatedAt: serverTimestamp(),
       });
-      return { id: ref.id, parentId, name };
+      return { id, parentId, name };
     }),
 
   updateChildName: (childId, name) =>
@@ -210,7 +224,7 @@ export const firebaseBackend: CloudBackend = {
 
   deleteAccount: (user) =>
     guarded(async () => {
-      const { auth, db } = services();
+      const { auth } = services();
       const current = auth.currentUser;
       if (!current || current.uid !== user.uid) throw new CloudError("no-account");
       /* Deleting a sign-in needs a recent one (about five minutes), on the
@@ -220,22 +234,16 @@ export const firebaseBackend: CloudBackend = {
       if (!Number.isFinite(signedInAt) || Date.now() - signedInAt > RECENT_SIGN_IN_MS) {
         throw new CloudError("recent-login", "auth/requires-recent-login");
       }
-      /* Preferred: the server cancels Stripe first, then removes everything
-         with the Admin SDK. Only a deployment with no server falls through
-         to the client-side deletion below. */
-      if (await deleteOnServer()) {
-        await firebaseSignOut(auth).catch(() => {});
-        return;
-      }
-      const child = await firebaseBackend.findChild(user.uid);
-      if (child) {
-        await deleteDoc(doc(db, "journeys", child.id));
-        await deleteDoc(doc(db, "children", child.id));
-      }
-      await deleteDoc(doc(db, "users", user.uid));
-      /* Last, because once the sign-in is gone the rules would refuse the
-         deletes above. */
-      await deleteUser(current);
+      /* Deletion is the server's job and only the server's. It cancels the
+         Stripe subscription and deletes the customer before removing
+         anything, which a browser cannot do; and the user document holds
+         the Stripe customer id, so a client able to delete it could throw
+         away the billing identity of a subscription that keeps renewing.
+         Firestore now refuses that delete (see firestore.rules), which
+         means there is no client-side fallback to fall back to: if the
+         server cannot do it, the honest answer is that it did not happen. */
+      await callApi("/api/account/delete", {});
+      await firebaseSignOut(auth).catch(() => {});
     }),
 
   /* ---- Password and email ------------------------------------------- */
@@ -309,7 +317,11 @@ async function callApi<T>(path: string, body: Record<string, unknown>): Promise<
   try {
     response = await fetch(path, {
       method: "POST",
-      headers: { "content-type": "application/json", authorization: `Bearer ${token}` },
+      headers: {
+        "content-type": "application/json",
+        authorization: `Bearer ${token}`,
+        ...(await appCheckHeader()),
+      },
       body: JSON.stringify(body),
     });
   } catch {
@@ -327,12 +339,3 @@ async function callApi<T>(path: string, body: Record<string, unknown>): Promise<
 }
 
 /** True when the server handled the deletion; false when there is no server. */
-async function deleteOnServer(): Promise<boolean> {
-  try {
-    await callApi("/api/account/delete", {});
-    return true;
-  } catch (error) {
-    if (error instanceof CloudError && error.reason === "billing-unavailable") return false;
-    throw error;
-  }
-}

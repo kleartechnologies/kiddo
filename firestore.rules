@@ -12,6 +12,12 @@ rules_version = '2';
 // is only allowed when it is filtered to `parentId == request.auth.uid`
 // (Firestore rejects a query whose possible results the rules would deny).
 //
+// These rules are also the only limit on how much a signed-in client can
+// store, because a client writes to Firestore directly and not through
+// KIDDO's own API. So every writeable document here is bounded three ways:
+// which keys it may carry, what type and size each value may be, and how
+// many of the document a parent may have at once.
+//
 // Tested with the emulator: `npm run test:rules` (see tests/firestore.rules.test.mjs).
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -38,6 +44,51 @@ service cloud.firestore {
       return name is string && name.size() >= 1 && name.size() <= 24;
     }
 
+    // `createdAt` and `updatedAt` are `serverTimestamp()` in the app and
+    // plain numbers in the tests and the preview backend. Either is fine;
+    // a string, a map or a list is not.
+    function stamp(value) {
+      return value is timestamp || value is int;
+    }
+
+    // Every door in KIDDO, by id. A journey may only ever name one of
+    // these, which is what stops a list of nine short ids from being used
+    // as a megabyte of free storage: rules cannot measure a document or
+    // walk a list, but they can say exactly which values are allowed in
+    // one. Adding a door means adding it here too — `tests/journey.test.ts`
+    // fails until this list and `WORLD_ACTIVITIES` agree.
+    function knownActivities() {
+      return [
+        'animals.find-the-home',
+        'animals.land-or-sea',
+        'animals.who-lives-here',
+        'counting.count-the-apples',
+        'counting.count-the-flowers',
+        'counting.find-the-number',
+        'words.alphabet-adventure',
+        'words.rhyming-friends',
+        'words.word-discovery'
+      ];
+    }
+
+    function activityList(value) {
+      return value is list && value.size() <= 200 && value.hasOnly(knownActivities());
+    }
+
+    // The most children one account may hold at once. KIDDO is for a
+    // family, not a classroom, and its own onboarding creates exactly one;
+    // six leaves room for a large family and for a parent who deletes and
+    // starts again, while keeping the number of documents a single sign-up
+    // can create finite. The cap is the id itself — a child document may
+    // only be created at one of these six names — so there is no counter
+    // to keep in step and a deleted child frees its slot again.
+    function childSlots() {
+      return [
+        request.auth.uid + '-0', request.auth.uid + '-1', request.auth.uid + '-2',
+        request.auth.uid + '-3', request.auth.uid + '-4', request.auth.uid + '-5'
+      ];
+    }
+
     // users/{uid} — one document per parent account, keyed by auth uid.
     //
     // `subscription` is the server's field: written by the Stripe webhook
@@ -50,11 +101,26 @@ service cloud.firestore {
       allow create: if isOwner(uid)
         && onlyKeys(['email', 'createdAt', 'updatedAt'])
         && request.resource.data.email is string
-        && request.resource.data.email == request.auth.token.email;
+        && request.resource.data.email.size() <= 254
+        && request.resource.data.email == request.auth.token.email
+        && stamp(request.resource.data.createdAt)
+        && stamp(request.resource.data.updatedAt);
       allow update: if isOwner(uid)
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['email', 'updatedAt'])
-        && request.resource.data.email == resource.data.email;
-      allow delete: if isOwner(uid);
+        && request.resource.data.email == resource.data.email
+        && stamp(request.resource.data.updatedAt);
+
+      // Never, by anybody, signed in or not.
+      //
+      // This document is the account's billing identity: it carries the
+      // Stripe customer id and the subscription the webhook writes. A
+      // client that could delete it could throw away the link between a
+      // person and a subscription that goes on renewing, and then start a
+      // second one — so deleting an account is the server's job, at
+      // POST /api/account/delete, which cancels Stripe first and removes
+      // everything with the Admin SDK. The Admin SDK does not go through
+      // these rules, so closing the door here costs the parent nothing.
+      allow delete: if false;
     }
 
     // stripeEvents/{eventId} — the webhook's idempotency log. Server only.
@@ -70,37 +136,53 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    // rateLimits/{bucket} — the durable request counters behind KIDDO's
+    // API budgets (see src/server/rateLimit.ts). Written only by the
+    // server. A client that could read these would learn how much room it
+    // has left; one that could write them would have no limit at all.
+    match /rateLimits/{bucket} {
+      allow read, write: if false;
+    }
+
     // children/{childId} — a profile owned by one parent. parentId is fixed
     // at creation and can never be changed, so a child cannot be moved to
-    // another account from the client.
+    // another account from the client. The id must be one of this parent's
+    // six slots, which is what caps how many they may have.
     match /children/{childId} {
       allow read: if signedIn() && resource.data.parentId == request.auth.uid;
       allow create: if signedIn()
+        && childId in childSlots()
         && onlyKeys(['parentId', 'name', 'createdAt', 'updatedAt'])
         && request.resource.data.parentId == request.auth.uid
-        && validName(request.resource.data.name);
+        && validName(request.resource.data.name)
+        && stamp(request.resource.data.createdAt)
+        && stamp(request.resource.data.updatedAt);
       allow update: if signedIn()
         && resource.data.parentId == request.auth.uid
         && request.resource.data.parentId == resource.data.parentId
         && onlyKeys(['parentId', 'name', 'createdAt', 'updatedAt'])
         && validName(request.resource.data.name)
-        && request.resource.data.createdAt == resource.data.createdAt;
+        && request.resource.data.createdAt == resource.data.createdAt
+        && stamp(request.resource.data.updatedAt);
       allow delete: if signedIn() && resource.data.parentId == request.auth.uid;
     }
 
     // journeys/{childId} — the child's Journey, keyed by the child's id so
-    // ownership is a single lookup on the child document.
+    // ownership is a single lookup on the child document. Every value is
+    // a door KIDDO actually has; nothing else can be stored here.
     match /journeys/{childId} {
       allow read, delete: if ownsChild(childId);
       allow create, update: if ownsChild(childId)
         && onlyKeys(['completed', 'medium', 'hard', 'last', 'updatedAt'])
-        && request.resource.data.completed is list
-        && request.resource.data.completed.size() <= 200
+        && activityList(request.resource.data.completed)
         && (!request.resource.data.keys().hasAny(['medium'])
-          || (request.resource.data.medium is list && request.resource.data.medium.size() <= 200))
+          || activityList(request.resource.data.medium))
         && (!request.resource.data.keys().hasAny(['hard'])
-          || (request.resource.data.hard is list && request.resource.data.hard.size() <= 200))
-        && (request.resource.data.last == null || request.resource.data.last is string);
+          || activityList(request.resource.data.hard))
+        && (request.resource.data.last == null
+          || request.resource.data.last in knownActivities())
+        && (!request.resource.data.keys().hasAny(['updatedAt'])
+          || stamp(request.resource.data.updatedAt));
     }
 
     match /{document=**} {

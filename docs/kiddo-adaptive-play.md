@@ -92,7 +92,7 @@ Easy/Medium/Hard are a new three-step vocabulary (`Tier`), never
 The plan above landed whole; the record below is where each piece lives and
 the two decisions that were made during the build.
 
-- **Tier plans** — `activities.ts`: `Tier`, `TIERS`, `TIER_WORDS`, and
+- **Tier plans** — `activities.ts`: `Tier`, `TIERS`, and
   `plans: { 1, 2, 3 }` per door, with `plan` kept as an alias for `plans[1]`
   so every Easy round is byte-for-byte the round that shipped before tiers.
   Slot counts are equal across a door's tiers. `english.alphabet-order` and

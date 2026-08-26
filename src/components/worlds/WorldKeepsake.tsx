@@ -4,6 +4,8 @@ import { MagicMotion } from "@/components/kiddo/MagicMotion";
 import { GroundThing } from "@/components/kiddo/world/scenery";
 import { ACCENT_VARS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { rewardKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import { WORLD_REWARDS } from "@/lib/worlds/activities";
 import type { WorldPlace } from "@/lib/worlds/places";
 
@@ -33,20 +35,26 @@ export function WorldKeepsake({
   justEarned?: boolean;
   className?: string;
 }) {
-  const reward = WORLD_REWARDS[place.id];
+  const t = useT();
+  const kind = WORLD_REWARDS[place.id];
+  /* Always the plural word, in every one of the three lines — English says
+     "no flowers yet" of an empty garden and "2 of 3 flowers" of a half-full
+     one, and a language that counts differently gets to say so in its own
+     three lines rather than have this file assemble them. */
+  const many = t(rewardKey(place.id, "many"));
   const label =
     done === 0
-      ? `No ${reward.many} yet`
+      ? t("worlds.keepsake.none", { many })
       : done === total
-        ? `All ${total} ${reward.many}`
+        ? t("worlds.keepsake.all", { total, many })
         : /* "1 of 3 flowers": the total is what is being counted. */
-          `${done} of ${total} ${reward.many}`;
+          t("worlds.keepsake.some", { done, total, many });
 
   return (
     <div
       className={cn("flex items-center gap-2", className)}
       role="img"
-      aria-label={`${place.name}: ${label}.`}
+      aria-label={t("worlds.keepsake.sr", { name: t(place.name), label })}
     >
       <ul className="flex items-end gap-1" aria-hidden>
         {Array.from({ length: total }, (_, index) => {
@@ -64,7 +72,7 @@ export function WorldKeepsake({
               {/* The one just earned pops in — the same `pop` a counting pip
                   arrives with, nothing invented for the occasion. */}
               <MagicMotion motion="pop" playKey={arriving ? 1 : 0} delay={0.6} className="h-full w-full">
-                <Mark kind={reward.kind} accent={place.accent} />
+                <Mark kind={kind} accent={place.accent} />
               </MagicMotion>
             </li>
           );

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 
+import { T } from "@/components/i18n/T";
 import { GameGrid } from "@/components/kiddo/GameGrid";
 import { UpcomingRow } from "@/components/kiddo/UpcomingRow";
 import { WorldHeader } from "@/components/kiddo/WorldHeader";
@@ -9,10 +10,12 @@ import { Screen } from "@/components/ui/Screen";
 import { ContinueAdventure } from "@/components/worlds/ContinueAdventure";
 import { WorldMap } from "@/components/worlds/WorldMap";
 import { GAMES } from "@/data/games";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 
 export const metadata: Metadata = {
-  title: "KIDDO World",
-  description: "Pick a world and start the adventure.",
+  title: translate(DEFAULT_LOCALE, "meta.play.title"),
+  description: translate(DEFAULT_LOCALE, "meta.play.description"),
 };
 
 /**
@@ -45,14 +48,14 @@ export default function KiddoWorldPage() {
 
         <section className="flex flex-col gap-6" aria-labelledby="worlds-heading">
           <h2 id="worlds-heading" className="font-display text-2xl font-semibold sm:text-3xl">
-            Pick a world
+            <T k="play.worlds" />
           </h2>
           <WorldMap />
         </section>
 
         <section className="mt-12 flex flex-col gap-6 sm:mt-16" aria-labelledby="games-heading">
           <h2 id="games-heading" className="font-display text-2xl font-semibold sm:text-3xl">
-            More games to play
+            <T k="play.moreGames" />
           </h2>
           <GameGrid games={GAMES} />
         </section>

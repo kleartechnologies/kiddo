@@ -86,7 +86,6 @@ const NAMES: readonly { tile: Sym; level: 1 | 2 | 3; called?: string }[] = [
 
 export const foodNames = defineQuizActivity({
   id: "food-names",
-  title: "Food We Eat",
   activityType: "food-knowledge",
   ageRange: { min: 3, max: 6 },
   host: "pip",
@@ -229,7 +228,6 @@ const SORTING: readonly Question[] = [
 
 export const foodOrigins = defineQuizActivity({
   id: "food-origins",
-  title: "Where Food Comes From",
   activityType: "food-knowledge",
   ageRange: { min: 4, max: 6 },
   host: "foxy",

@@ -148,7 +148,6 @@ const TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 4 };
 export const oppositesActivity = defineGeneratedActivity({
   id: "opposites",
   packId: "english",
-  title: "Opposites",
   category: "english",
   activityType: "opposites",
   kind: "choice",

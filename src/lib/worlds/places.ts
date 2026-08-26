@@ -1,6 +1,8 @@
 import type { Accent, CharacterId, Game, GameCategory } from "@/lib/games/types";
+import { doorKey, worldBlurbKey, worldLineKey, worldNameKey } from "@/lib/i18n/names";
+import type { MessageKey } from "@/lib/i18n/messages";
 import { activitiesOf, type PlayableWorldId, type WorldActivity } from "./activities";
-import { GAME_WORLDS, type GameWorldId } from "./worlds";
+import type { GameWorldId } from "./worlds";
 
 /**
  * A world as a *place* a child can go — what the map calls it, who lives
@@ -15,11 +17,17 @@ import { GAME_WORLDS, type GameWorldId } from "./worlds";
 
 export interface WorldPlace {
   id: PlayableWorldId;
-  name: string;
+  /**
+   * What the map calls it — as a message key, like everything else in here
+   * that is words. A place has an accent, a sky and a friend living in it,
+   * and none of those are language; its name and its two lines are, so they
+   * are looked up rather than stored. See `lib/i18n/names`.
+   */
+  name: MessageKey;
   /** What KIDDO says about the place. One line a four year old understands. */
-  line: string;
+  line: MessageKey;
   /** For a grown-up reading over a shoulder. */
-  blurb: string;
+  blurb: MessageKey;
   /** The sky: the same theme the world's own Quest plays under. */
   theme: GameCategory;
   accent: Accent;
@@ -31,9 +39,9 @@ export interface WorldPlace {
 export const WORLD_PLACES: Readonly<Record<WorldPlace["id"], WorldPlace>> = {
   counting: {
     id: "counting",
-    name: GAME_WORLDS.counting.name,
-    line: "Count what grows in the garden.",
-    blurb: "Counting things, knowing numbers and finding the one that is asked for.",
+    name: worldNameKey("counting"),
+    line: worldLineKey("counting"),
+    blurb: worldBlurbKey("counting"),
     theme: "numbers",
     accent: "sprout",
     friend: "wally",
@@ -41,9 +49,9 @@ export const WORLD_PLACES: Readonly<Record<WorldPlace["id"], WorldPlace>> = {
   },
   animals: {
     id: "animals",
-    name: GAME_WORLDS.animals.name,
-    line: "Help the animals find their homes.",
-    blurb: "Animal names, sounds and babies, where they live and what they eat.",
+    name: worldNameKey("animals"),
+    line: worldLineKey("animals"),
+    blurb: worldBlurbKey("animals"),
     theme: "discovery",
     accent: "apricot",
     friend: "foxy",
@@ -51,9 +59,9 @@ export const WORLD_PLACES: Readonly<Record<WorldPlace["id"], WorldPlace>> = {
   },
   words: {
     id: "words",
-    name: GAME_WORLDS.words.name,
-    line: "Open the book and find the words.",
-    blurb: "Letters, rhymes, and the sounds at the start and end of words.",
+    name: worldNameKey("words"),
+    line: worldLineKey("words"),
+    blurb: worldBlurbKey("words"),
     theme: "letters",
     accent: "blossom",
     friend: "bibi",
@@ -78,9 +86,11 @@ export function worldGameFor(activity: WorldActivity): Game {
   const place = WORLD_PLACES[activity.world];
   return {
     id: activity.id,
-    title: activity.title,
-    tagline: activity.intro,
-    parentSummary: activity.blurb,
+    /* The door's own words, from the same keys the map and the parent
+       dashboard read — so a door is called one thing everywhere. */
+    title: doorKey(activity, "title"),
+    tagline: doorKey(activity, "intro"),
+    parentSummary: doorKey(activity, "blurb"),
     category: place.theme,
     ageRange: { min: 4, max: 7 },
     difficulty: "gentle",

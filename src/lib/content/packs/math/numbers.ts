@@ -27,7 +27,6 @@ const COMPARE_MAX: LevelTable<number> = { 1: 5, 2: 10, 3: 20 };
 export const countingActivity = defineGeneratedActivity({
   id: "counting",
   packId: "math",
-  title: "Counting",
   category: "math",
   activityType: "counting",
   kind: "choice",
@@ -59,7 +58,6 @@ export const countingActivity = defineGeneratedActivity({
 export const numberRecognitionActivity = defineGeneratedActivity({
   id: "number-recognition",
   packId: "math",
-  title: "Knowing numbers",
   category: "math",
   activityType: "number-recognition",
   kind: "choice",
@@ -99,7 +97,6 @@ function twoWithGap(rng: Rng, max: number): number[] {
 export const comparisonActivity = defineGeneratedActivity({
   id: "comparison",
   packId: "math",
-  title: "Bigger or smaller",
   category: "math",
   activityType: "comparison",
   kind: "choice",

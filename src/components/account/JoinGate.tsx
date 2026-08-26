@@ -6,13 +6,15 @@ import { useEffect, useId, useRef, useState } from "react";
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import {
-  PLANS,
+  planText,
   PLAN_ORDER,
   YEARLY_SAVING_PERCENT,
   type Plan,
 } from "@/lib/billing/subscription";
 import { retrySession, sessionHasAccess, signOut, startCheckout, useSession } from "@/lib/cloud/session";
 import type { AuthFailure } from "@/lib/cloud/types";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useT, useTranslation } from "@/lib/i18n/useLocale";
 import { KIDDO_HOME, PARENTS, PRICING, WELCOME } from "@/lib/routes";
 
 import { AuthCard } from "./AuthCard";
@@ -39,17 +41,18 @@ import { SubscriptionGate } from "./SubscriptionGate";
  * button, never a dead end.
  */
 
-const WORDS: Partial<Record<AuthFailure, string>> = {
-  offline: "KIDDO can’t reach the internet right now. Check the connection and try again.",
-  "billing-unavailable": "Subscriptions aren’t set up on this KIDDO yet. Please try again later.",
-  "no-account": "Please sign in again and then choose a plan.",
+const WORDS: Partial<Record<AuthFailure, MessageKey>> = {
+  offline: "auth.error.offline",
+  "billing-unavailable": "join.error.billing-unavailable",
+  "no-account": "join.error.no-account",
 };
 
 export function JoinGate({ plan: chosen }: { plan: Plan }) {
   const session = useSession();
   const [plan, setPlan] = useState<Plan>(chosen);
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null);
+  const t = useT();
   const id = useId();
   /* Whether the account was made (or signed into) on this visit. Only then
      does Checkout start by itself — a parent who arrived already signed in
@@ -72,7 +75,7 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
     if (failure) {
       setBusy(false);
       started.current = false;
-      setError(WORDS[failure] ?? "Something went wrong starting the payment. Please try again.");
+      setError(WORDS[failure] ?? "join.error.checkout");
     }
     /* On success the browser is already on its way to Stripe. */
   }
@@ -95,13 +98,10 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   if (status === "unavailable") {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-join-gate="unavailable">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">Subscriptions aren’t set up here yet</h1>
-        <p className="text-ink-700 text-base leading-snug">
-          This copy of KIDDO is running without accounts, so there is nothing to pay for
-          yet. Everything a child plays stays on this device.
-        </p>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("join.unavailable.title")}</h1>
+        <p className="text-ink-700 text-base leading-snug">{t("join.unavailable.body")}</p>
         <ButtonLink href={KIDDO_HOME} size="md" className="self-start">
-          Open KIDDO
+          {t("join.unavailable.cta")}
         </ButtonLink>
       </Card>
     );
@@ -110,16 +110,14 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   if (sessionHasAccess(session)) {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-join-gate="subscribed">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">You already have KIDDO</h1>
-        <p className="text-ink-700 text-base leading-snug">
-          Your subscription is active, so there is nothing to pay. Everything is open.
-        </p>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("join.subscribed.title")}</h1>
+        <p className="text-ink-700 text-base leading-snug">{t("join.subscribed.body")}</p>
         <div className="flex flex-wrap gap-3">
           <ButtonLink href={KIDDO_HOME} size="md" iconRight icon={<ArrowRight className="size-5" aria-hidden />}>
-            Enter KIDDO
+            {t("common.enterKiddo")}
           </ButtonLink>
           <ButtonLink href={PARENTS} size="md" variant="soft">
-            Parent area
+            {t("join.subscribed.parents")}
           </ButtonLink>
         </div>
       </Card>
@@ -129,16 +127,16 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   if (status === "trouble") {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-join-gate="trouble">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">We couldn’t reach your account</h1>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("join.trouble.title")}</h1>
         <p className="text-ink-700 text-base leading-snug" role="status">
-          Check your connection and try again — nothing has been charged.
+          {t("join.trouble.body")}
         </p>
         <div className="flex flex-wrap gap-3">
           <Button onClick={retrySession} data-session-retry>
-            Try again
+            {t("common.tryAgain")}
           </Button>
           <Button variant="quiet" onClick={() => void signOut()}>
-            Sign out
+            {t("common.signOut")}
           </Button>
         </div>
       </Card>
@@ -152,7 +150,7 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   if (status === "loading" || status === "signed-in") {
     return (
       <Card as="section" padding="lg" radius="hero" data-join-gate={status} aria-busy>
-        <p className="text-ink-500 text-base">One moment…</p>
+        <p className="text-ink-500 text-base">{t("common.oneMoment")}</p>
       </Card>
     );
   }
@@ -164,21 +162,20 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
       {status === "signed-out" ? (
         <>
           <AuthCard initialMode="signup" />
-          <p className="text-ink-500 text-sm leading-snug">
-            You’ll be taken to Stripe to pay as soon as your account exists. Nothing is
-            charged until you finish there, and KIDDO never sees your card.
-          </p>
+          <p className="text-ink-500 text-sm leading-snug">{t("join.beforeStripe")}</p>
         </>
       ) : (
         <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-join-checkout>
           <h2 className="font-display text-xl font-semibold sm:text-2xl">
-            {busy ? "Taking you to Stripe…" : "Ready when you are"}
+            {t(busy ? "join.checkout.starting" : "join.checkout.ready")}
           </h2>
           <p className="text-ink-700 text-base leading-snug">
-            {`Signed in as ${session.user?.email ?? "your account"}. The next step is Stripe’s secure checkout.`}
+            {t("join.checkout.signedInAs", {
+              email: session.user?.email ?? t("join.checkout.yourAccount"),
+            })}
           </p>
           <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-join-error>
-            {error ?? ""}
+            {error ? t(error) : ""}
           </p>
           <div className="flex flex-wrap items-center gap-3">
             <Button
@@ -189,7 +186,7 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
               iconRight
               data-join-start
             >
-              {busy ? "One moment…" : `Continue to checkout`}
+              {t(busy ? "common.oneMoment" : "join.checkout.cta")}
             </Button>
             <button
               type="button"
@@ -197,7 +194,7 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
               className="text-ink-700 -my-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-4"
               data-join-signout
             >
-              Use a different account
+              {t("join.checkout.differentAccount")}
             </button>
           </div>
         </Card>
@@ -218,6 +215,8 @@ function ChosenPlan({
   disabled: boolean;
   id: string;
 }) {
+  const { locale, t } = useTranslation();
+  const detail = planText(plan, locale);
   return (
     <Card as="section" aria-labelledby={`${id}-plan`} padding="lg" radius="hero" className="flex flex-col gap-5" data-join-plan={plan}>
       <div className="flex items-start gap-4">
@@ -225,22 +224,32 @@ function ChosenPlan({
           <Sparkles className="size-6" aria-hidden />
         </span>
         <div className="space-y-1">
-          <p className="text-ink-500 text-xs font-semibold tracking-wide uppercase">Your plan</p>
+          <p className="text-ink-500 text-xs font-semibold tracking-wide uppercase">
+            {t("join.plan.eyebrow")}
+          </p>
           <h1 id={`${id}-plan`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {`${PLANS[plan].name} · ${PLANS[plan].price} a ${PLANS[plan].per}`}
+            {t("join.plan.heading", {
+              name: detail.name,
+              price: detail.price,
+              per: detail.per,
+            })}
           </h1>
           <p className="text-ink-700 text-base leading-snug">
             {plan === "yearly"
-              ? `${PLANS.yearly.blurb} — ${YEARLY_SAVING_PERCENT}% less than paying monthly.`
-              : PLANS.monthly.blurb + ". Cancel anytime."}
+              ? t("join.plan.yearlyBlurb", {
+                  blurb: detail.blurb,
+                  saving: YEARLY_SAVING_PERCENT,
+                })
+              : t("join.plan.monthlyBlurb", { blurb: detail.blurb })}
           </p>
         </div>
       </div>
 
       <fieldset className="flex flex-col gap-2 sm:flex-row" disabled={disabled}>
-        <legend className="sr-only">Choose a plan</legend>
+        <legend className="sr-only">{t("join.plan.legend")}</legend>
         {PLAN_ORDER.map((key) => {
           const selected = plan === key;
+          const option = planText(key, locale);
           return (
             <label
               key={key}
@@ -259,7 +268,11 @@ function ChosenPlan({
                 className="accent-ink-900 size-5 shrink-0"
               />
               <span className="text-ink-900 text-base font-semibold">
-                {`${PLANS[key].name} · ${PLANS[key].price}/${PLANS[key].per}`}
+                {t("join.plan.option", {
+                  name: option.name,
+                  price: option.price,
+                  per: option.per,
+                })}
               </span>
             </label>
           );
@@ -267,7 +280,7 @@ function ChosenPlan({
       </fieldset>
 
       <ButtonLink href={PRICING} variant="quiet" size="sm" className="self-start" data-join-back>
-        Compare the plans again
+        {t("join.plan.compare")}
       </ButtonLink>
     </Card>
   );

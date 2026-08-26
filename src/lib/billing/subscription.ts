@@ -10,6 +10,10 @@
  * There are exactly two plans. No free tier, no trial, no lifetime.
  */
 
+import { formatDay } from "@/lib/i18n/format";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+
 export type Plan = "monthly" | "yearly";
 
 /**
@@ -228,11 +232,52 @@ export function stateFromStripe(
 }
 
 /**
- * Stripe may deliver events twice and out of order. An event older than the
- * one already applied is ignored; the same or newer wins.
+ * How final a state is, for deciding same-second ties below. Higher wins:
+ * an event that takes access away must never be undone by one that grants
+ * it, when the two are indistinguishable by time.
+ */
+const FINALITY: Record<SubscriptionStatus, number> = {
+  none: 0,
+  incomplete: 1,
+  active: 2,
+  past_due: 3,
+  cancelled: 4,
+  expired: 5,
+};
+
+/** Status first, then a scheduled cancellation, as one comparable number. */
+function finality(state: SubscriptionState): number {
+  return FINALITY[state.status] * 2 + (state.cancelAtPeriodEnd ? 1 : 0);
+}
+
+/**
+ * Stripe may deliver events twice and out of order, and it stamps them in
+ * whole seconds. An event older than the one already applied is ignored.
+ *
+ * The same second is the interesting case, and it is not hypothetical:
+ * cancelling a subscription produces `customer.subscription.updated` and
+ * `customer.subscription.deleted` with the same `created`, and Stripe does
+ * not promise which arrives first. Accepting whichever landed last — which
+ * is what a plain `>=` on the timestamp did — meant a stale "still active"
+ * update could follow the deletion and reopen access to an account that
+ * had just been closed.
+ *
+ * So a tie is broken by the states themselves rather than by arrival:
+ *  - the more final status wins, so a deletion beats a same-second update;
+ *  - at equal status, a scheduled cancellation wins, so an update carrying
+ *    `cancel_at_period_end` (or `cancel_at`) is not reverted by a plain
+ *    active one from the same second.
+ *
+ * Two events describing the *same* state still tie, and a tie still applies:
+ * writing the state that is already there is a no-op, and the webhook's
+ * event-id claim has already turned away the genuine duplicates.
  */
 export function isNewer(incoming: SubscriptionState, existing: SubscriptionState | null | undefined): boolean {
-  return !existing || incoming.eventCreated >= existing.eventCreated;
+  if (!existing) return true;
+  if (incoming.eventCreated !== existing.eventCreated) {
+    return incoming.eventCreated > existing.eventCreated;
+  }
+  return finality(incoming) >= finality(existing);
 }
 
 /** Read a state back from Firestore (or anywhere) without trusting it. */
@@ -253,51 +298,116 @@ export function parseSubscription(raw: unknown): SubscriptionState {
 }
 
 /**
+ * The words on a plan, in the language the reader is in.
+ *
+ * `PLANS` above stays exactly as it was — English, and the only place a
+ * price is written down. What moves here is the half of a plan that is
+ * *language* rather than *fact*: its name, its period, its badge and its
+ * button. The amount, the formatted price and the plan key are the same
+ * sentence in every language, and a translator can no more change RM59.90
+ * than they can change which Stripe price it maps to.
+ *
+ * The default locale on this and the two functions below is what keeps the
+ * existing billing tests meaningful: called the way they were always called,
+ * these return the English they always returned.
+ */
+export interface PlanText {
+  name: string;
+  price: string;
+  per: string;
+  note: string | null;
+  blurb: string;
+  cta: string;
+}
+
+export function planText(plan: Plan, locale: Locale = DEFAULT_LOCALE): PlanText {
+  return {
+    name: translate(locale, `plan.${plan}.name`),
+    price: PLANS[plan].price,
+    per: translate(locale, `plan.${plan}.per`),
+    /* Only the yearly plan has a badge, and "no badge" is an empty string in
+       the catalogue rather than a missing key — a translator should see every
+       row of the plan, including the one that is deliberately blank. */
+    note: translate(locale, `plan.${plan}.note`) || null,
+    blurb: translate(locale, `plan.${plan}.blurb`, { perMonth: YEARLY_PER_MONTH }),
+    cta: translate(locale, `plan.${plan}.cta`),
+  };
+}
+
+/**
  * The status as one word for the account area's chip. The sentence below
  * says what to do about it; this says what it is.
  */
-export function statusLabel(state: SubscriptionState, now: number): string {
+export function statusLabel(
+  state: SubscriptionState,
+  now: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
   switch (state.status) {
     case "active":
-      if (!hasAccess(state, now)) return "Renewing";
-      return state.cancelAtPeriodEnd ? "Ending" : "Active";
+      if (!hasAccess(state, now)) return translate(locale, "billing.status.renewing");
+      return translate(
+        locale,
+        state.cancelAtPeriodEnd ? "billing.status.ending" : "billing.status.active",
+      );
     case "past_due":
-      return "Payment failed";
+      return translate(locale, "billing.status.past_due");
     case "incomplete":
-      return "Confirming";
+      return translate(locale, "billing.status.incomplete");
     case "cancelled":
-      return "Cancelled";
+      return translate(locale, "billing.status.cancelled");
     case "expired":
-      return "Ended";
+      return translate(locale, "billing.status.expired");
     case "none":
-      return "No subscription";
+      return translate(locale, "billing.status.none");
   }
 }
 
-/** The sentence a parent reads on the billing card. Plain, never a code. */
-export function describeSubscription(state: SubscriptionState, now: number): string {
-  const plan = state.plan ? PLANS[state.plan] : null;
-  const when = state.currentPeriodEnd ? formatDay(state.currentPeriodEnd) : null;
+/**
+ * The sentence a parent reads on the billing card. Plain, never a code.
+ *
+ * Every branch is a whole sentence in the catalogue rather than English
+ * fragments glued together, because the pieces do not survive translation in
+ * the same order: "Yearly plan, RM59.90 a year" becomes "Pelan Tahunan,
+ * RM59.90 setahun", where the period word has grown a prefix and the plan
+ * name has moved behind its noun. A sentence a translator can see whole is a
+ * sentence they can get right.
+ */
+export function describeSubscription(
+  state: SubscriptionState,
+  now: number,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const plan = state.plan ? planText(state.plan, locale) : null;
+  const when = state.currentPeriodEnd ? formatDay(state.currentPeriodEnd, locale) : null;
   switch (state.status) {
     case "active":
-      if (!hasAccess(state, now)) return "Your subscription is being renewed. If this takes more than a day, please check your payment details.";
-      if (state.cancelAtPeriodEnd) return when ? `Cancelled. KIDDO stays open until ${when}.` : "Cancelled. KIDDO stays open until the end of the paid period.";
-      return plan
-        ? when ? `${plan.name} plan, ${plan.price} a ${plan.per}. Renews on ${when}.` : `${plan.name} plan, ${plan.price} a ${plan.per}.`
-        : when ? `Active. Renews on ${when}.` : "Active.";
+      if (!hasAccess(state, now)) return translate(locale, "billing.describe.renewing");
+      if (state.cancelAtPeriodEnd) {
+        return when
+          ? translate(locale, "billing.describe.endingOn", { when })
+          : translate(locale, "billing.describe.ending");
+      }
+      if (plan) {
+        const vars = { plan: plan.name, price: plan.price, per: plan.per };
+        return when
+          ? translate(locale, "billing.describe.planRenews", { ...vars, when })
+          : translate(locale, "billing.describe.plan", vars);
+      }
+      return when
+        ? translate(locale, "billing.describe.activeRenews", { when })
+        : translate(locale, "billing.describe.active");
     case "past_due":
-      return "The last payment didn’t go through, so KIDDO is paused. Update your payment details to carry on.";
+      return translate(locale, "billing.describe.past_due");
     case "incomplete":
-      return "Your payment is still being confirmed.";
+      return translate(locale, "billing.describe.incomplete");
     case "cancelled":
-      return when ? `Your subscription ended on ${when}.` : "Your subscription has ended.";
+      return when
+        ? translate(locale, "billing.describe.endedOn", { when })
+        : translate(locale, "billing.describe.ended");
     case "expired":
-      return "Your subscription has ended.";
+      return translate(locale, "billing.describe.ended");
     case "none":
-      return "No subscription yet.";
+      return translate(locale, "billing.describe.none");
   }
-}
-
-function formatDay(ms: number): string {
-  return new Date(ms).toLocaleDateString("en-MY", { day: "numeric", month: "long", year: "numeric" });
 }

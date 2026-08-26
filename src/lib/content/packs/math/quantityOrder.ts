@@ -142,7 +142,6 @@ function trayOrder(
 export const quantityOrderActivity = defineGeneratedActivity({
   id: "quantity-order",
   packId: "math",
-  title: "Smallest group first",
   category: "math",
   activityType: "comparison",
   kind: "order",

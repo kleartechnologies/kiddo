@@ -160,7 +160,6 @@ function trayOrder(
 export const lifeCycles = defineGeneratedActivity({
   id: "life-cycles",
   packId: "general-knowledge",
-  title: "How Things Grow",
   category: "general-knowledge",
   activityType: "life-cycles",
   kind: "order",

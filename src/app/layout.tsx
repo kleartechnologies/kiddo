@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 
 import { CloudSession } from "@/components/account/CloudSession";
+import { HtmlLang } from "@/components/i18n/HtmlLang";
 import { MotionProvider } from "@/components/MotionProvider";
 import "./globals.css";
 
@@ -56,6 +57,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full">
+        <HtmlLang />
         <CloudSession />
         <MotionProvider>{children}</MotionProvider>
       </body>

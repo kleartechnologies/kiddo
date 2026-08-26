@@ -7,6 +7,8 @@ import { useCallback, useState } from "react";
 import { captionOf, spokenOf } from "@/lib/content/challenges";
 import type { ConnectNode, ContentItem } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
+import type { Translate } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import { springSoft } from "@/lib/motion";
 import type { ConnectStageProps } from "./ConnectStage";
 import { ContentItemView } from "./ContentItemView";
@@ -77,11 +79,13 @@ function srLabelOf(
   node: ConnectNode,
   partner: ConnectNode | null,
   selected: boolean,
+  t: Translate,
 ): string {
   const name = spokenOf(node.item);
-  if (partner) return `${name}, matched with ${spokenOf(partner.item)}.`;
-  if (selected) return `${name}, selected. Choose the item that matches it.`;
-  return `${name}, not matched yet. Choose it.`;
+  if (partner)
+    return t("stage.match.matched", { name, partner: spokenOf(partner.item) });
+  if (selected) return t("stage.match.selected", { name });
+  return t("stage.match.idle", { name });
 }
 
 /**
@@ -127,6 +131,7 @@ export function MatchStage({
   onSelectLeft,
   onSelectRight,
 }: MatchStageProps) {
+  const t = useT();
   const { left, right } = challenge.payload;
   const reduced = useReducedMotion();
 
@@ -326,7 +331,7 @@ export function MatchStage({
               data-state={matched ? "matched" : selected ? "selected" : "idle"}
               aria-pressed={matched ? undefined : selected}
               aria-disabled={matched || !accepting}
-              aria-label={srLabelOf(node, partner, selected)}
+              aria-label={srLabelOf(node, partner, selected, t)}
               onPointerDown={handlePointerDown(group, node.id)}
               onPointerUp={handlePointerUp}
               onPointerCancel={handlePointerCancel}
@@ -433,7 +438,10 @@ export function MatchStage({
       const from = nodeOf("left", attempt.leftId);
       const to = nodeOf("right", attempt.rightId);
       if (!from || !to) return "";
-      return `${spokenOf(from.item)} and ${spokenOf(to.item)} do not go together. Try another one.`;
+      return t("stage.match.no", {
+        from: spokenOf(from.item),
+        to: spokenOf(to.item),
+      });
     }
     const last = connections[connections.length - 1];
     if (!last) return "";
@@ -441,9 +449,10 @@ export function MatchStage({
     const to = nodeOf("right", last.rightId);
     if (!from || !to) return "";
     const remaining = challenge.payload.pairs.length - connections.length;
+    const pairing = { from: spokenOf(from.item), to: spokenOf(to.item) };
     return remaining === 0
-      ? `${spokenOf(from.item)} goes with ${spokenOf(to.item)}. You found them all!`
-      : `${spokenOf(from.item)} goes with ${spokenOf(to.item)}. ${remaining} more to find.`;
+      ? t("stage.match.allDone", pairing)
+      : t("stage.match.more", { ...pairing, remaining });
   })();
 
   return (
@@ -464,8 +473,8 @@ export function MatchStage({
            anything: every number here is a ceiling, not a size. */
         className="mx-auto flex w-full max-w-[min(40rem,100%)] flex-col gap-3"
       >
-        {shelf("left", left, "First set")}
-        {shelf("right", right, "The set that goes with it")}
+        {shelf("left", left, t("stage.match.left"))}
+        {shelf("right", right, t("stage.match.right"))}
       </div>
 
       <span role="status" aria-live="polite" className="sr-only">

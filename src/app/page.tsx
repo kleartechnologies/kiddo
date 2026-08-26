@@ -12,29 +12,46 @@ import { Progression } from "@/components/landing/Progression";
 import { ScreenTime } from "@/components/landing/ScreenTime";
 import { WorldShowcase } from "@/components/landing/WorldShowcase";
 import { Screen } from "@/components/ui/Screen";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 
+/**
+ * The page's own metadata, read from the English catalogue.
+ *
+ * It is English and stays English, and that is a decision rather than an
+ * omission. `metadata` is evaluated when the page is built, long before any
+ * browser has said which language it wants; making it follow the reader
+ * would mean rendering this page per request — the one thing `next.config.ts`
+ * refuses on purpose, so that the landing page stays a static file a CDN can
+ * hand out. What a person actually reads is translated the moment the page
+ * hydrates, and `<html lang>` follows them (see `components/i18n/HtmlLang`).
+ *
+ * There are no `alternates.languages` entries because there is no second URL
+ * to point at: KIDDO has one address per page and carries the preference with
+ * the reader (§15). Inventing `/ms` here would advertise a page that does not
+ * exist.
+ */
+const meta = (key: Parameters<typeof translate>[1]) => translate(DEFAULT_LOCALE, key);
+
 export const metadata: Metadata = {
-  title: { absolute: "KIDDO — Learning should feel like an adventure" },
-  description:
-    "KIDDO turns early learning into playful little worlds for children aged 4 to 8: a garden to count in, animals to guide home, and a storybook full of words. One subscription for the parent; no ads, nothing to buy inside.",
+  title: { absolute: meta("landing.meta.title") },
+  description: meta("landing.meta.description"),
   /* The canonical resolves against `metadataBase` in `app/layout.tsx`, which
      is only set when NEXT_PUBLIC_SITE_URL is configured (TODO(launch)). Without
      it, no canonical is emitted rather than an invented domain. */
   alternates: process.env.NEXT_PUBLIC_SITE_URL ? { canonical: "/" } : {},
   openGraph: {
-    title: "KIDDO — Learning should feel like an adventure",
-    description:
-      "Playful little worlds for early learning. Children count in a garden, help animals home and discover words in a storybook.",
+    title: meta("landing.meta.title"),
+    description: meta("landing.meta.ogDescription"),
     type: "website",
     siteName: "KIDDO",
     locale: "en_GB",
   },
   twitter: {
     card: "summary_large_image",
-    title: "KIDDO — Learning should feel like an adventure",
-    description:
-      "Playful little worlds for early learning, for children aged 4 to 8.",
+    title: meta("landing.meta.title"),
+    description: meta("landing.meta.twitterDescription"),
   },
 };
 

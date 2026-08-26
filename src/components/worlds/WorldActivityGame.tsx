@@ -20,6 +20,8 @@ import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
 import type { CharacterId } from "@/lib/games/types";
 import { isKind } from "@/lib/content/engine";
+import { doorKey, rewardKey, worldNameKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import { useGeneralKnowledgeQuest } from "@/lib/games/useGeneralKnowledgeQuest";
 import {
   nextActivityIn,
@@ -32,7 +34,7 @@ import {
 } from "@/lib/journey/journey";
 import { recordCompletedAt, recordOpened, useJourney } from "@/lib/journey/useJourney";
 import { useChildName } from "@/lib/profile/useChildName";
-import { WORLD_REWARDS, type Tier, type WorldActivity } from "@/lib/worlds/activities";
+import type { Tier, WorldActivity } from "@/lib/worlds/activities";
 import { introPreviewOf } from "@/lib/worlds/introPreview";
 import { activityRoute, WORLD_PLACES, worldGameFor } from "@/lib/worlds/places";
 import { TierPicker } from "./TierPicker";
@@ -71,6 +73,7 @@ import { WorldKeepsake } from "./WorldKeepsake";
 const never = () => () => {};
 
 export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
+  const t = useT();
   const place = WORLD_PLACES[activity.world];
   const game = useMemo(() => worldGameFor(activity), [activity]);
 
@@ -161,20 +164,25 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
           quest.question,
           challenge.prompt.speech,
           challenge.hint ?? "",
-          challenge.explanation ?? "You joined them all up!",
-          "Yes! That's the one.",
-          "Ooh, not that one. Have another go.",
+          challenge.explanation ?? t("game.general-knowledge-quest.joined"),
+          t("game.general-knowledge-quest.yesBoard"),
+          t("game.general-knowledge-quest.retryBoard"),
         ]
       : [
           quest.question,
           challenge.prompt.speech,
           challenge.hint ?? "",
-          challenge.explanation ?? `Great thinking! It's ${answerLabel}.`,
-          "Ooh, not that one. Try again!",
+          challenge.explanation ??
+            t("game.general-knowledge-quest.yes", { answer: answerLabel }),
+          t("game.general-knowledge-quest.retry"),
         ]
     : [];
 
-  const hello = name ? `Hi, ${name}! ${activity.intro}` : activity.intro;
+  /* Named and unnamed are two whole greetings, not one with a name spliced
+     in: `door.<id>.intro` is a sentence of its own in either language, and
+     where a name goes in front of it is the greeting's business. */
+  const intro = t(doorKey(activity, "intro"));
+  const hello = name ? t("worlds.game.hello", { name, intro }) : intro;
 
   /* The glimpse waits for the mount: before it, the quest's deal is a
      placeholder the seeded deal replaces, and a glimpse of the wrong board
@@ -197,18 +205,21 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
             ? lines[4]
             : quest.question;
 
-  const step = `Question ${quest.progress.current + 1} of ${quest.progress.total}`;
+  const step = { current: quest.progress.current + 1, total: quest.progress.total };
   const announcement =
     phase === "correct"
       ? board
-        ? `${lines[3]} ${step} done.`
-        : `Yes, the answer is ${answerLabel}. ${step} done.`
+        ? t("quest.boardAnswered", { said: lines[3], ...step })
+        : t("quest.answered", { answer: answerLabel, ...step })
       : board && quest.feedback === "correct"
-        ? `Yes. ${board.progress.current} of ${board.progress.total} joined.`
+        ? t("quest.joined", {
+            current: board.progress.current,
+            total: board.progress.total,
+          })
         : phase === "incorrect" || (board && quest.feedback === "retry")
-          ? "Not quite. Have another go."
+          ? t("quest.notQuite")
           : phase === "awaitingAnswer" && challenge
-            ? `${step}. ${quest.question}`
+            ? t("quest.asking", { question: quest.question, ...step })
             : "";
 
   /* What comes after: the next unfinished door here, or — when the world is
@@ -217,24 +228,30 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
   const nextHere = nextActivityIn(journey, activity.world);
   const elsewhere = suggestWorldAfter(journey, activity.world);
   const next = nextHere
-    ? { href: activityRoute(nextHere), label: `Next: ${nextHere.title}` }
+    ? {
+        href: activityRoute(nextHere),
+        label: t("worlds.game.next", { door: t(doorKey(nextHere, "title")) }),
+      }
     : elsewhere
-      ? { href: WORLD_PLACES[elsewhere].route, label: `Visit ${WORLD_PLACES[elsewhere].name}` }
+      ? {
+          href: WORLD_PLACES[elsewhere].route,
+          label: t("worlds.page.visit", { world: t(worldNameKey(elsewhere)) }),
+        }
       : undefined;
 
-  const reward = WORLD_REWARDS[activity.world];
+  const world = t(place.name);
   const message =
     progress.complete && earned === "first"
-      ? `Wonderful! You discovered everything in ${place.name}!`
+      ? t("worlds.game.worldDone", { world })
       : earned === "first"
         ? finishedTier === 1
-          ? reward.earned
+          ? t(rewardKey(activity.world, "earned"))
           : finishedTier === 2
-            ? "That was tricky — and you did it!"
-            : "Wow! You figured it out!"
+            ? t("worlds.game.tricky")
+            : t("worlds.game.figured")
         : progress.complete
-          ? `Wonderful! You discovered everything in ${place.name}.`
-          : "Still brilliant. Every time counts!";
+          ? t("worlds.game.worldDoneAgain", { world })
+          : t("worlds.game.again");
 
   /* How big the moment is: the tier the round was played at — or, when this
      finish was the last thing the world had to find, the world's own. */
@@ -256,7 +273,7 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
       feedback={quest.feedback}
       status={quest.status}
       celebration={{
-        title: activity.done,
+        title: t(doorKey(activity, "done")),
         message,
         moment,
         onPlayAgain: () => {
@@ -278,7 +295,7 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
                 className="border-edge bg-paper flex flex-col items-center gap-3 rounded-card border p-4"
               >
                 <p className="font-display text-lg leading-snug font-semibold">
-                  Ready for a bigger challenge?
+                  {t("worlds.game.bigger")}
                 </p>
                 <TierPicker states={tierStates} selected={finishedTier} onSelect={chooseTier} />
               </div>
@@ -287,7 +304,7 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
         ),
         next,
       }}
-      exit={{ href: place.route, label: `Back to ${place.name}` }}
+      exit={{ href: place.route, label: t("worlds.game.back", { world }) }}
       /* The whole round is played in this world — the way in, every board,
          and the way out — so the child never leaves the place they chose. */
       world={activity.world}
@@ -296,6 +313,7 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
     >
       {phase === "intro" || !challenge ? (
         <Intro
+          label={t("worlds.game.start")}
           friend={place.friend}
           preview={
             glimpse.length > 0 ? (
@@ -313,7 +331,9 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
           picker={
             showPicker ? (
               <div data-tier-choice className="flex flex-col items-center gap-2">
-                <p className="text-ink-700 text-base font-semibold">How big a challenge?</p>
+                <p className="text-ink-700 text-base font-semibold">
+                  {t("worlds.tier.ask")}
+                </p>
                 <TierPicker states={tierStates} selected={activeTier} onSelect={chooseTier} />
               </div>
             ) : undefined
@@ -366,11 +386,14 @@ export function WorldActivityGame({ activity }: { activity: WorldActivity }) {
  * garden looks like the garden and the way into the book looks like the book.
  */
 function Intro({
+  label,
   friend,
   preview,
   onStart,
   picker,
 }: {
+  /** Already in the reader's language — the door's own way in. */
+  label: string;
   friend: CharacterId;
   preview?: ReactNode;
   onStart: () => void;
@@ -383,7 +406,7 @@ function Intro({
     begin: (
       <div className="flex flex-col items-center gap-6 [@media(max-height:54rem)]:gap-4">
         <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-          Let&apos;s go!
+          {label}
         </Button>
         {picker}
       </div>

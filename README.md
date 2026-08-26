@@ -39,6 +39,16 @@ Checkout, a signed webhook writes the entitlement to Firestore, and the
 child's pages open only with an active subscription. Secrets live in
 server-only variables (see `.env.example`); see `docs/kiddo-billing.md`.
 
+KIDDO speaks English and Bahasa Melayu, all the way down: the landing page,
+the money screens, the parent area, and the questions, hints and explanations
+inside the games. Interface strings live in `src/lib/i18n/messages` (missing a
+translation is a compile error); the words inside a dealt question are
+localized by `src/lib/content/i18n` from a lexicon and a sentence book. Ids,
+answers, seeds and progress are never translated, so changing language
+mid-round changes the words and nothing else. See
+`docs/kiddo-localization.md`, and `docs/kiddo-malay-review.md` for the Malay
+strings still awaiting a native Malaysian speaker's review.
+
 ## Routes
 
 | Route             | What it is                                                    |

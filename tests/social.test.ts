@@ -105,14 +105,23 @@ test("no events is answered with no notices, never with something reassuring", (
   assert.doesNotMatch(notices, /<button|onClick/, "a notice is news, not something a parent has to dismiss");
 
   const route = readFileSync(new URL("../src/app/api/social/recent/route.ts", import.meta.url), "utf8");
-  assert.match(route, /if \(!adminConfigured\(\)\) return quiet\(\);/);
-  assert.match(route, /json\(\{ events: \[\] \}, 200\)/, "an unconfigured or failing server answers with an empty list");
+  assert.match(route, /if \(!adminConfigured\(\)\) return quiet\(\[\]\);/);
+  assert.match(
+    route,
+    /console\.error\("\[social\/recent\]".*\n\s*return quiet\(\[\]\);/,
+    "a failing server answers with an empty list",
+  );
+  assert.match(
+    route,
+    /const events = await recentJoinEvents\(READ_LIMIT\);/,
+    "every notice comes from Firestore; the route invents none",
+  );
 });
 
 test("the route answers with an empty list, not an error, when billing is not configured", async () => {
   delete process.env.FIREBASE_SERVICE_ACCOUNT;
   const { GET } = await import("@/app/api/social/recent/route");
-  const response = await GET();
+  const response = await GET(new Request("https://kiddo.test/api/social/recent"));
   assert.equal(response.status, 200);
   assert.deepEqual(await response.json(), { events: [] });
 });

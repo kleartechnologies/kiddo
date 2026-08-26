@@ -153,7 +153,6 @@ export const ALPHABET_RUNS: readonly string[] = ([1, 2, 3] as const).flatMap(
 export const alphabetOrderActivity = defineGeneratedActivity({
   id: "alphabet-order",
   packId: "english",
-  title: "Alphabet Order",
   category: "english",
   activityType: "letter-sequence",
   kind: "order",

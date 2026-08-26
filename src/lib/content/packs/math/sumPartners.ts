@@ -137,7 +137,6 @@ function conceptOf(chosen: readonly Bond[]): string {
 export const sumPartnersActivity = defineGeneratedActivity({
   id: "sum-partners",
   packId: "math",
-  title: "Sums and answers",
   category: "math",
   activityType: "addition",
   kind: "connect",

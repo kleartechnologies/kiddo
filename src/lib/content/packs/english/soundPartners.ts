@@ -152,7 +152,6 @@ const pictureId = (entry: PhonicsWord) => `picture-${entry.word.toLowerCase()}`;
 export const soundPartnersActivity = defineGeneratedActivity({
   id: "sound-partners",
   packId: "english",
-  title: "Pictures and their first letter",
   category: "english",
   activityType: "phonics",
   kind: "connect",

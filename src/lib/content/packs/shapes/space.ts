@@ -105,7 +105,6 @@ function actors(rng: Rng, relation: SpatialRelation, level: number) {
 export const positionActivity = defineGeneratedActivity({
   id: "position",
   packId: "shapes",
-  title: "Where is it?",
   category: "shapes",
   activityType: "position",
   kind: "choice",
@@ -213,7 +212,6 @@ const MIRROR_TILES: LevelTable<number> = { 2: 3, 3: 4 };
 export const symmetryActivity = defineGeneratedActivity({
   id: "symmetry",
   packId: "shapes",
-  title: "The same both ways",
   category: "shapes",
   activityType: "symmetry",
   kind: "choice",

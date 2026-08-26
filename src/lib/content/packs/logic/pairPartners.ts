@@ -254,7 +254,6 @@ function conceptOf(chosen: readonly Goes[]): string {
 export const pairPartnersActivity = defineGeneratedActivity({
   id: "pair-partners",
   packId: "logic",
-  title: "Things that go together",
   category: "logic",
   activityType: "goes-together",
   kind: "connect",

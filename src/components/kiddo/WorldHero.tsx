@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 
 import { CharacterFigure } from "./CharacterFigure";
+import { useTranslation } from "@/lib/i18n/useLocale";
 import { riseIn, springy, staggerChildren } from "@/lib/motion";
 import { greetingFor } from "@/lib/profile/greeting";
 import { useChildName } from "@/lib/profile/useChildName";
@@ -20,10 +21,11 @@ import { visitSeed } from "@/lib/profile/visit";
  * invent a name of its own.
  */
 export function WorldHero() {
+  const { locale, t } = useTranslation();
   const name = useChildName();
   /* Only ask for a seed once there is a name to vary: on the server, and on
      the render that hydrates it, there is neither. */
-  const { hello, invitation } = greetingFor(name, name ? visitSeed() : 0);
+  const { hello, invitation } = greetingFor(name, name ? visitSeed() : 0, locale);
 
   return (
     <motion.section
@@ -53,7 +55,7 @@ export function WorldHero() {
 
       <motion.div variants={riseIn} className="space-y-3">
         <p className="text-ink-500 font-display text-base font-semibold tracking-wide sm:text-lg">
-          Play. Learn. Smile.
+          {t("chrome.tagline")}
         </p>
         {/* Two lines, always: the hello and the invitation are separate
             thoughts, and a name is not something to be met halfway down a

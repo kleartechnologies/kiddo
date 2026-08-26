@@ -94,7 +94,6 @@ function trayOrder(letters: readonly string[], rng: Rng, displaced: number): str
 export const wordBuildActivity = defineGeneratedActivity({
   id: "word-build",
   packId: "english",
-  title: "Building words",
   category: "english",
   activityType: "spelling",
   kind: "order",

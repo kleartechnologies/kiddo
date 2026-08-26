@@ -54,7 +54,6 @@ const SPACE_FACTS: readonly {
 
 export const spaceFacts = defineQuizActivity({
   id: "space",
-  title: "Up in Space",
   activityType: "space-facts",
   ageRange: { min: 4, max: 6 },
   host: "pip",
@@ -98,7 +97,6 @@ const SKY = {
 
 export const dayAndNight = defineQuizActivity({
   id: "day-and-night",
-  title: "Day and Night",
   activityType: "day-and-night",
   ageRange: { min: 3, max: 6 },
   host: "bibi",
@@ -315,7 +313,6 @@ function trayOrder(
 export const dayOrder = defineGeneratedActivity({
   id: "day-order",
   packId: "general-knowledge",
-  title: "What Happens First",
   category: "general-knowledge",
   activityType: "day-and-night",
   kind: "order",

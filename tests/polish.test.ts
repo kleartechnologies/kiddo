@@ -2,6 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { readFileSync } from "node:fs";
 
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
+import { assertNothingScolds } from "./helpers/words";
+
 /**
  * The promises this pass made about the shell, checked against the source.
  *
@@ -77,7 +81,12 @@ test("every header control is big enough for a four-year-old's hand", () => {
      rule. The logo itself is fixed art, so the padding grew, not the mark. */
   assert.match(header, /min-h-14/, "the wordmark link lost its height");
   assert.match(header, /min-h-12 .*sm:min-h-14|min-h-12/, "the grown-up door shrank");
-  assert.match(header, /aria-label="KIDDO home"/, "the wordmark lost its name");
+  /* And it is still named — in the reader's language, so the one link every
+     child screen carries is not the one English phrase on a Malay page. */
+  assert.match(header, /aria-label=\{t\("chrome\.home"\)\}/, "the wordmark lost its name");
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    assert.ok(words["chrome.home"].trim().length > 0);
+  }
 });
 
 /* 6 ---------------------------------------------------------------------- */
@@ -88,31 +97,45 @@ test("a wrong answer is never a verdict, in the ear as well as the eye", () => {
      region said "Not that one. Keep trying." */
   const unkind = /\b(wrong|incorrect|failed?|failure|bad|no good|try harder|nope)\b/i;
 
-  for (const path of [
-    "src/components/games/math/MathQuestGame.tsx",
-    "src/components/games/english/EnglishQuestGame.tsx",
-    "src/components/games/logic/LogicQuestGame.tsx",
-    "src/components/games/shapes/ShapesColoursQuestGame.tsx",
-    "src/components/games/general-knowledge/GeneralKnowledgeQuestGame.tsx",
-  ]) {
+  for (const [path, prefix] of [
+    ["src/components/games/math/MathQuestGame.tsx", "game.math-quest."],
+    ["src/components/games/english/EnglishQuestGame.tsx", "game.english-quest."],
+    ["src/components/games/logic/LogicQuestGame.tsx", "game.logic-quest."],
+    ["src/components/games/shapes/ShapesColoursQuestGame.tsx", "game.shapes-colours-quest."],
+    [
+      "src/components/games/general-knowledge/GeneralKnowledgeQuestGame.tsx",
+      "game.general-knowledge-quest.",
+    ],
+  ] as const) {
     const source = read(path);
 
     /* Only the words KIDDO says or announces — `phase === "incorrect"` is a
-       state name, not something a child ever hears. */
+       state name, not something a child ever hears. Kept as a backstop for a
+       sentence written straight into a component instead of the catalogue. */
     const spoken = [...source.matchAll(/"([^"\\]{6,})"/g)]
       .map((m) => m[1])
-      .filter((s) => /[a-z] [a-z]/i.test(s) && !s.includes("/"));
+      .filter((s) => /[a-z] [a-z]/i.test(s) && !s.includes("/") && !s.includes("."));
 
     for (const line of spoken) {
       assert.doesNotMatch(line, unkind, `${path} says "${line}"`);
     }
 
+    /* And the words themselves, where they now live: every line this game can
+       say, in every language it says them in. The scan above would pass on a
+       component holding nothing but keys, which is exactly what these are now,
+       and would never have looked at the Malay half at all. */
+    assertNothingScolds(assert, prefix);
+
     assert.match(
       source,
-      /"Not quite\. Have another go\."/,
+      /t\("quest\.notQuite"\)/,
       `${path} lost its kind announcement`,
     );
   }
+
+  /* One announcement, shared by all five, and kind in both languages. */
+  assert.equal(en["quest.notQuite"], "Not quite. Have another go.");
+  assertNothingScolds(assert, "quest.");
 });
 
 /* 7 ---------------------------------------------------------------------- */

@@ -24,7 +24,15 @@
  *    8 reduced motion   both pages readable at once
  *    9 console          nothing logged, nothing failed
  *
- * Expects a server already running (`npm run build && npm start -- -p 4310`).
+ * Expects the account-free measuring server on port 4310:
+ *
+ *     npm run measure:serve
+ *
+ * That is a production build with the NEXT_PUBLIC_FIREBASE_* variables
+ * unset, which is a mode KIDDO ships rather than a rig — see
+ * `scripts/measure-serve.mjs`. Pointed at a configured server this exits
+ * 2 and says so, because the way past a real sign-in form is a different
+ * server and never a weaker gate.
  *
  *   node scripts/measure-join.mjs [--shots=DIR] [origin]
  */
@@ -32,6 +40,7 @@ import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { VIEWPORTS, applyViewport, clickAt, evaluate, openBrowser, visit } from "./cdp.mjs";
+import { announce, requireAccountFree } from "./measure-mode.mjs";
 
 const ARGS = process.argv.slice(2);
 const SHOTS = ARGS.find((arg) => arg.startsWith("--shots="))?.slice(8) ?? null;
@@ -59,6 +68,8 @@ const section = (title) => console.log(`\n${title}`);
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 
 const { cdp, sessionId, close } = await openBrowser(9353);
+const mode = await requireAccountFree(cdp, sessionId, ORIGIN);
+announce(mode);
 await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: WATCH_FOR_TROUBLE }, sessionId);
 
 const js = (expression) => evaluate(cdp, sessionId, expression);

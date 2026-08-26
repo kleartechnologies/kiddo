@@ -157,7 +157,6 @@ const TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 4 };
 export const sortingActivity = defineGeneratedActivity({
   id: "sorting",
   packId: "logic",
-  title: "Sorting things into groups",
   category: "logic",
   activityType: "sorting",
   kind: "choice",

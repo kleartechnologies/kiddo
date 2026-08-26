@@ -1,4 +1,6 @@
-import { isPlan, type Plan } from "@/lib/billing/subscription";
+import { isPlan, planText, type Plan } from "@/lib/billing/subscription";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 
 /**
  * "A new KIDDO family just joined" — and nothing more than that.
@@ -52,17 +54,21 @@ export function recentJoins(events: readonly JoinEvent[], now: number): JoinEven
 }
 
 /**
- * The sentence for one event. Each says only what the event proves: a
- * family joined, and — when KIDDO knows which — on which plan. No names,
- * no places, no numbers.
+ * The sentence for one event, in the reader's language. Each says only what
+ * the event proves: a family joined, and — when KIDDO knows which — on which
+ * plan. No names, no places, no numbers.
+ *
+ * The plan's name comes from `planText`, the same place the pricing cards
+ * read it, so the notice and the card cannot disagree about what the yearly
+ * plan is called in either language.
  */
-export function noticeFor(event: JoinEvent): string {
+export function noticeFor(event: JoinEvent, locale: Locale = DEFAULT_LOCALE): string {
   switch (event.plan) {
     case "yearly":
-      return "🚀 A family just chose the Yearly plan";
+      return translate(locale, "social.join.plan", { plan: planText("yearly", locale).name });
     case "monthly":
-      return "🎉 A new KIDDO family just joined";
+      return translate(locale, "social.join.joined");
     default:
-      return "✨ Another family started their KIDDO journey";
+      return translate(locale, "social.join.started");
   }
 }

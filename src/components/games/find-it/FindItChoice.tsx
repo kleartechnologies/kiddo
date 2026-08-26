@@ -2,6 +2,7 @@
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ChoiceTile } from "@/components/kiddo/ChoiceTile";
+import { useT } from "@/lib/i18n/useLocale";
 import type { FindItItem } from "@/lib/games/findIt";
 
 /**
@@ -33,18 +34,13 @@ export function FindItChoice({
   interactive,
   onPick,
 }: FindItChoiceProps) {
+  const t = useT();
   const state = found ? "correct" : nudged ? "wrong" : tried ? "tried" : "idle";
 
   /* The visible label is the name; the spoken one is the whole instruction,
      and it carries the state in words so nothing depends on the colour of a
      border a screen reader will never see. */
-  const srLabel = found
-    ? `${item.label}, that's the one`
-    : nudged
-      ? `${item.label}, not this one`
-      : tried
-        ? `Choose ${item.label}, already tried`
-        : `Choose ${item.label}`;
+  const srLabel = t(`stage.choice.${state}`, { name: item.label });
 
   return (
     <ChoiceTile

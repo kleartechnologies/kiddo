@@ -74,7 +74,6 @@ const NAMING: readonly {
 
 export const objectNames = defineQuizActivity({
   id: "object-names",
-  title: "Things Around the House",
   activityType: "everyday-objects",
   ageRange: { min: 3, max: 6 },
   host: "wally",
@@ -127,7 +126,6 @@ const USES: readonly {
 
 export const objectUses = defineQuizActivity({
   id: "object-uses",
-  title: "What Is It For?",
   activityType: "everyday-objects",
   ageRange: { min: 4, max: 6 },
   host: "wally",
@@ -191,7 +189,6 @@ const WEARING: readonly {
 
 export const clothing = defineQuizActivity({
   id: "clothing",
-  title: "Getting Dressed",
   activityType: "clothing",
   ageRange: { min: 3, max: 6 },
   host: "bibi",

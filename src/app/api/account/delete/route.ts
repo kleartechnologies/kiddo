@@ -1,6 +1,8 @@
+import { requireAppCheck } from "@/server/appCheck";
 import { subscriptionOf } from "@/server/billing";
 import { adminAuth, adminConfigured, adminDb } from "@/server/firebaseAdmin";
-import { json, problem, requireCaller } from "@/server/http";
+import { json, problem, requireCaller, tooMany } from "@/server/http";
+import { consume, LIMITS } from "@/server/rateLimit";
 import { stripe, stripeConfigured } from "@/server/stripe";
 
 export const runtime = "nodejs";
@@ -25,11 +27,19 @@ export const RECENT_AUTH_S = 5 * 60;
  */
 export async function POST(request: Request) {
   if (!adminConfigured()) return problem(503, "accounts-not-configured");
+  const attested = await requireAppCheck(request);
+  if (attested) return attested;
   const caller = await requireCaller(request);
   if (caller instanceof Response) return caller;
   if (Math.floor(Date.now() / 1000) - caller.authTime > RECENT_AUTH_S) {
     return problem(403, "recent-login-required");
   }
+
+  /* Deleting an account is irreversible and wanted once. A budget this
+     small costs a real parent nothing and stops a stolen token from
+     hammering Stripe and Firestore with cancel-and-delete work. */
+  const budget = await consume(LIMITS.accountDelete, caller.uid);
+  if (!budget.allowed) return tooMany(budget.retryAfterS);
 
   const uid = caller.uid;
   try {

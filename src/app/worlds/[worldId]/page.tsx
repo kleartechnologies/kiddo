@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 
 import { WorldPage } from "@/components/worlds/WorldPage";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 import { isPlayableWorld, PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 import { WORLD_PLACES } from "@/lib/worlds/places";
 
@@ -16,7 +18,14 @@ export function generateStaticParams() {
 
 export async function generateMetadata(props: PageProps<"/worlds/[worldId]">) {
   const { worldId } = await props.params;
-  return { title: isPlayableWorld(worldId) ? WORLD_PLACES[worldId].name : "World" };
+  /* English, at build time, like every other title in the app: the tab is
+     part of the prerendered HTML and the reader's language is not known
+     until the page is in their browser. */
+  return {
+    title: isPlayableWorld(worldId)
+      ? translate(DEFAULT_LOCALE, WORLD_PLACES[worldId].name)
+      : "World",
+  };
 }
 
 export default async function WorldRoute(props: PageProps<"/worlds/[worldId]">) {

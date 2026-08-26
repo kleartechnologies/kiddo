@@ -106,7 +106,6 @@ const PROPERTIES: readonly {
 
 export const landAndWater = defineQuizActivity({
   id: "land-and-water",
-  title: "Land and Water",
   activityType: "land-and-water",
   ageRange: { min: 4, max: 6 },
   host: "wally",
@@ -188,7 +187,6 @@ const HATS = {
 
 export const safety = defineQuizActivity({
   id: "safety",
-  title: "Staying Safe",
   activityType: "safety",
   ageRange: { min: 4, max: 6 },
   host: "kiddo",

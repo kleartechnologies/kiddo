@@ -170,7 +170,6 @@ export const HABITAT_FACTS = HOMES.length;
 
 export const animalHabitats = defineQuizActivity({
   id: "animal-homes",
-  title: "Where Do Animals Live?",
   activityType: "animal-habitats",
   ageRange: { min: 3, max: 6 },
   host: "bibi",
@@ -362,7 +361,6 @@ function conceptOf(chosen: readonly Home[]): string {
 export const homePartners = defineGeneratedActivity({
   id: "home-partners",
   packId: "general-knowledge",
-  title: "Animals and Their Homes",
   category: "general-knowledge",
   activityType: "animal-habitats",
   kind: "connect",

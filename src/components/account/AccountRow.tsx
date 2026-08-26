@@ -6,6 +6,8 @@ import { useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { deleteAccount, refreshUser, sendVerification, signOut, useSession } from "@/lib/cloud/session";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useT } from "@/lib/i18n/useLocale";
 import { retrySave, useJourneySaveStatus } from "@/lib/journey/useJourney";
 
 /**
@@ -20,7 +22,8 @@ export function AccountRow() {
   const session = useSession();
   const status = useJourneySaveStatus();
   const dialog = useRef<HTMLDialogElement>(null);
-  const [problem, setProblem] = useState<string | null>(null);
+  const [problem, setProblem] = useState<MessageKey | null>(null);
+  const t = useT();
   const [busy, setBusy] = useState(false);
   const titleId = useId();
   const bodyId = useId();
@@ -40,14 +43,14 @@ export function AccountRow() {
     setVerify(verified ? "idle" : "still");
   }
 
-  const line =
+  const line: MessageKey =
     status === "error"
-      ? "The latest progress has not reached your account yet."
+      ? "account.sync.error"
       : status === "saving"
-        ? "Saving progress…"
+        ? "account.sync.saving"
         : status === "synced"
-          ? "Progress is saved to your account."
-          : "Progress is on this device for now.";
+          ? "account.sync.synced"
+          : "account.sync.device";
 
   async function confirmDelete() {
     setBusy(true);
@@ -56,10 +59,10 @@ export function AccountRow() {
     if (!failure) return;
     setProblem(
       failure === "recent-login"
-        ? "For safety, please sign out, sign in again, and then delete the account."
+        ? "account.delete.error.recent-login"
         : failure === "offline"
-          ? "KIDDO can’t reach the internet right now. Check the connection and try again."
-          : "KIDDO couldn’t delete the account just now. Please try again.",
+          ? "auth.error.offline"
+          : "account.delete.error.unknown",
     );
   }
 
@@ -68,42 +71,50 @@ export function AccountRow() {
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0 space-y-1">
           <h2 id={`${titleId}-account`} className="font-display text-lg font-semibold sm:text-xl">
-            Your account
+            {t("account.title")}
           </h2>
           <p className="text-ink-700 truncate text-base" data-account-email>
             {session.user.email}
           </p>
           <p className="text-ink-500 flex items-center gap-2 text-sm" aria-live="polite" data-account-sync={status}>
             {status === "error" ? <CloudOff className="size-4" aria-hidden /> : <Cloud className="size-4" aria-hidden />}
-            {line}
+            {t(line)}
             {status === "error" && (
               <button type="button" onClick={retrySave} className="text-ink-900 -my-3 inline-flex min-h-12 items-center font-semibold underline underline-offset-4" data-account-retry>
-                Try again
+                {t("common.tryAgain")}
               </button>
             )}
           </p>
           {!session.user.emailVerified && (
             <p className="text-ink-700 flex flex-wrap items-center gap-x-2 text-sm" aria-live="polite" data-account-verify={verify}>
               <MailWarning className="text-honey-ink size-4" aria-hidden />
-              {verify === "sent"
-                ? "Verification email sent. Open the link in it, then come back here."
-                : verify === "still"
-                  ? "Not verified yet. Open the link in the email, then check again."
-                  : verify === "failed"
-                    ? "Couldn’t send the email just now. Please try again."
-                    : "Your email isn’t verified yet."}
+              {t(
+                verify === "sent"
+                  ? "account.verify.sent"
+                  : verify === "still"
+                    ? "account.verify.still"
+                    : verify === "failed"
+                      ? "account.verify.failed"
+                      : "account.verify.unverified",
+              )}
               <button type="button" onClick={() => void resend()} disabled={verify === "sending"} className="text-ink-900 -my-3 inline-flex min-h-12 items-center font-semibold underline underline-offset-4" data-account-verify-send>
-                {verify === "sending" ? "Sending…" : verify === "sent" || verify === "still" ? "Send again" : "Send verification email"}
+                {t(
+                  verify === "sending"
+                    ? "account.verify.sending"
+                    : verify === "sent" || verify === "still"
+                      ? "account.verify.sendAgain"
+                      : "account.verify.send",
+                )}
               </button>
               <button type="button" onClick={() => void checkVerified()} disabled={verify === "checking"} className="text-ink-900 -my-3 inline-flex min-h-12 items-center font-semibold underline underline-offset-4" data-account-verify-check>
-                {verify === "checking" ? "Checking…" : "I’ve verified"}
+                {t(verify === "checking" ? "account.verify.checking" : "account.verify.check")}
               </button>
             </p>
           )}
         </div>
         <div className="flex flex-wrap gap-2">
           <Button variant="soft" size="sm" icon={<LogOut className="size-5" aria-hidden />} onClick={() => void signOut()} className="min-h-12" data-account-signout>
-            Sign out
+            {t("common.signOut")}
           </Button>
           <Button
             variant="quiet"
@@ -116,7 +127,7 @@ export function AccountRow() {
             className="min-h-12"
             data-account-delete-open
           >
-            Delete account
+            {t("account.delete.open")}
           </Button>
         </div>
       </div>
@@ -143,18 +154,18 @@ export function AccountRow() {
         >
           <div className="space-y-2">
             <h2 id={titleId} className="font-display text-2xl font-semibold">
-              Delete your KIDDO account?
+              {t("account.delete.title")}
             </h2>
             <p id={bodyId} className="text-ink-700 text-base leading-snug">
-              Your sign-in, your child’s name and every bit of progress will be removed from KIDDO, and any subscription is cancelled so nothing more is charged. This cannot be undone.
+              {t("account.delete.body")}
             </p>
             <p aria-live="polite" className="text-apricot-ink min-h-5 text-sm font-semibold" data-account-delete-error>
-              {problem ?? ""}
+              {problem ? t(problem) : ""}
             </p>
           </div>
           <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
             <Button variant="quiet" size="sm" type="submit" value="cancel" autoFocus className="min-h-12">
-              Cancel
+              {t("common.cancel")}
             </Button>
             <Button
               variant="primary"
@@ -165,7 +176,7 @@ export function AccountRow() {
               className="min-h-12 bg-apricot-base text-apricot-ink shadow-[0_5px_0_0_var(--color-apricot-deep)] hover:bg-apricot-base/95"
               data-account-delete-confirm
             >
-              {busy ? "Deleting…" : "Delete account"}
+              {t(busy ? "account.delete.busy" : "account.delete.open")}
             </Button>
           </div>
         </form>

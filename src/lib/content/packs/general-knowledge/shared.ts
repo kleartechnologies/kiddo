@@ -218,8 +218,6 @@ export function askQuestion(
 export interface QuizDef {
   /** Local id. Becomes `general-knowledge.<id>`. */
   id: string;
-  /** Grown-up facing. The child is never shown it. */
-  title: string;
   activityType: ActivityType;
   ageRange: AgeRange;
   host?: CharacterId;
@@ -250,7 +248,6 @@ export function defineQuizActivity(def: QuizDef): GeneratedActivity {
   return defineGeneratedActivity({
     id: def.id,
     packId: "general-knowledge",
-    title: def.title,
     category: "general-knowledge",
     activityType: def.activityType,
     kind: "choice",

@@ -119,7 +119,6 @@ const PLANT_FACTS: readonly Question[] = [
 
 export const plants = defineQuizActivity({
   id: "plants",
-  title: "Growing Things",
   activityType: "plants",
   ageRange: { min: 3, max: 6 },
   host: "bibi",
@@ -174,7 +173,6 @@ const NOT_ALIVE_ANSWERS = ["a chair", "a rock", "a ball", "a car"];
 
 export const livingThings = defineQuizActivity({
   id: "living-things",
-  title: "Alive or Not Alive?",
   activityType: "living-things",
   ageRange: { min: 4, max: 6 },
   host: "foxy",
@@ -244,7 +242,6 @@ const MADE: readonly Sym[] = [
 
 export const naturalOrMade = defineQuizActivity({
   id: "natural-or-made",
-  title: "Made by People, or Not?",
   activityType: "natural-or-made",
   ageRange: { min: 4, max: 6 },
   host: "wally",

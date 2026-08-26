@@ -36,6 +36,7 @@ import {
   retrySave,
   unbindJourney,
 } from "@/lib/journey/useJourney";
+import { en } from "@/lib/i18n/messages/en";
 import { journeySummary, nextUp } from "@/lib/parents/dashboard";
 import { CHILD_NAME_KEY } from "@/lib/profile/child";
 import { __resetChildNameStoreForTests, setChildName } from "@/lib/profile/useChildName";
@@ -332,9 +333,14 @@ test("a failed write keeps the child's progress on screen and tells the parent, 
 
 test("the parent's sync line never says saved while a write is failing", () => {
   const src = readFileSync(new URL("../src/components/account/AccountRow.tsx", import.meta.url), "utf8");
-  assert.match(src, /status === "error"\s*\?\s*"The latest progress has not reached your account yet\."/);
-  assert.match(src, /status === "synced"\s*\?\s*"Progress is saved to your account\."/);
-  assert.doesNotMatch(src, /"error"[^:]*:\s*"Progress is saved/);
+  /* The row picks a key from the status, and the catalogue holds the words:
+     both halves are checked, so neither the branch nor the sentence can
+     drift into claiming a save that did not happen — in either language. */
+  assert.match(src, /status === "error"\s*\?\s*"account\.sync\.error"/);
+  assert.match(src, /status === "synced"\s*\?\s*"account\.sync\.synced"/);
+  assert.doesNotMatch(src, /"error"[^:]*:\s*"account\.sync\.synced"/);
+  assert.equal(en["account.sync.error"], "The latest progress has not reached your account yet.");
+  assert.equal(en["account.sync.synced"], "Progress is saved to your account.");
 });
 
 /* ---- Continue Adventure and ParentDashboard read the cloud journey ------ */

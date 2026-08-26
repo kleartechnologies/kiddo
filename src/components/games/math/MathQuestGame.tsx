@@ -7,6 +7,7 @@ import { ChoiceStage } from "@/components/games/engines/ChoiceStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
 import { isKind } from "@/lib/content/engine";
+import { useT } from "@/lib/i18n/useLocale";
 import { useMathQuestGame } from "@/lib/games/useMathQuestGame";
 import type { Game } from "@/lib/games/types";
 import { worldOf } from "@/lib/worlds/worlds";
@@ -23,6 +24,7 @@ import { worldOf } from "@/lib/worlds/worlds";
  * activity, or a whole English pack, does not bring anyone back to this file.
  */
 export function MathQuestGame({ game }: { game: Game }) {
+  const t = useT();
   const math = useMathQuestGame();
   const { challenge, phase, answerLabel } = math;
 
@@ -35,14 +37,14 @@ export function MathQuestGame({ game }: { game: Game }) {
   const lines = challenge
     ? [
         challenge.prompt.speech,
-        challenge.explanation ?? `Yes! It's ${answerLabel}.`,
-        "Ooh, so close! Have another go.",
+        challenge.explanation ?? t("game.math-quest.yes", { answer: answerLabel }),
+        t("game.math-quest.retry"),
       ]
     : [];
 
   const prompt =
     phase === "intro"
-      ? "Hello! I'm KIDDO. Shall we play with some numbers?"
+      ? t("game.math-quest.hello")
       : phase === "correct"
         ? lines[1]
         : phase === "incorrect"
@@ -51,14 +53,14 @@ export function MathQuestGame({ game }: { game: Game }) {
 
   /* The same thing in words, for a screen reader, because the bubble above
      lives in a paragraph nobody is focused on. */
-  const step = `Question ${math.progress.current + 1} of ${math.progress.total}`;
+  const step = { current: math.progress.current + 1, total: math.progress.total };
   const announcement =
     phase === "correct"
-      ? `Yes, the answer is ${answerLabel}. ${step} done.`
+      ? t("quest.answered", { answer: answerLabel, ...step })
       : phase === "incorrect"
-        ? "Not quite. Have another go."
+        ? t("quest.notQuite")
         : phase === "awaitingAnswer" && challenge
-          ? `${step}. ${challenge.prompt.speech}`
+          ? t("quest.asking", { question: challenge.prompt.speech, ...step })
           : "";
 
   return (
@@ -73,8 +75,8 @@ export function MathQuestGame({ game }: { game: Game }) {
       feedback={math.feedback}
       status={math.status}
       celebration={{
-        title: "You did the whole quest!",
-        message: "Ten questions, all the way to the end. Brilliant thinking!",
+        title: t("game.math-quest.done.title"),
+        message: t("game.math-quest.done.message"),
         onPlayAgain: math.restart,
       }}
       /* Where this question is played. Most are the meadow; counting stands
@@ -85,7 +87,7 @@ export function MathQuestGame({ game }: { game: Game }) {
       announce={announcement}
     >
       {phase === "intro" || !challenge ? (
-        <Intro onStart={math.begin} />
+        <Intro label={t("game.math-quest.start")} onStart={math.begin} />
       ) : isKind(challenge, "choice") ? (
         <ChoiceStage
           challenge={challenge}
@@ -114,12 +116,12 @@ export function MathQuestGame({ game }: { game: Game }) {
  * A four year old should not arrive mid-question. Wally is standing here
  * because this is his world, and there is exactly one thing to press.
  */
-function Intro({ onStart }: { onStart: () => void }) {
+function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
       <CharacterFigure id="wally" size="lg" pose="wave" />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-        Let&apos;s play!
+        {label}
       </Button>
     </div>
   );

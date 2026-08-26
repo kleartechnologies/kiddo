@@ -4,6 +4,7 @@ import { useId, useState } from "react";
 import { Smile } from "lucide-react";
 
 import { Card } from "@/components/ui/Card";
+import { useTranslation } from "@/lib/i18n/useLocale";
 import { MAX_CHILD_NAME_LENGTH } from "@/lib/profile/child";
 import { greetingFor } from "@/lib/profile/greeting";
 import { setChildName, useChildName } from "@/lib/profile/useChildName";
@@ -28,6 +29,7 @@ import { setChildName, useChildName } from "@/lib/profile/useChildName";
  */
 export function ChildNameField() {
   const stored = useChildName();
+  const { locale, t } = useTranslation();
   /* The box holds what is being typed; the store holds what is being kept.
      They differ mid-word — "Noah W" is stored as "Noah" — and forcing the
      input back to the stored value would fight the parent's cursor. */
@@ -40,7 +42,7 @@ export function ChildNameField() {
   /* Seeded at zero rather than from the visit: this is a sample of the
      greeting, and a preview that reshuffles itself while a parent types would
      read as a bug. */
-  const { hello, invitation } = greetingFor(stored, 0);
+  const { hello, invitation } = greetingFor(stored, 0, locale);
 
   return (
     <Card className="flex flex-col gap-4" padding="lg">
@@ -49,19 +51,14 @@ export function ChildNameField() {
           <Smile className="size-6" aria-hidden />
         </span>
         <div>
-          <h2 className="font-display text-lg font-semibold sm:text-xl">
-            Let KIDDO say hello
-          </h2>
-          <p className="text-ink-500 mt-1 text-base leading-snug">
-            Add your child&rsquo;s first name or nickname and KIDDO will greet
-            them by it. Leave it empty and KIDDO simply says hello.
-          </p>
+          <h2 className="font-display text-lg font-semibold sm:text-xl">{t("name.title")}</h2>
+          <p className="text-ink-500 mt-1 text-base leading-snug">{t("name.blurb")}</p>
         </div>
       </div>
 
       <div className="flex flex-col gap-2">
         <label htmlFor={fieldId} className="text-ink-700 text-base font-semibold">
-          First name or nickname
+          {t("name.field")}
         </label>
         <input
           id={fieldId}
@@ -73,7 +70,7 @@ export function ChildNameField() {
             setChildName(event.target.value);
           }}
           maxLength={MAX_CHILD_NAME_LENGTH}
-          placeholder="Noah"
+          placeholder={t("name.placeholder")}
           autoComplete="off"
           autoCorrect="off"
           spellCheck={false}
@@ -81,9 +78,7 @@ export function ChildNameField() {
           className="bg-paper border-edge text-ink-900 placeholder:text-ink-300 min-h-14 rounded-tile border-2 px-4 text-lg"
         />
         <p id={hintId} className="text-ink-500 text-sm leading-snug">
-          Kept on this device only, never sent anywhere, and only ever shown on
-          your child&rsquo;s own screen. First names work best &mdash; anything
-          after the first word is discarded.
+          {t("name.hint")}
         </p>
       </div>
 
@@ -91,7 +86,7 @@ export function ChildNameField() {
         aria-live="polite"
         className="bg-cream-100 text-ink-700 rounded-tile px-4 py-3 text-base"
       >
-        <span className="text-ink-700">KIDDO will say:</span>{" "}
+        <span className="text-ink-700">{t("name.preview")}</span>{" "}
         <span className="font-display font-semibold">
           {hello} {invitation}
         </span>

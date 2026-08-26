@@ -170,7 +170,6 @@ function wrongShapes(thing: Thing, level: Level, count: number, rng: Rng): Shape
 export const shapeObjectsActivity = defineGeneratedActivity({
   id: "shape-objects",
   packId: "shapes",
-  title: "What shape is it?",
   category: "shapes",
   activityType: "shape-recognition",
   kind: "choice",
@@ -290,7 +289,6 @@ function conceptOf(chosen: readonly Thing[]): string {
 export const shapePartnersActivity = defineGeneratedActivity({
   id: "shape-partners",
   packId: "shapes",
-  title: "Things and their shapes",
   category: "shapes",
   activityType: "shape-recognition",
   kind: "connect",

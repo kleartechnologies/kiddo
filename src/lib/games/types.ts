@@ -1,3 +1,5 @@
+import type { MessageKey } from "@/lib/i18n/messages";
+
 /**
  * Shared vocabulary for KIDDO games and characters.
  *
@@ -77,7 +79,8 @@ export type GameStatus = "ready" | "soon";
  */
 export interface GameTheme {
   id: string;
-  title: string;
+  /** The chip's words, in the catalogue: `game.<gameId>.theme.<id>`. */
+  title: MessageKey;
   accent: Accent;
   access: GameAccess;
 }
@@ -159,12 +162,20 @@ export interface GameArtwork {
 
 export interface Game {
   id: string;
-  /** Child-facing name. Short enough to read at a glance. */
-  title: string;
+  /**
+   * Child-facing name. Short enough to read at a glance.
+   *
+   * A key rather than the words, because a child who chose Malay plays
+   * "Jelajah Nombor". The words live in the message catalogue and nowhere
+   * else, so a third language is a third catalogue and not a third copy of
+   * this file — and the compiler will not let a game name a line that no
+   * language has written.
+   */
+  title: MessageKey;
   /** One playful sentence spoken to the child, not a feature description. */
-  tagline: string;
+  tagline: MessageKey;
   /** Plain description for the eventual parent-facing catalogue. */
-  parentSummary: string;
+  parentSummary: MessageKey;
   category: GameCategory;
   ageRange: AgeRange;
   difficulty: Difficulty;

@@ -1,12 +1,17 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 
-import { KiddoWordmark } from "@/components/kiddo/KiddoWordmark";
+import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
+import { T } from "@/components/i18n/T";
+import { WordmarkLink } from "@/components/kiddo/WordmarkLink";
 import { WelcomeGate } from "@/components/account/WelcomeGate";
 import { Screen } from "@/components/ui/Screen";
-import { LANDING } from "@/lib/routes";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 
-export const metadata: Metadata = { title: "Welcome", robots: { index: false } };
+export const metadata: Metadata = {
+  title: translate(DEFAULT_LOCALE, "meta.welcome.title"),
+  robots: { index: false },
+};
 
 /**
  * Where Stripe returns a parent after Checkout. What they see depends on
@@ -17,12 +22,13 @@ export default function WelcomePage() {
   return (
     <Screen width="narrow" detail="quiet">
       <header className="flex items-center justify-between gap-3">
-        <Link href={LANDING} aria-label="KIDDO home" className="-mx-2 flex min-h-14 items-center rounded-2xl px-2">
-          <KiddoWordmark size="sm" />
-        </Link>
-        <span className="bg-ink-900/5 text-ink-700 rounded-full px-3 py-1 text-xs font-semibold tracking-wide whitespace-nowrap uppercase">
-          Step 2 of 2
-        </span>
+        <WordmarkLink />
+        <div className="flex items-center gap-2 sm:gap-3">
+          <span className="bg-ink-900/5 text-ink-700 rounded-full px-3 py-1 text-xs font-semibold tracking-wide whitespace-nowrap uppercase">
+            <T k="page.step2" />
+          </span>
+          <LanguageSwitcher />
+        </div>
       </header>
       <main className="flex flex-1 flex-col justify-center gap-6 py-6 select-text sm:py-8">
         <WelcomeGate />

@@ -8,6 +8,7 @@ import { getActivity } from "@/lib/content/registry";
 import { createRng } from "@/lib/content/rng";
 import type { Challenge, ChallengeOf, ConnectPair } from "@/lib/content/types";
 import { validateActivity, validateChallenge } from "@/lib/content/validate";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
 import {
   connectProgress,
   connectReducer,
@@ -519,9 +520,19 @@ test("every node says what it is and what state it is in", () => {
   assert.match(source, /aria-label=\{srLabelOf\(/);
   assert.match(source, /aria-pressed=/);
   assert.match(source, /aria-disabled=/);
-  /* Not colour alone: the state is in the words. */
-  assert.match(source, /joined to/);
-  assert.match(source, /not joined yet/);
+  /* Not colour alone: the state is in the words — and in both languages, so
+     a Malay board is no more a colour puzzle than an English one. The stage
+     names the keys; the catalogues hold the words. */
+  assert.match(source, /t\("stage\.connect\.joined", \{ name, partner/);
+  assert.match(source, /t\("stage\.connect\.idle", \{ name \}\)/);
+  const states = ["joined", "selected", "idle"] as const;
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    assert.notEqual(words["stage.connect.joined"], words["stage.connect.idle"]);
+    for (const state of states) {
+      const key = `stage.connect.${state}` as const;
+      assert.ok(words[key].includes("{name}"), `${key} must say which node it is`);
+    }
+  }
 });
 
 /* 32 --------------------------------------------------------------------- */

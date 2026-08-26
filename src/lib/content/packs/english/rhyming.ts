@@ -318,7 +318,6 @@ function conceptOf(chosen: readonly RhymePair[]): string {
 export const rhymingPartnersActivity = defineGeneratedActivity({
   id: "rhyming-partners",
   packId: "english",
-  title: "Words That Rhyme",
   category: "english",
   activityType: "rhyming",
   kind: "connect",

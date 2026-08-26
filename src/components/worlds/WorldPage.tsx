@@ -23,10 +23,13 @@ import {
   type ActivityStatus,
   type TierState,
 } from "@/lib/journey/journey";
+import type { MessageKey, Translate } from "@/lib/i18n/messages";
+import { doorKey, tierKey, worldNameKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import { useJourney } from "@/lib/journey/useJourney";
 import { instantly, popIn, riseIn, springSoft, staggerChildren, tappableCard } from "@/lib/motion";
 import { useChildName } from "@/lib/profile/useChildName";
-import { activitiesOf, TIERS, TIER_WORDS, type Tier, type WorldActivity } from "@/lib/worlds/activities";
+import { activitiesOf, TIERS, type Tier, type WorldActivity } from "@/lib/worlds/activities";
 import { activityRoute, WORLD_PLACES, type WorldPlace } from "@/lib/worlds/places";
 import { WorldKeepsake } from "./WorldKeepsake";
 import { WorldScene } from "./WorldScene";
@@ -52,6 +55,7 @@ import { WorldScene } from "./WorldScene";
  * door is open — the words are an invitation, never a lock.
  */
 export function WorldPage({ place }: { place: WorldPlace }) {
+  const t = useT();
   const journey = useJourney();
   const name = useChildName();
   const reduced = useReducedMotion();
@@ -61,11 +65,23 @@ export function WorldPage({ place }: { place: WorldPlace }) {
   const elsewhere = progress.complete ? suggestWorldAfter(journey, place.id) : null;
   const accent = ACCENTS[place.accent];
 
+  /* Named and unnamed are two whole sentences rather than one with a comma
+     spliced into it: where a name goes in a greeting is not the same in every
+     language, and neither is whether it takes a comma. */
   const line = progress.complete
-    ? `Wonderful${name ? `, ${name}` : ""}! You discovered everything here.`
+    ? name
+      ? t("worlds.page.allDoneNamed", { name })
+      : t("worlds.page.allDone")
     : progress.done === 0
-      ? place.line
-      : `Welcome back${name ? `, ${name}` : ""}! ${next ? `Shall we try ${next.title}?` : place.line}`;
+      ? t(place.line)
+      : (() => {
+          const rest = next
+            ? t("worlds.page.try", { door: t(doorKey(next, "title")) })
+            : t(place.line);
+          return name
+            ? t("worlds.page.backNamed", { name, rest })
+            : t("worlds.page.back", { rest });
+        })();
 
   return (
     <Screen theme={place.theme} detail="quiet">
@@ -75,7 +91,7 @@ export function WorldPage({ place }: { place: WorldPlace }) {
         <BackLink />
         <div className="min-w-0 flex-1">
           <h1 className={cn("font-display truncate text-xl font-semibold sm:text-2xl", accent.text)}>
-            {place.name}
+            {t(place.name)}
           </h1>
         </div>
         <SoundToggle />
@@ -117,7 +133,9 @@ export function WorldPage({ place }: { place: WorldPlace }) {
               icon={<Sparkles className="size-5" aria-hidden />}
               data-world-next
             >
-              {progress.done === 0 ? "Start here" : "Continue"}
+              {progress.done === 0
+                ? t("worlds.page.startHere")
+                : t("worlds.page.continue")}
             </ButtonLink>
           ) : elsewhere ? (
             <ButtonLink
@@ -127,7 +145,9 @@ export function WorldPage({ place }: { place: WorldPlace }) {
               icon={<ArrowRight className="size-5" aria-hidden />}
               data-world-next
             >
-              Visit {WORLD_PLACES[elsewhere].name}
+              {t("worlds.page.visit", {
+                world: t(worldNameKey(elsewhere)),
+              })}
             </ButtonLink>
           ) : null}
         </div>
@@ -141,7 +161,7 @@ export function WorldPage({ place }: { place: WorldPlace }) {
           }
           initial="hidden"
           animate="show"
-          aria-label={`Things to do in ${place.name}`}
+          aria-label={t("worlds.page.doors", { world: t(place.name) })}
           className="grid list-none grid-cols-1 gap-4 [grid-auto-rows:1fr] sm:grid-cols-3 sm:gap-5"
         >
           {activities.map((activity) => (
@@ -168,18 +188,28 @@ export function WorldPage({ place }: { place: WorldPlace }) {
   );
 }
 
-const STATUS_WORDS: Record<ActivityStatus, string> = {
-  done: "Done",
-  next: "Next",
-  new: "New",
+const STATUS_WORDS: Record<ActivityStatus, MessageKey> = {
+  done: "worlds.status.done",
+  next: "worlds.status.next",
+  new: "worlds.status.new",
 };
 
 /* How a door's aria-label says each tier state. */
-const TIER_STATE_WORDS: Record<TierState, string> = {
-  done: "finished",
-  ready: "unlocked",
-  locked: "locked",
+const TIER_STATE_WORDS: Record<TierState, MessageKey> = {
+  done: "worlds.tierState.done",
+  ready: "worlds.tierState.ready",
+  locked: "worlds.tierState.locked",
 };
+
+/** A door's tiers, as the sentence that follows its name. */
+function tiersSaid(tiers: Readonly<Record<Tier, TierState>>, t: Translate): string {
+  return TIERS.map((tier) =>
+    t("worlds.doorCard.tier", {
+      tier: t(tierKey(tier)),
+      state: t(TIER_STATE_WORDS[tiers[tier]]),
+    }),
+  ).join(" ");
+}
 
 function Door({
   activity,
@@ -194,6 +224,7 @@ function Door({
      a fresh world stays an invitation, not a wall of padlocks. */
   tiers: Readonly<Record<Tier, TierState>> | null;
 }) {
+  const t = useT();
   const accent = ACCENTS[place.accent];
   const reduced = useReducedMotion();
   return (
@@ -207,11 +238,13 @@ function Door({
     >
       <Link
         href={activityRoute(activity)}
-        aria-label={`${activity.title}. ${activity.blurb} ${STATUS_WORDS[status]}.${
-          tiers
-            ? ` ${TIERS.map((tier) => `${TIER_WORDS[tier]} ${TIER_STATE_WORDS[tiers[tier]]}.`).join(" ")}`
-            : ""
-        }`}
+        aria-label={
+          t("worlds.doorCard.sr", {
+            title: t(doorKey(activity, "title")),
+            blurb: t(doorKey(activity, "blurb")),
+            status: t(STATUS_WORDS[status]),
+          }) + (tiers ? ` ${tiersSaid(tiers, t)}` : "")
+        }
         className={cn(
           "group flex h-full min-h-[7.5rem] flex-col gap-2 rounded-card border p-5",
           "bg-paper border-edge shadow-soft transition-shadow hover:shadow-lift",
@@ -220,7 +253,7 @@ function Door({
       >
         <div className="flex items-start justify-between gap-3">
           <h2 className="font-display text-xl leading-tight font-semibold sm:text-2xl">
-            {activity.title}
+            {t(doorKey(activity, "title"))}
           </h2>
           <span
             className={cn(
@@ -233,10 +266,12 @@ function Door({
             )}
           >
             {status === "done" ? <Check className="size-4" strokeWidth={3} aria-hidden /> : null}
-            {STATUS_WORDS[status]}
+            {t(STATUS_WORDS[status])}
           </span>
         </div>
-        <p className="text-ink-500 text-base leading-snug">{activity.blurb}</p>
+        <p className="text-ink-500 text-base leading-snug">
+          {t(doorKey(activity, "blurb"))}
+        </p>
         {tiers ? (
           <span className="flex flex-wrap items-center gap-1.5" data-door-tiers>
             {TIERS.map((tier) => {
@@ -262,14 +297,16 @@ function Door({
                   ) : (
                     <Lock className="size-3" aria-hidden />
                   )}
-                  {TIER_WORDS[tier]}
+                  {t(tierKey(tier))}
                 </span>
               );
             })}
           </span>
         ) : null}
         <span className="text-ink-700 mt-auto inline-flex items-center gap-1 pt-2 text-base font-semibold">
-          {status === "done" ? "Play again" : "Let's play"}
+          {status === "done"
+            ? t("worlds.doorCard.playAgain")
+            : t("worlds.doorCard.play")}
           <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5" aria-hidden />
         </span>
       </Link>

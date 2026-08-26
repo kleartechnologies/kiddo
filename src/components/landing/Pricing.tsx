@@ -1,13 +1,17 @@
+"use client";
+
 import { ArrowRight, Check } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import {
-  PLANS,
+  planText,
   PLAN_ORDER,
   YEARLY_SAVING_PERCENT,
   type Plan,
 } from "@/lib/billing/subscription";
 import { cn } from "@/lib/cn";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useT, useTranslation } from "@/lib/i18n/useLocale";
 import { joinWithPlan } from "@/lib/routes";
 import { SectionIntro } from "./SectionIntro";
 
@@ -25,19 +29,23 @@ import { SectionIntro } from "./SectionIntro";
  * popular" claim KIDDO cannot prove. Choosing a plan leads to `/join`,
  * which asks for an account and then hands over to Stripe.
  */
-const INCLUDED = [
-  "Every world, every door and every game",
-  "One child’s journey, kept and carried between devices",
-  "The parent area, with what was explored and what is next",
-  "No adverts and nothing to buy inside",
+const INCLUDED: MessageKey[] = [
+  "landing.pricing.included.1",
+  "landing.pricing.included.2",
+  "landing.pricing.included.3",
+  "landing.pricing.included.4",
 ];
 
 export function Pricing() {
+  const t = useT();
   return (
     <section aria-labelledby="pricing-heading" id="pricing" className="scroll-mt-24">
-      <SectionIntro id="pricing-heading" eyebrow="Pricing" title="One subscription opens all of KIDDO.">
-        A plan for you, the grown-up. Your child never signs in, never sees a price and is
-        never asked to buy anything.
+      <SectionIntro
+        id="pricing-heading"
+        eyebrow={t("landing.pricing.eyebrow")}
+        title={t("landing.pricing.title")}
+      >
+        {t("landing.pricing.body")}
       </SectionIntro>
 
       <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 items-start gap-4 sm:mt-12 md:grid-cols-2 md:gap-6">
@@ -52,21 +60,21 @@ export function Pricing() {
             <span className="bg-sage-soft text-sage-ink mt-0.5 flex size-6 shrink-0 items-center justify-center rounded-full">
               <Check className="size-4" strokeWidth={3} aria-hidden />
             </span>
-            {line}
+            {t(line)}
           </li>
         ))}
       </ul>
 
       <p className="text-ink-500 mx-auto mt-6 max-w-2xl text-center text-sm">
-        Cancel anytime from the parent area. Payments are handled by Stripe — KIDDO never
-        sees or stores your card.
+        {t("landing.pricing.footnote")}
       </p>
     </section>
   );
 }
 
 function PlanCard({ plan }: { plan: Plan }) {
-  const detail = PLANS[plan];
+  const { locale, t } = useTranslation();
+  const detail = planText(plan, locale);
   const best = plan === "yearly";
 
   return (
@@ -100,7 +108,7 @@ function PlanCard({ plan }: { plan: Plan }) {
         <p className="text-ink-700 text-base leading-snug">{detail.blurb}</p>
         {best && (
           <p className="text-sage-ink text-base font-semibold" data-pricing-saving>
-            {`Save ${YEARLY_SAVING_PERCENT}% compared with paying monthly`}
+            {t("landing.pricing.saving", { saving: YEARLY_SAVING_PERCENT })}
           </p>
         )}
       </div>

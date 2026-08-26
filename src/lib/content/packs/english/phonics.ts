@@ -208,7 +208,6 @@ function askForTheWord(
 export const beginningSoundsActivity = defineGeneratedActivity({
   id: "beginning-sounds",
   packId: "english",
-  title: "Beginning sounds",
   category: "english",
   activityType: "phonics",
   kind: "choice",

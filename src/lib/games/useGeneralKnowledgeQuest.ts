@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 
+import { useSaid } from "@/lib/content/i18n/useSaid";
 import { currentChallenge } from "@/lib/content/progress";
 import type { SessionPlan } from "@/lib/content/session";
 import { createRng, randomSeed } from "@/lib/content/rng";
@@ -114,11 +115,18 @@ export function useGeneralKnowledgeQuest(
     if (missed && phase === "awaitingAnswer") dispatch({ type: "missed" });
   }, [missed, phase]);
 
+  /* The round, said in the reader's language, on the way out — never on the
+     way in. `useConnect` above stays on the English board it was handed, so a
+     language change cannot move a board the child is halfway through, and the
+     reducer never hears about it at all. See `useSaid`. */
+  const said = useSaid(state);
+  const saidBoard = currentBoard(said);
+
   return useMemo(() => {
-    const challenge = currentChallenge(state.run);
+    const challenge = currentChallenge(said.run);
 
     const isNudged = (optionId: string) =>
-      phase === "incorrect" && optionId === state.picked;
+      phase === "incorrect" && optionId === said.picked;
 
     /* On a connect board the line is the only thing that can go right or
        wrong, so while the board is being played its feedback is the engine's;
@@ -130,13 +138,13 @@ export function useGeneralKnowledgeQuest(
       /** Null only once the round is over. */
       challenge,
       phase,
-      progress: generalKnowledgeProgress(state),
+      progress: generalKnowledgeProgress(said),
       /** What the right answer is called, so KIDDO can say it out loud. */
       answerLabel: answerLabelOf(challenge),
       /** The question, or — once one has been got wrong — where to think. */
-      question: generalKnowledgePrompt(state),
+      question: generalKnowledgePrompt(said),
       /** True once this question has been missed, so KIDDO can soften. */
-      hinted: state.hinted,
+      hinted: said.hinted,
 
       /* The shared vocabulary GameShell reads. KIDDO cheers or encourages;
          there is no third, unhappier value. */
@@ -154,12 +162,12 @@ export function useGeneralKnowledgeQuest(
 
       /** The answer, once it has been found. Nothing else is ever ticked. */
       isCorrect: (optionId: string) =>
-        phase === "correct" && optionId === state.picked,
+        phase === "correct" && optionId === said.picked,
       /** The one just tapped that was not it, for the length of the nudge. */
       isNudged,
       /** Ruled out earlier this question. Still tappable, just quieter. */
       isTried: (optionId: string) =>
-        state.tried.includes(optionId) && !isNudged(optionId),
+        said.tried.includes(optionId) && !isNudged(optionId),
 
       /**
        * The connect board, when the question is one. Everything
@@ -168,7 +176,7 @@ export function useGeneralKnowledgeQuest(
        */
       board: onBoard
         ? {
-            challenge: current,
+            challenge: saidBoard ?? current,
             connections: board.connections,
             selectedLeft: board.selectedLeft,
             selectedRight: board.selectedRight,
@@ -185,5 +193,5 @@ export function useGeneralKnowledgeQuest(
       answer,
       restart,
     };
-  }, [state, phase, onBoard, current, board, begin, answer, restart]);
+  }, [said, phase, onBoard, current, saidBoard, board, begin, answer, restart]);
 }

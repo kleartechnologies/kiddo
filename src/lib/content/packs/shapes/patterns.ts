@@ -98,7 +98,6 @@ function shownFor(unit: number, rng: Rng): number {
 export const patternsActivity = defineGeneratedActivity({
   id: "patterns",
   packId: "shapes",
-  title: "What comes next?",
   category: "shapes",
   activityType: "patterns",
   kind: "choice",

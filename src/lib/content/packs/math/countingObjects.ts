@@ -142,7 +142,6 @@ function rowOf(thing: Countable, count: number): PromptPart[] {
 export const countingObjectsActivity = defineGeneratedActivity({
   id: "counting-objects",
   packId: "math",
-  title: "How Many Things?",
   category: "math",
   activityType: "counting",
   kind: "choice",

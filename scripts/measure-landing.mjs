@@ -12,9 +12,13 @@
  *    6 console         nothing logged
  *
  * Needs a production server on http://127.0.0.1:4310 (`npm run build && npm
- * start -- -p 4310`). Exits 1 if any check fails.
+ * start -- -p 4310`). Works against either build: with Firebase configured
+ * the walk asserts that `/parents` stops a signed-out visitor at the sign-in
+ * card, and without it the same walk goes on into the account-free dashboard.
+ * Exits 1 if any check fails.
  */
 import { applyViewport, evaluate, openBrowser, settle, visit, VIEWPORTS } from "./cdp.mjs";
+import { announce, serverMode } from "./measure-mode.mjs";
 
 const ORIGIN = "http://127.0.0.1:4310";
 const WATCH_FOR_TROUBLE = `
@@ -189,8 +193,41 @@ for (const plan of ["yearly", "monthly"]) {
 }
 
 await hop("/play", 'a[href="/parents"]', "/parents");
-await hop("/parents", "[data-parent-privacy]", "/privacy");
+
+/* Where the walk stops depends on how KIDDO was built, and the point of this
+   part is that it *does* stop.
+   
+   A configured build puts `/parents` behind `ParentGate`, so a visitor who has
+   walked in off the landing page is signed out and meets the sign-in card —
+   not the dashboard, not the child's journey, not the billing row. That is the
+   authentication boundary working, and the measurement asserts it rather than
+   clicking through it. An account-free build has no boundary to assert
+   (`session.status` is `unavailable` for everybody), so there the dashboard is
+   the correct answer and the original walk continues.
+
+   The one thing neither mode may do is show a signed-out visitor the
+   dashboard. */
+const parents = await serverMode(cdp, sessionId, ORIGIN);
+announce(parents);
+if (parents.cloud) {
+  report(`/parents · signed out → ${parents.gate}`, [
+    parents.gate === "signed-out" ? null : `expected the sign-in card, got ${parents.gate}`,
+    parents.auth ? null : "no sign-in card",
+    parents.dashboard ? "the dashboard is readable without an account" : null,
+  ].filter(Boolean));
+  /* The dashboard's own link to the privacy page is behind the gate with the
+     dashboard, so a signed-out parent reaches it the way they always could:
+     from the public footer. */
+  await hop("/", 'footer a[href="/privacy"]', "/privacy");
+} else {
+  report(`/parents · account-free build → dashboard`, [
+    parents.dashboard ? null : "no dashboard on a build with no accounts",
+  ].filter(Boolean));
+  await hop("/parents", "[data-parent-privacy]", "/privacy");
+}
 await hop("/privacy", 'a[aria-label="KIDDO home"]', "/");
+/* The header's way back into KIDDO is outside the gate in both modes: it is
+   the parent's own door, and it never depended on being signed in. */
 await hop("/parents", "[data-open-kiddo]", "/play");
 
 section("5 · reduced motion");

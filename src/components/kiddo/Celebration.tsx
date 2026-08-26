@@ -7,6 +7,7 @@ import { Button, ButtonLink } from "@/components/ui/Button";
 import { CharacterFigure } from "./CharacterFigure";
 import { MagicMotion } from "./MagicMotion";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { KIDDO_HOME } from "@/lib/routes";
 import { springBouncy, springSoft, staggerChildren } from "@/lib/motion";
 import type { CharacterId } from "@/lib/games/types";
@@ -93,11 +94,11 @@ function usePlayOnMount(): number {
 
 export function Celebration({
   character = "kiddo",
-  title = "You did it!",
+  title,
   message,
   onPlayAgain,
   /** The way out. Worded exactly like every other exit in the product. */
-  backLabel = "Back to KIDDO World",
+  backLabel,
   backHref = KIDDO_HOME,
   reward,
   next,
@@ -105,6 +106,12 @@ export function Celebration({
   className,
 }: {
   character?: CharacterId;
+  /**
+   * The words themselves, already in the reader's language — a game reads
+   * them from the catalogue and hands them in. Not a message key, because
+   * several of these carry a place or a door's name inside them and a key
+   * cannot hold a value. Defaults are the celebration's own two lines.
+   */
   title?: string;
   message?: string;
   onPlayAgain?: () => void;
@@ -122,6 +129,7 @@ export function Celebration({
   next?: { href: string; label: string };
   className?: string;
 }) {
+  const t = useT();
   const lift = usePlayOnMount();
 
   return (
@@ -178,7 +186,9 @@ export function Celebration({
         transition={{ ...springSoft, delay: 0.15 }}
         className="space-y-1"
       >
-        <h2 className="font-display text-4xl font-bold sm:text-5xl">{title}</h2>
+        <h2 className="font-display text-4xl font-bold sm:text-5xl">
+          {title ?? t("celebrate.title")}
+        </h2>
         {message ? (
           <p className="text-ink-500 text-lg sm:text-xl">{message}</p>
         ) : null}
@@ -208,11 +218,11 @@ export function Celebration({
         ) : null}
         {onPlayAgain ? (
           <Button size="lg" onClick={onPlayAgain} block variant={next ? "soft" : "primary"}>
-            Play again
+            {t("celebrate.playAgain")}
           </Button>
         ) : null}
         <ButtonLink href={backHref} variant="soft" size="lg" block>
-          {backLabel}
+          {backLabel ?? t("chrome.back")}
         </ButtonLink>
       </motion.div>
     </motion.div>

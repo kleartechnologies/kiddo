@@ -13,6 +13,8 @@ import { MemoryGame } from "@/components/games/memory/MemoryGame";
 import { ShapesColoursQuestGame } from "@/components/games/shapes/ShapesColoursQuestGame";
 import { GAMES, getGame } from "@/data/games";
 import type { Game } from "@/lib/games/types";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 
 /**
  * The game route.
@@ -41,7 +43,9 @@ export function generateStaticParams() {
 export async function generateMetadata(props: PageProps<"/play/[gameId]">) {
   const { gameId } = await props.params;
   const game = getGame(gameId);
-  return { title: game?.title ?? "Play" };
+  /* English, at build time, like every other page's metadata: the tab's
+     name is not part of the language the child chose. See `app/page.tsx`. */
+  return { title: game ? translate(DEFAULT_LOCALE, game.title) : "Play" };
 }
 
 export default async function PlayPage(props: PageProps<"/play/[gameId]">) {

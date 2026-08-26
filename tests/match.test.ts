@@ -13,6 +13,8 @@ import { getActivity } from "@/lib/content/registry";
 import { createRng } from "@/lib/content/rng";
 import type { Challenge, ChallengeOf, ConnectPair } from "@/lib/content/types";
 import { validateActivity, validateChallenge } from "@/lib/content/validate";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
 import {
   connectProgress,
   connectReducer,
@@ -596,10 +598,22 @@ test("every card says what it is and what state it is in", () => {
   assert.match(source, /aria-label=\{srLabelOf\(/);
   assert.match(source, /aria-pressed=/);
   assert.match(source, /aria-disabled=/);
-  /* Not colour alone, and not position alone: the state is in the words. */
-  assert.match(source, /not matched yet/);
-  assert.match(source, /matched with/);
-  assert.match(source, /Choose the item that matches it/);
+  /* Not colour alone, and not position alone: the state is in the words. The
+     stage reaches for a different sentence in each state; each catalogue
+     holds three that differ and each names the card it is about, so a Malay
+     board is no more a colour puzzle than an English one. */
+  assert.match(source, /t\("stage\.match\.matched", \{ name, partner/);
+  assert.match(source, /t\("stage\.match\.selected", \{ name \}\)/);
+  assert.match(source, /t\("stage\.match\.idle", \{ name \}\)/);
+  assert.match(en["stage.match.idle"], /not matched yet/);
+  assert.match(en["stage.match.matched"], /matched with/);
+  assert.match(en["stage.match.selected"], /Choose the item that matches it/);
+  const states = ["matched", "selected", "idle"] as const;
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    const said = states.map((state) => words[`stage.match.${state}`]);
+    assert.equal(new Set(said).size, said.length);
+    for (const line of said) assert.ok(line.includes("{name}"));
+  }
   /* The board itself is named, and what happens is announced. */
   assert.match(source, /role="group"/);
   assert.match(source, /aria-live="polite"/);

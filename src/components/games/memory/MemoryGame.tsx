@@ -3,6 +3,7 @@
 import { GameShell } from "@/components/games/GameShell";
 import { getCharacter } from "@/data/characters";
 import { FRIENDS_PACK } from "@/lib/games/memory";
+import { useT } from "@/lib/i18n/useLocale";
 import { useMemoryGame } from "@/lib/games/useMemoryGame";
 import type { Game } from "@/lib/games/types";
 import { MemoryBoard } from "./MemoryBoard";
@@ -20,6 +21,7 @@ import { MemoryBoard } from "./MemoryBoard";
  * moment it appears.
  */
 export function MemoryGame({ game }: { game: Game }) {
+  const t = useT();
   const match = useMemoryGame(FRIENDS_PACK);
 
   const found = match.lastMatch ? getCharacter(match.lastMatch).name : null;
@@ -30,17 +32,17 @@ export function MemoryGame({ game }: { game: Game }) {
   const prompt =
     match.phase === "matched"
       ? finished
-        ? "You found them all!"
-        : `Yes! You found ${found}!`
+        ? t("game.memory-match.foundAll")
+        : t("game.memory-match.foundOne", { name: found ?? "" })
       : match.phase === "checking"
-        ? "Ooh, not those two. Try again!"
+        ? t("game.memory-match.checking")
         : match.phase === "secondCardSelected"
-          ? "Let's see..."
+          ? t("game.memory-match.peek")
           : match.phase === "firstCardSelected"
-            ? "Now find the one that matches!"
+            ? t("game.memory-match.findMatch")
             : match.pairsFound > 0
-              ? "Nice! Find another pair."
-              : "Tap two cards to find matching friends!";
+              ? t("game.memory-match.another")
+              : t("game.memory-match.start");
 
   /* The same words again, for a screen reader, because the prompt above sits
      in a heading nobody is focused on. Matching is announced in words as well
@@ -48,10 +50,17 @@ export function MemoryGame({ game }: { game: Game }) {
   const announcement =
     match.phase === "matched"
       ? finished
-        ? `You found all ${match.totalPairs} pairs in ${match.attempts} tries.`
-        : `${found} matched. ${match.pairsFound} of ${match.totalPairs} pairs found.`
+        ? t("game.memory-match.saidAll", {
+            total: match.totalPairs,
+            tries: match.attempts,
+          })
+        : t("game.memory-match.saidOne", {
+            name: found ?? "",
+            done: match.pairsFound,
+            total: match.totalPairs,
+          })
       : match.phase === "checking"
-        ? "Not a pair. Both cards are turning back over."
+        ? t("game.memory-match.saidMiss")
         : "";
 
   return (
@@ -63,8 +72,8 @@ export function MemoryGame({ game }: { game: Game }) {
       feedback={match.feedback}
       status={match.status}
       celebration={{
-        title: "Great job!",
-        message: "You found all the friends!",
+        title: t("game.memory-match.done.title"),
+        message: t("game.memory-match.done.message"),
         onPlayAgain: match.restart,
       }}
     >

@@ -137,7 +137,6 @@ function conceptOf(words: readonly string[], groups: readonly WordGroup[]): stri
 export const groupPartnersActivity = defineGeneratedActivity({
   id: "group-partners",
   packId: "logic",
-  title: "Which group does it go in?",
   category: "logic",
   activityType: "sorting",
   kind: "connect",

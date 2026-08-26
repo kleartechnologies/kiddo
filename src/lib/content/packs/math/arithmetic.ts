@@ -82,7 +82,6 @@ export function bondConcept(a: number, b: number): string {
 export const additionActivity = defineGeneratedActivity({
   id: "addition",
   packId: "math",
-  title: "Adding up",
   category: "math",
   activityType: "addition",
   kind: "choice",
@@ -128,7 +127,6 @@ export const additionActivity = defineGeneratedActivity({
 export const subtractionActivity = defineGeneratedActivity({
   id: "subtraction",
   packId: "math",
-  title: "Taking away",
   category: "math",
   activityType: "subtraction",
   kind: "choice",

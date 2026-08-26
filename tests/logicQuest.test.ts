@@ -18,6 +18,9 @@ import {
   type LogicQuestAction,
   type LogicQuestState,
 } from "@/lib/games/logicQuest";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
+import { assertChoiceStatesAreSaid, assertNothingScolds } from "./helpers/words";
 
 /**
  * A whole round of Logic Quest, played without React.
@@ -370,14 +373,11 @@ test("Logic Quest is in the catalogue and wired to a route of its own", () => {
 test("a wrong answer is never punished in words, in the game or in the shell", () => {
   const game = source("src/components/games/logic/LogicQuestGame.tsx");
 
-  /* The words a child sees. Nothing here says no. */
-  assert.match(game, /Almost!/);
-  for (const forbidden of ["Wrong", "failed", "Oops", "No,", "Incorrect"]) {
-    assert.ok(
-      !game.includes(forbidden),
-      `LogicQuestGame says "${forbidden}" to a four year old`,
-    );
-  }
+  /* The words a child sees. The game names the keys; the catalogues hold the
+     sentences. Nothing under either of them says no — in either language. */
+  assert.match(game, /t\("game\.logic-quest\.retry"\)/);
+  assert.equal(en["game.logic-quest.retry"], "Almost! Let's take another look.");
+  assertNothingScolds(assert, "game.logic-quest.", "quest.");
 
   /* KIDDO cheers or encourages. There is no third, unhappier reaction, and
      the shell has no vocabulary for one. */
@@ -399,7 +399,14 @@ test("the way out and the way through are both reachable without a mouse", () =>
   assert.match(shell, /<BackLink href=\{exit\?\.href\} label=\{exit\?\.label\} \/>/);
   const back = source("src/components/kiddo/BackLink.tsx");
   assert.match(back, /href = KIDDO_HOME/, "the way out goes to the child's home");
-  assert.match(back, /label = "Back to KIDDO World"/);
+  /* And it is named, whether or not the screen gave it a name of its own —
+     in the reader's language, so the one control on every game screen is
+     never the one English word on a Malay page. */
+  assert.match(back, /aria-label=\{label \?\? t\("chrome\.back"\)\}/);
+  assert.equal(en["chrome.back"], "Back to KIDDO World");
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    assert.ok(words["chrome.back"].trim().length > 0, "the way out lost its name");
+  }
   assert.match(back, /<Link/, "the way out has to be a real link");
 
   /* Every tile is a real button, so it is tabbable and answers to Enter and
@@ -418,9 +425,7 @@ test("the way out and the way through are both reachable without a mouse", () =>
 
   /* Nothing rests on colour alone: the state is in the accessible name. */
   const stage = source("src/components/games/engines/ChoiceStage.tsx");
-  assert.match(stage, /that's the one/);
-  assert.match(stage, /not this one/);
-  assert.match(stage, /already tried/);
+  assertChoiceStatesAreSaid(assert, stage);
 });
 
 /* 14 --------------------------------------------------------------------- */

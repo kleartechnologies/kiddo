@@ -62,7 +62,6 @@ const JOBS: readonly {
 
 export const communityHelpers = defineQuizActivity({
   id: "community-helpers",
-  title: "People Who Help Us",
   activityType: "community",
   ageRange: { min: 3, max: 6 },
   host: "kiddo",
@@ -139,7 +138,6 @@ const TOOL_FACTS: readonly {
 
 export const helperTools = defineQuizActivity({
   id: "helper-tools",
-  title: "Tools of the Job",
   activityType: "community",
   ageRange: { min: 4, max: 6 },
   host: "wally",
@@ -292,7 +290,6 @@ function conceptOf(chosen: readonly Job[]): string {
 export const helperPartners = defineGeneratedActivity({
   id: "helper-partners",
   packId: "general-knowledge",
-  title: "Who Uses What",
   category: "general-knowledge",
   activityType: "community",
   kind: "connect",
@@ -370,7 +367,6 @@ const GOING: readonly { key: PlaceKey; ask: string; because: string; idea: strin
 
 export const places = defineQuizActivity({
   id: "places",
-  title: "Places We Go",
   activityType: "places",
   ageRange: { min: 3, max: 6 },
   host: "bibi",

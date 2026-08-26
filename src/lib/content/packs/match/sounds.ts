@@ -119,7 +119,6 @@ function conceptOf(chosen: readonly Animal[]): string {
 export const soundPartnersActivity = defineGeneratedActivity({
   id: "sound-partners",
   packId: "match",
-  title: "Animals and their sounds",
   category: "general-knowledge",
   activityType: "animal-sounds",
   kind: "connect",

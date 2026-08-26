@@ -5,6 +5,7 @@ import { Volume2, VolumeX } from "lucide-react";
 
 import { useAudioSettings, useSound } from "@/lib/audio/useAudio";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { springy } from "@/lib/motion";
 
 /**
@@ -39,9 +40,10 @@ import { springy } from "@/lib/motion";
 export function SoundToggle({ className }: { className?: string }) {
   const { muted, toggleMuted } = useAudioSettings();
   const play = useSound();
+  const t = useT();
 
   const on = !muted;
-  const label = on ? "Sound on" : "Sound off";
+  const label = on ? t("chrome.soundOn") : t("chrome.soundOff");
 
   return (
     <motion.button

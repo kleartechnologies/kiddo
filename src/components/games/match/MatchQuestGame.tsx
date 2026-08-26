@@ -6,6 +6,8 @@ import { GameShell } from "@/components/games/GameShell";
 import { MatchStage } from "@/components/games/engines/MatchStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
+import { useT } from "@/lib/i18n/useLocale";
+import type { MessageKey } from "@/lib/i18n/messages";
 import { useMatchQuestGame } from "@/lib/games/useMatchQuestGame";
 import type { Game } from "@/lib/games/types";
 import { worldOf } from "@/lib/worlds/worlds";
@@ -35,17 +37,17 @@ import { worldOf } from "@/lib/worlds/worlds";
  * event worth a raised voice.
  */
 const PRAISE = [
-  "Great match!",
-  "Those two belong together!",
-  "Nice one!",
-  "That's the one!",
-] as const;
+  "game.match-quest.praise.1",
+  "game.match-quest.praise.2",
+  "game.match-quest.praise.3",
+  "game.match-quest.praise.4",
+] as const satisfies readonly MessageKey[];
 
 const NUDGES = [
-  "Not these two yet.",
-  "Have another look.",
-  "Who could be its friend?",
-] as const;
+  "game.match-quest.nudge.1",
+  "game.match-quest.nudge.2",
+  "game.match-quest.nudge.3",
+] as const satisfies readonly MessageKey[];
 
 /**
  * Pick a line from what is on screen rather than from a clock or a die.
@@ -55,14 +57,19 @@ const NUDGES = [
  * many pairs have landed, and which two cards were just tried. Different
  * moments get different lines, the same moment always gets the same one, and
  * nothing here reaches for `Math.random` in a render.
+ *
+ * It picks a *key*, not a sentence, so the same board says the same thing in
+ * either language — a child switching to Malay mid-round hears the Malay for
+ * the line they were already on, not a different line.
  */
-function rotate(lines: readonly string[], salt: string): string {
+function rotate(lines: readonly MessageKey[], salt: string): MessageKey {
   let total = 0;
   for (const character of salt) total += character.codePointAt(0) ?? 0;
   return lines[total % lines.length];
 }
 
 export function MatchQuestGame({ game }: { game: Game }) {
+  const t = useT();
   const match = useMatchQuestGame();
   const { challenge, phase, feedback, attempt } = match;
 
@@ -73,13 +80,13 @@ export function MatchQuestGame({ game }: { game: Game }) {
      poses. */
   const prompt =
     phase === "intro"
-      ? "Hello! I'm KIDDO. Shall we find the letters that belong together?"
+      ? t("game.match-quest.hello")
       : match.solved
-        ? (challenge.explanation ?? "You found all the friends!")
+        ? (challenge.explanation ?? t("game.match-quest.solved"))
         : feedback === "correct"
-          ? rotate(PRAISE, salt)
+          ? t(rotate(PRAISE, salt))
           : feedback === "retry"
-            ? rotate(NUDGES, salt)
+            ? t(rotate(NUDGES, salt))
             : challenge.prompt.speech;
 
   /* The board carries its own live region for the pairing itself, so this one
@@ -87,7 +94,11 @@ export function MatchQuestGame({ game }: { game: Game }) {
      through the round that leaves the child. Two regions describing the same
      tap would be the same news twice, half a beat apart. */
   const announcement = match.solved
-    ? `${challenge.explanation ?? "You found them all."} Board ${match.progress.current + 1} of ${match.progress.total} done.`
+    ? t("game.match-quest.said", {
+        said: challenge.explanation ?? t("game.match-quest.saidSolved"),
+        current: match.progress.current + 1,
+        total: match.progress.total,
+      })
     : "";
 
   return (
@@ -101,8 +112,8 @@ export function MatchQuestGame({ game }: { game: Game }) {
       feedback={feedback}
       status={match.status}
       celebration={{
-        title: "Everyone found a friend!",
-        message: "Every big letter found its little friend. Wonderful matching!",
+        title: t("game.match-quest.done.title"),
+        message: t("game.match-quest.done.message"),
         onPlayAgain: match.restart,
       }}
       /* One board leaves before the next arrives: the stage is keyed on
@@ -114,7 +125,7 @@ export function MatchQuestGame({ game }: { game: Game }) {
       announce={announcement}
     >
       {phase === "intro" ? (
-        <Intro onStart={match.begin} />
+        <Intro label={t("game.match-quest.start")} onStart={match.begin} />
       ) : (
         <MatchStage
           challenge={challenge}
@@ -142,12 +153,12 @@ export function MatchQuestGame({ game }: { game: Game }) {
  * A four year old should not arrive mid-board. BIBI is standing here because
  * letters are BIBI's world, and there is exactly one thing to press.
  */
-function Intro({ onStart }: { onStart: () => void }) {
+function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
       <CharacterFigure id="bibi" size="lg" pose="wave" />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-        Let&apos;s match!
+        {label}
       </Button>
     </div>
   );

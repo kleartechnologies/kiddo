@@ -1,4 +1,5 @@
 import type { AgeRange, CharacterId } from "@/lib/games/types";
+import { conceptKey } from "@/lib/i18n/names";
 import type { Level } from "./difficulty";
 import type {
   Activity,
@@ -52,7 +53,6 @@ interface ActivityDefBase {
   /** Local id. `math` + `addition` becomes `math.addition`. */
   id: string;
   packId: PackId;
-  title: string;
   category: ContentCategory;
   activityType: ActivityType;
   kind: ChallengeKind;
@@ -132,7 +132,9 @@ export function defineStaticActivity(def: StaticActivityDef): StaticActivity {
 
   return {
     ...identity,
-    title: def.title,
+    /* Named from its id, in the catalogues. An activity carries no words of
+       its own — see `conceptKey`. */
+    title: conceptKey(identity.id),
     kind: def.kind,
     levels: tidyLevels(def.levels ?? challenges.map((c) => c.level)),
     source: "static",
@@ -158,7 +160,9 @@ export function defineGeneratedActivity(
 
   return {
     ...identity,
-    title: def.title,
+    /* Named from its id, in the catalogues. An activity carries no words of
+       its own — see `conceptKey`. */
+    title: conceptKey(identity.id),
     kind: def.kind,
     levels: tidyLevels(def.levels),
     source: "generated",

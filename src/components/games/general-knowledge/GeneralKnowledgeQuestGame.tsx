@@ -8,6 +8,7 @@ import { ConnectStage } from "@/components/games/engines/ConnectStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
 import { isKind } from "@/lib/content/engine";
+import { useT } from "@/lib/i18n/useLocale";
 import { useGeneralKnowledgeQuest } from "@/lib/games/useGeneralKnowledgeQuest";
 import type { Game } from "@/lib/games/types";
 import { worldOf } from "@/lib/worlds/worlds";
@@ -43,6 +44,7 @@ import { worldOf } from "@/lib/worlds/worlds";
 const WALKS_HOME = "general-knowledge.home-partners";
 
 export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
+  const t = useT();
   const quest = useGeneralKnowledgeQuest();
   const { challenge, phase, answerLabel, board } = quest;
 
@@ -55,16 +57,17 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
           quest.question,
           challenge.prompt.speech,
           challenge.hint ?? "",
-          challenge.explanation ?? "You joined them all up!",
-          "Yes! That's the one.",
-          "Ooh, not that one. Have another go.",
+          challenge.explanation ?? t("game.general-knowledge-quest.joined"),
+          t("game.general-knowledge-quest.yesBoard"),
+          t("game.general-knowledge-quest.retryBoard"),
         ]
       : [
           quest.question,
           challenge.prompt.speech,
           challenge.hint ?? "",
-          challenge.explanation ?? `Great thinking! It's ${answerLabel}.`,
-          "Ooh, not that one. Try again!",
+          challenge.explanation ??
+            t("game.general-knowledge-quest.yes", { answer: answerLabel }),
+          t("game.general-knowledge-quest.retry"),
         ]
     : [];
 
@@ -73,7 +76,7 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
      KIDDO has the poses. */
   const prompt =
     phase === "intro"
-      ? "Hello! I'm KIDDO. Shall we find out about the world?"
+      ? t("game.general-knowledge-quest.hello")
       : phase === "correct"
         ? lines[3]
         : board
@@ -92,18 +95,21 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
 
   /* The same thing in words, for a screen reader, because the bubble above
      lives in a paragraph nobody is focused on. */
-  const step = `Question ${quest.progress.current + 1} of ${quest.progress.total}`;
+  const step = { current: quest.progress.current + 1, total: quest.progress.total };
   const announcement =
     phase === "correct"
       ? board
-        ? `${lines[3]} ${step} done.`
-        : `Yes, the answer is ${answerLabel}. ${step} done.`
+        ? t("quest.boardAnswered", { said: lines[3], ...step })
+        : t("quest.answered", { answer: answerLabel, ...step })
       : board && quest.feedback === "correct"
-        ? `Yes. ${board.progress.current} of ${board.progress.total} joined.`
+        ? t("quest.joined", {
+            current: board.progress.current,
+            total: board.progress.total,
+          })
         : phase === "incorrect" || (board && quest.feedback === "retry")
-          ? "Not quite. Have another go."
+          ? t("quest.notQuite")
           : phase === "awaitingAnswer" && challenge
-            ? `${step}. ${quest.question}`
+            ? t("quest.asking", { question: quest.question, ...step })
             : "";
 
   return (
@@ -118,9 +124,8 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
       feedback={quest.feedback}
       status={quest.status}
       celebration={{
-        title: "You know so much!",
-        message:
-          "Ten questions about the whole wide world, all the way to the end. Animals, weather, people, places — you knew them all.",
+        title: t("game.general-knowledge-quest.done.title"),
+        message: t("game.general-knowledge-quest.done.message"),
         onPlayAgain: quest.restart,
       }}
       /* Where this question is played. Most are the meadow; counting stands
@@ -131,7 +136,7 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
       announce={announcement}
     >
       {phase === "intro" || !challenge ? (
-        <Intro onStart={quest.begin} />
+        <Intro label={t("game.general-knowledge-quest.start")} onStart={quest.begin} />
       ) : isKind(challenge, "choice") ? (
         <ChoiceStage
           challenge={challenge}
@@ -177,12 +182,12 @@ export function GeneralKnowledgeQuestGame({ game }: { game: Game }) {
  * A four year old should not arrive mid-question. Foxy is standing here
  * because this is their world, and there is exactly one thing to press.
  */
-function Intro({ onStart }: { onStart: () => void }) {
+function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
       <CharacterFigure id="foxy" size="lg" pose="wave" />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-        Let&apos;s find out!
+        {label}
       </Button>
     </div>
   );

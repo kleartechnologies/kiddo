@@ -100,6 +100,15 @@ Route strings live in `src/lib/routes.ts`.
       should only be removed after a real review.
 - [ ] Deployment target, HTTPS, and a real production build smoke test on a
       physical iPhone/iPad and Android phone (installed-app mode included).
+- [ ] **Malay copy: native-speaker review.** KIDDO ships in English and Bahasa
+      Melayu, and the Malay was written carefully but not natively. Every
+      string exists and every test passes; that proves coverage, not fluency.
+      `docs/kiddo-malay-review.md` is the reviewer's worklist, ordered by risk
+      — the baby-animals wording first, then the fourteen sentences where the
+      Malay deliberately does not mirror the English, then the 86 lesson names.
+      One item in it is a product decision rather than a translation one: the
+      Malay baby-animal question gives its answer away for ten of twelve
+      animals, because Malay names a baby as *anak* + the grown-up.
 
 ### Phase 8B — parent accounts + cloud journey sync (24 Aug 2026)
 
@@ -178,14 +187,45 @@ claims or hints that they exist.
 
 ```bash
 npm test && npx tsc --noEmit && npm run lint && npm run build
-npm start -- -p 4310
+npm run test:rules                   # Firestore rules, needs Java
+```
+
+The browser measurements drive a *production* server on port 4310, and that
+server has two shapes. `npm start` is not one of them — start the right one
+with the scripts below, which build it and check it is what they claim.
+
+```bash
+npm run measure:serve                # account-free build (no Firebase keys)
+npm run measure:language             # both languages, end to end
 npm run measure:landing
-npm run measure:parents
-npm run measure:journey -- --quick
-npm run measure:worlds -- --quick
-npm run measure:quest-magic -- --quick
+npm run measure:join
 npm run measure:account
-npm run measure:quest-magic -- --quick
+npm run measure:parents
+npm run measure:journey
+npm run measure:match-quest
+npm run measure:quest-magic
+```
+
+```bash
+npm run measure:serve:dev            # the same, plus KIDDO_DEV_PAGES=1
+npm run measure:worlds               # these drive /playground/*, which only
+npm run measure:visual               # exists in a dev-pages build and is
+npm run measure:magic                # never served by a deployed KIDDO
+npm run measure:magic-wired
+npm run measure:order
+npm run measure:match
+npm run measure:mixed
+npm run measure                      # viewports
+```
+
+The account-free build is a shipped product mode, not a test rig: without
+`NEXT_PUBLIC_FIREBASE_API_KEY` and `…_APP_ID` KIDDO runs device-only, and
+`src/lib/cloud/preview.ts` gives the account screens a pretend backend the
+device opts into with `localStorage["kiddo.preview.cloud"] = "1"`. No
+measurement lowers a gate, opens a route or signs in with a real account —
+`scripts/measure-mode.mjs` refuses to run against the wrong server instead.
+
+```bash
 node scripts/make-brand-assets.mjs   # regenerate icons / OG / landing shots
 ```
 

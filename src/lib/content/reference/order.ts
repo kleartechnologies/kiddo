@@ -56,7 +56,6 @@ function trayOrder(values: readonly number[], rng: Rng): number[] {
 export const orderReferenceActivity = defineGeneratedActivity({
   id: "count-order",
   packId: "discovery",
-  title: "Counting on",
   category: "discovery",
   activityType: "number-sequence",
   kind: "order",

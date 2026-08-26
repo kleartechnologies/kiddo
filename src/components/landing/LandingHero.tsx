@@ -1,13 +1,16 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
-import { PLANS, YEARLY_SAVING_PERCENT } from "@/lib/billing/subscription";
+import { planText, YEARLY_SAVING_PERCENT } from "@/lib/billing/subscription";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { cn } from "@/lib/cn";
+import { worldNameKey } from "@/lib/i18n/names";
+import { useT, useTranslation } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
-import { WORLD_PLACES } from "@/lib/worlds/places";
 
 /**
  * The first screen a parent sees.
@@ -23,6 +26,10 @@ import { WORLD_PLACES } from "@/lib/worlds/places";
  * nothing to reduce.
  */
 export function LandingHero() {
+  const { locale, t } = useTranslation();
+  const monthly = planText("monthly", locale);
+  const yearly = planText("yearly", locale);
+
   return (
     <section
       aria-labelledby="hero-heading"
@@ -30,18 +37,16 @@ export function LandingHero() {
     >
       <div className="flex flex-col gap-6 text-center lg:text-left">
         <p className="text-ink-500 font-display text-base font-semibold tracking-wide sm:text-lg">
-          Early learning for ages 4 to 8
+          {t("landing.hero.eyebrow")}
         </p>
         <h1
           id="hero-heading"
           className="font-display text-[2.25rem] leading-[1.05] font-bold text-balance min-[380px]:text-[2.6rem] sm:text-5xl lg:text-6xl"
         >
-          Learning should feel like an adventure.
+          {t("landing.hero.title")}
         </h1>
         <p className="text-ink-700 mx-auto max-w-xl text-lg leading-relaxed text-pretty sm:text-xl lg:mx-0">
-          KIDDO turns early learning into playful little worlds. Children count what grows
-          in a garden, help animals find their homes, and discover words inside a storybook
-          — one short activity at a time.
+          {t("landing.hero.body")}
         </p>
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
           <ButtonLink
@@ -51,14 +56,20 @@ export function LandingHero() {
             icon={<ArrowRight className="size-6" aria-hidden />}
             data-landing-cta
           >
-            Start KIDDO
+            {t("landing.hero.cta")}
           </ButtonLink>
           <ButtonLink href="#how-it-works" variant="soft" size="md">
-            See how KIDDO works
+            {t("landing.hero.secondary")}
           </ButtonLink>
         </div>
         <p className="text-ink-500 text-sm">
-          {`One subscription, ${PLANS.monthly.price} a ${PLANS.monthly.per} or ${PLANS.yearly.price} a ${PLANS.yearly.per} (${YEARLY_SAVING_PERCENT}% less), opens every world. Cancel anytime. Works in the browser on phones, tablets and laptops.`}
+          {t("landing.hero.terms", {
+            monthly: monthly.price,
+            monthlyPer: monthly.per,
+            yearly: yearly.price,
+            yearlyPer: yearly.per,
+            saving: YEARLY_SAVING_PERCENT,
+          })}
         </p>
       </div>
 
@@ -69,6 +80,7 @@ export function LandingHero() {
 
 /** The three worlds, fanned like cards on a table, with KIDDO in front. */
 function WorldFan() {
+  const t = useT();
   const tilt = ["-rotate-6 lg:-rotate-[7deg]", "rotate-0", "rotate-6 lg:rotate-[7deg]"];
   const lift = ["translate-y-4", "-translate-y-3", "translate-y-4"];
 
@@ -78,26 +90,23 @@ function WorldFan() {
       aria-hidden
     >
       <ul className="grid list-none grid-cols-3 items-center gap-2 sm:gap-3">
-        {PLAYABLE_WORLDS.map((id, index) => {
-          const place = WORLD_PLACES[id];
-          return (
-            <li
-              key={id}
-              className={cn(
-                "bg-paper border-edge overflow-hidden rounded-tile border p-1.5 shadow-lift sm:rounded-card sm:p-2",
-                tilt[index],
-                lift[index],
-              )}
-            >
-              <div className="relative aspect-[4/5] overflow-hidden rounded-[calc(var(--radius-tile)-0.375rem)] sm:rounded-[calc(var(--radius-card)-0.5rem)]">
-                <WorldScene world={id} />
-              </div>
-              <p className="font-display text-ink-900 truncate px-1 pt-2 pb-1 text-center text-xs font-semibold sm:text-sm">
-                {place.name}
-              </p>
-            </li>
-          );
-        })}
+        {PLAYABLE_WORLDS.map((id, index) => (
+          <li
+            key={id}
+            className={cn(
+              "bg-paper border-edge overflow-hidden rounded-tile border p-1.5 shadow-lift sm:rounded-card sm:p-2",
+              tilt[index],
+              lift[index],
+            )}
+          >
+            <div className="relative aspect-[4/5] overflow-hidden rounded-[calc(var(--radius-tile)-0.375rem)] sm:rounded-[calc(var(--radius-card)-0.5rem)]">
+              <WorldScene world={id} />
+            </div>
+            <p className="font-display text-ink-900 truncate px-1 pt-2 pb-1 text-center text-xs font-semibold sm:text-sm">
+              {t(worldNameKey(id))}
+            </p>
+          </li>
+        ))}
       </ul>
       {/* KIDDO stands on the table in front of the cards, as on the home screen. */}
       <div className="absolute inset-x-0 -bottom-2 flex justify-center">

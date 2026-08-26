@@ -21,7 +21,15 @@
  *                       values, the dialog is a dialog, keyboard reaches it
  *   10 console          nothing logged
  *
- * Expects a server already running (`npm run build && npm start -- -p 4310`).
+ * Expects the account-free measuring server on port 4310:
+ *
+ *     npm run measure:serve
+ *
+ * That is a production build with the NEXT_PUBLIC_FIREBASE_* variables
+ * unset, which is a mode KIDDO ships rather than a rig — see
+ * `scripts/measure-serve.mjs`. Pointed at a configured server this exits
+ * 2 and says so, because the way past a real sign-in form is a different
+ * server and never a weaker gate.
  *
  *   node scripts/measure-parents.mjs [--quick] [--shots=DIR] [origin]
  */
@@ -37,6 +45,7 @@ import {
   settle,
   visit,
 } from "./cdp.mjs";
+import { announce, requireAccountFree } from "./measure-mode.mjs";
 
 const ARGS = process.argv.slice(2);
 const QUICK = ARGS.includes("--quick");
@@ -90,6 +99,8 @@ const section = (title) => console.log(`\n${title}`);
 if (SHOTS) mkdirSync(SHOTS, { recursive: true });
 
 const { cdp, sessionId, close } = await openBrowser(9347);
+const mode = await requireAccountFree(cdp, sessionId, ORIGIN);
+announce(mode);
 await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: WATCH_FOR_TROUBLE }, sessionId);
 
 const reduce = (on) =>

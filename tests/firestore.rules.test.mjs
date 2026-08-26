@@ -22,6 +22,7 @@ import {
 import {
   collection,
   deleteDoc,
+  deleteField,
   doc,
   getDoc,
   getDocs,
@@ -33,6 +34,9 @@ import {
 
 const PROJECT = process.env.GCLOUD_PROJECT ?? "demo-kiddo";
 const ALICE = { uid: "alice", email: "alice@example.com" };
+/* A real door id: journeys may only ever name one KIDDO actually has. */
+const DOOR = "counting.count-the-apples";
+const DOOR2 = "words.word-discovery";
 const BOB = { uid: "bob", email: "bob@example.com" };
 
 let env;
@@ -54,20 +58,20 @@ async function seed() {
   await env.withSecurityRulesDisabled(async (ctx) => {
     const db = ctx.firestore();
     await setDoc(doc(db, "users/alice"), { email: ALICE.email, createdAt: 1, updatedAt: 1 });
-    await setDoc(doc(db, "children/c-alice"), {
+    await setDoc(doc(db, "children/alice-0"), {
       parentId: "alice",
       name: "Mia",
       createdAt: 1,
       updatedAt: 1,
     });
-    await setDoc(doc(db, "journeys/c-alice"), { completed: ["a"], last: "a", updatedAt: 1 });
-    await setDoc(doc(db, "children/c-bob"), {
+    await setDoc(doc(db, "journeys/alice-0"), { completed: [DOOR], last: DOOR, updatedAt: 1 });
+    await setDoc(doc(db, "children/bob-0"), {
       parentId: "bob",
       name: "Leo",
       createdAt: 1,
       updatedAt: 1,
     });
-    await setDoc(doc(db, "journeys/c-bob"), { completed: [], last: null, updatedAt: 1 });
+    await setDoc(doc(db, "journeys/bob-0"), { completed: [], last: null, updatedAt: 1 });
   });
 }
 
@@ -76,11 +80,11 @@ describe("unauthenticated", () => {
     await seed();
     const db = nobody();
     await assertFails(getDoc(doc(db, "users/alice")));
-    await assertFails(getDoc(doc(db, "children/c-alice")));
-    await assertFails(getDoc(doc(db, "journeys/c-alice")));
+    await assertFails(getDoc(doc(db, "children/alice-0")));
+    await assertFails(getDoc(doc(db, "journeys/alice-0")));
     await assertFails(getDocs(collection(db, "children")));
     await assertFails(setDoc(doc(db, "users/alice"), { email: "x" }));
-    await assertFails(setDoc(doc(db, "journeys/c-alice"), { completed: [], last: null }));
+    await assertFails(setDoc(doc(db, "journeys/alice-0"), { completed: [], last: null }));
   });
 });
 
@@ -114,7 +118,31 @@ describe("users", () => {
     await assertSucceeds(
       setDoc(doc(bob, "users/bob"), { email: BOB.email, createdAt: 1, updatedAt: 1 }),
     );
-    await assertSucceeds(deleteDoc(doc(bob, "users/bob")));
+  });
+
+  /* The user document carries the Stripe customer id and the subscription
+     the webhook writes. A client that could delete it could throw away the
+     billing identity of a subscription that keeps on renewing, and then
+     start a second one — so nobody deletes it from a browser. Account
+     deletion is POST /api/account/delete, which cancels Stripe first and
+     removes everything with the Admin SDK, which does not read these
+     rules at all. */
+  it("cannot be deleted by its owner, by anyone else, or by a stranger", async () => {
+    await seed();
+    await assertFails(deleteDoc(doc(as(ALICE), "users/alice")));
+    await assertFails(deleteDoc(doc(as(BOB), "users/alice")));
+    await assertFails(deleteDoc(doc(nobody(), "users/alice")));
+
+    /* Nor by any of the ways a delete can be spelled as a write. */
+    await assertFails(setDoc(doc(as(ALICE), "users/alice"), {}));
+    await assertFails(updateDoc(doc(as(ALICE), "users/alice"), { email: deleteField() }));
+
+    /* It is still there, with everything the server put on it. */
+    const snap = await assertSucceeds(getDoc(doc(as(ALICE), "users/alice")));
+    if (!snap.exists()) throw new Error("the user document should have survived");
+
+    /* And the server, which does not go through these rules, still can. */
+    await env.withSecurityRulesDisabled((ctx) => deleteDoc(doc(ctx.firestore(), "users/alice")));
   });
 });
 
@@ -167,6 +195,16 @@ describe("subscription (server-owned)", () => {
     await assertFails(getDocs(collection(db, "stripeEvents")));
   });
 
+  it("the rate-limit counters are closed to every client, signed in or not", async () => {
+    // A client that could read these would know how much room it has left;
+    // one that could write them would have no limit at all.
+    for (const db of [as(ALICE), nobody()]) {
+      await assertFails(setDoc(doc(db, "rateLimits/checkout__alice__1"), { count: 0 }));
+      await assertFails(getDoc(doc(db, "rateLimits/checkout__alice__1")));
+      await assertFails(getDocs(collection(db, "rateLimits")));
+    }
+  });
+
   it("the join notices are closed to every client, signed in or not", async () => {
     // A landing-page notice must be a purchase that really happened, so no
     // client may add one — and since a join is somebody else's purchase,
@@ -184,8 +222,8 @@ describe("children", () => {
   it("is readable only by the owning parent, only via an owner-filtered query", async () => {
     await seed();
     const alice = as(ALICE);
-    await assertSucceeds(getDoc(doc(alice, "children/c-alice")));
-    await assertFails(getDoc(doc(alice, "children/c-bob")));
+    await assertSucceeds(getDoc(doc(alice, "children/alice-0")));
+    await assertFails(getDoc(doc(alice, "children/bob-0")));
     await assertSucceeds(
       getDocs(query(collection(alice, "children"), where("parentId", "==", "alice"))),
     );
@@ -198,21 +236,43 @@ describe("children", () => {
   it("can only be created for oneself with a valid name", async () => {
     const alice = as(ALICE);
     const ok = { parentId: "alice", name: "Mia", createdAt: 1, updatedAt: 1 };
-    await assertSucceeds(setDoc(doc(alice, "children/new"), ok));
-    await assertFails(setDoc(doc(alice, "children/stolen"), { ...ok, parentId: "bob" }));
-    await assertFails(setDoc(doc(alice, "children/blank"), { ...ok, name: "" }));
-    await assertFails(setDoc(doc(alice, "children/long"), { ...ok, name: "x".repeat(25) }));
-    await assertFails(setDoc(doc(alice, "children/extra"), { ...ok, birthdate: "2019-01-01" }));
+    await assertSucceeds(setDoc(doc(alice, "children/alice-1"), ok));
+    await assertFails(setDoc(doc(alice, "children/alice-2"), { ...ok, parentId: "bob" }));
+    await assertFails(setDoc(doc(alice, "children/alice-2"), { ...ok, name: "" }));
+    await assertFails(setDoc(doc(alice, "children/alice-2"), { ...ok, name: "x".repeat(25) }));
+    await assertFails(setDoc(doc(alice, "children/alice-2"), { ...ok, birthdate: "2019-01-01" }));
+  });
+
+  /* A child document is created by the browser, so the rules are the only
+     limit on how many one sign-up can make. The cap is the id itself. */
+  it("stops at the parent's own slots, and a deleted child frees one", async () => {
+    const alice = as(ALICE);
+    const ok = { parentId: "alice", name: "Mia", createdAt: 1, updatedAt: 1 };
+    for (const slot of [0, 1, 2, 3, 4, 5]) {
+      await assertSucceeds(setDoc(doc(alice, `children/alice-${slot}`), ok));
+    }
+    // A seventh has nowhere to go: not a further slot…
+    await assertFails(setDoc(doc(alice, "children/alice-6"), ok));
+    await assertFails(setDoc(doc(alice, "children/alice-60"), ok));
+    // …not an id of the parent's own choosing…
+    await assertFails(setDoc(doc(alice, "children/mia"), ok));
+    await assertFails(setDoc(doc(alice, "children/alice-"), ok));
+    // …and not one of somebody else's, even carrying her own parentId.
+    await assertFails(setDoc(doc(alice, "children/bob-1"), ok));
+
+    // Deleting gives the slot back, so the cap is "at once", not "ever".
+    await assertSucceeds(deleteDoc(doc(alice, "children/alice-3")));
+    await assertSucceeds(setDoc(doc(alice, "children/alice-3"), ok));
   });
 
   it("can be renamed but never re-parented, and only deleted by its parent", async () => {
     await seed();
     const alice = as(ALICE);
-    await assertSucceeds(updateDoc(doc(alice, "children/c-alice"), { name: "Mimi", updatedAt: 2 }));
-    await assertFails(updateDoc(doc(alice, "children/c-alice"), { parentId: "bob" }));
-    await assertFails(updateDoc(doc(as(BOB), "children/c-alice"), { name: "Leo" }));
-    await assertFails(deleteDoc(doc(as(BOB), "children/c-alice")));
-    await assertSucceeds(deleteDoc(doc(alice, "children/c-alice")));
+    await assertSucceeds(updateDoc(doc(alice, "children/alice-0"), { name: "Mimi", updatedAt: 2 }));
+    await assertFails(updateDoc(doc(alice, "children/alice-0"), { parentId: "bob" }));
+    await assertFails(updateDoc(doc(as(BOB), "children/alice-0"), { name: "Leo" }));
+    await assertFails(deleteDoc(doc(as(BOB), "children/alice-0")));
+    await assertSucceeds(deleteDoc(doc(alice, "children/alice-0")));
   });
 });
 
@@ -221,45 +281,70 @@ describe("journeys", () => {
     await seed();
     const alice = as(ALICE);
     const bob = as(BOB);
-    await assertSucceeds(getDoc(doc(alice, "journeys/c-alice")));
-    await assertFails(getDoc(doc(bob, "journeys/c-alice")));
-    await assertFails(getDoc(doc(alice, "journeys/c-bob")));
-    const journey = { completed: ["a", "b"], last: "b", updatedAt: 2 };
-    await assertSucceeds(setDoc(doc(alice, "journeys/c-alice"), journey));
-    await assertFails(setDoc(doc(bob, "journeys/c-alice"), journey));
+    await assertSucceeds(getDoc(doc(alice, "journeys/alice-0")));
+    await assertFails(getDoc(doc(bob, "journeys/alice-0")));
+    await assertFails(getDoc(doc(alice, "journeys/bob-0")));
+    const journey = { completed: [DOOR, DOOR2], last: DOOR2, updatedAt: 2 };
+    await assertSucceeds(setDoc(doc(alice, "journeys/alice-0"), journey));
+    await assertFails(setDoc(doc(bob, "journeys/alice-0"), journey));
     await assertFails(setDoc(doc(alice, "journeys/nobodys-child"), journey));
-    await assertFails(deleteDoc(doc(bob, "journeys/c-alice")));
-    await assertSucceeds(deleteDoc(doc(alice, "journeys/c-alice")));
+    await assertFails(deleteDoc(doc(bob, "journeys/alice-0")));
+    await assertSucceeds(deleteDoc(doc(alice, "journeys/alice-0")));
   });
 
   it("only accept the journey shape", async () => {
     await seed();
     const alice = as(ALICE);
     await assertFails(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: "a", last: null, updatedAt: 2 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: DOOR, last: null, updatedAt: 2 }),
     );
     await assertFails(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: [], last: 3, updatedAt: 2 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], last: 3, updatedAt: 2 }),
     );
     await assertFails(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: [], last: null, score: 9 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], last: null, score: 9 }),
     );
     await assertFails(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: [], medium: "x", last: null, updatedAt: 2 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], medium: "x", last: null, updatedAt: 2 }),
     );
     await assertFails(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: [], hard: 7, last: null, updatedAt: 2 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], hard: 7, last: null, updatedAt: 2 }),
     );
+    /* Only doors KIDDO actually has. This is what stops the journey from
+       being used as free storage: rules cannot measure a document, but
+       they can say exactly which values a list may hold. */
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: ["made-up.door"], last: null, updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: ["x".repeat(50000)], last: null, updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [DOOR, "made-up.door"], last: null, updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], medium: ["made-up.door"], last: null, updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], hard: [{ door: DOOR }], last: null, updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], last: "made-up.door", updatedAt: 2 }),
+    );
+    await assertFails(
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], last: null, updatedAt: "x".repeat(50000) }),
+    );
+
     /* The shape from before tiers existed still writes — migration by shape. */
     await assertSucceeds(
-      setDoc(doc(alice, "journeys/c-alice"), { completed: [], last: null, updatedAt: 2 }),
+      setDoc(doc(alice, "journeys/alice-0"), { completed: [], last: null, updatedAt: 2 }),
     );
     await assertSucceeds(
-      setDoc(doc(alice, "journeys/c-alice"), {
-        completed: ["a"],
-        medium: ["a"],
+      setDoc(doc(alice, "journeys/alice-0"), {
+        completed: [DOOR],
+        medium: [DOOR],
         hard: [],
-        last: "a",
+        last: DOOR,
         updatedAt: 2,
       }),
     );

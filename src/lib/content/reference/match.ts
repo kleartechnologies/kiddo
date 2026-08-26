@@ -91,7 +91,6 @@ const idOf = (item: PictureItem) => item.label.toLowerCase();
 export const matchReferenceActivity = defineGeneratedActivity({
   id: "animal-babies",
   packId: "discovery",
-  title: "Grown-ups and babies",
   category: "discovery",
   activityType: "matching",
   kind: "connect",

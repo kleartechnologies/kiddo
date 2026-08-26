@@ -3,6 +3,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
+import { useLocale } from "@/lib/i18n/useLocale";
 import { springSoft } from "@/lib/motion";
 import {
   noticeFor,
@@ -39,6 +40,7 @@ const VISIBLE_MS = 5_500;
 const GAP_MS = 9_000;
 
 export function JoinNotices() {
+  const locale = useLocale();
   const [events, setEvents] = useState<JoinEvent[]>([]);
   const [index, setIndex] = useState(-1);
   const [showing, setShowing] = useState(false);
@@ -102,7 +104,7 @@ export function JoinNotices() {
             className="bg-paper border-edge text-ink-900 max-w-xs rounded-full border px-4 py-3 text-sm font-semibold shadow-lift sm:text-base"
             data-join-notice
           >
-            {noticeFor(event)}
+            {noticeFor(event, locale)}
           </motion.p>
         )}
       </AnimatePresence>

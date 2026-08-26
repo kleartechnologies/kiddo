@@ -144,7 +144,6 @@ const WEATHER_FACTS: readonly Question[] = [
 
 export const weather = defineQuizActivity({
   id: "weather",
-  title: "What's the Weather?",
   activityType: "weather",
   ageRange: { min: 3, max: 6 },
   host: "pip",
@@ -204,7 +203,6 @@ const SEASON_FACTS: readonly {
 
 export const seasons = defineQuizActivity({
   id: "seasons",
-  title: "The Four Seasons",
   activityType: "seasons",
   ageRange: { min: 4, max: 6 },
   host: "bibi",
@@ -246,7 +244,6 @@ const COLD: readonly Sym[] = [
 
 export const hotOrCold = defineQuizActivity({
   id: "hot-or-cold",
-  title: "Hot or Cold?",
   activityType: "hot-or-cold",
   ageRange: { min: 3, max: 6 },
   host: "foxy",

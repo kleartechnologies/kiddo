@@ -141,7 +141,6 @@ function rotate(unit: readonly Sym[], by: number): Sym[] {
 export const patternsActivity = defineGeneratedActivity({
   id: "patterns",
   packId: "logic",
-  title: "Repeating patterns",
   category: "logic",
   activityType: "patterns",
   kind: "choice",

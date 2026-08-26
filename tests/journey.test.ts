@@ -1,9 +1,14 @@
 import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
 import { test } from "node:test";
 
+import { childSlotIds, MAX_CHILDREN_PER_PARENT } from "@/lib/cloud/children";
 import { getActivity } from "@/lib/content/registry";
 import { createRng } from "@/lib/content/rng";
 import { buildGeneralKnowledgeSession } from "@/lib/games/generalKnowledgeQuest";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+import { doorKey } from "@/lib/i18n/names";
 import {
   EMPTY_JOURNEY,
   continueTarget,
@@ -94,7 +99,12 @@ test("doors have routes, places and a game to play inside", () => {
     assert.equal(activityRoute(door), `/worlds/${door.world}/${door.slug}`);
     assert.equal(findWorldActivity(door.world, door.slug), door);
     assert.equal(WORLD_PLACES[door.world].route, `/worlds/${door.world}`);
-    assert.equal(worldGameFor(door).title, door.title);
+    /* The `Game` a door plays as is named by the door's own catalogue key —
+       the same key the map and the parent dashboard read — so the shell's
+       title cannot drift from the map's: there is only one of them. That the
+       key has real words behind it in every language is `i18n.test.ts`. */
+    assert.equal(worldGameFor(door).title, doorKey(door, "title"));
+    assert.ok(translate(DEFAULT_LOCALE, worldGameFor(door).title).length > 0);
   }
   assert.equal(findWorldActivity("counting", "nope") ?? null, null);
   assert.equal(findWorldActivity("meadow", "count-the-apples") ?? null, null);
@@ -237,4 +247,55 @@ test("finishing a tier twice is finishing it once, and no finish rewrites anothe
   assert.deepEqual(wandered.medium, hard.medium);
   assert.deepEqual(wandered.hard, hard.hard);
   assert.equal(wandered.last, other.id);
+});
+
+/**
+ * `firestore.rules` names every door by hand, because that allowlist is
+ * the only thing standing between "a list of nine short ids" and "a
+ * megabyte of whatever a signed-in client feels like storing" — rules
+ * cannot measure a document or walk a list, but they can say exactly
+ * which values a list may hold. The cost of that is a second place the
+ * doors are written down, so this test is the thing that notices.
+ */
+test("the rules know about exactly the doors KIDDO has", () => {
+  const rules = readFileSync(new URL("../firestore.rules", import.meta.url), "utf8");
+  const block = /function knownActivities\(\) \{\s*return \[([^\]]*)\];/.exec(rules);
+  assert.ok(block, "firestore.rules must list the activity ids");
+  const listed = [...block[1].matchAll(/'([^']+)'/g)].map((match) => match[1]).sort();
+  const real = WORLD_ACTIVITIES.map((activity) => activity.id).sort();
+  assert.deepEqual(
+    listed,
+    real,
+    "a new door needs adding to knownActivities() in firestore.rules, or journeys naming it cannot be saved",
+  );
+
+  /* `last` is one id, not a list, so it is checked against the same names. */
+  assert.match(rules, /request\.resource\.data\.last in knownActivities\(\)/);
+});
+
+test("the rules cap children at the number the app thinks they do", () => {
+  const rules = readFileSync(new URL("../firestore.rules", import.meta.url), "utf8");
+  const block = /function childSlots\(\) \{\s*return \[([^\]]*)\];/.exec(rules);
+  assert.ok(block, "firestore.rules must list the child slots");
+  const slots = [...block[1].matchAll(/request\.auth\.uid \+ '-(\d+)'/g)].map((match) => Number(match[1]));
+  assert.deepEqual(
+    slots,
+    Array.from({ length: MAX_CHILDREN_PER_PARENT }, (_, index) => index),
+    "firestore.rules and MAX_CHILDREN_PER_PARENT must agree, or the cap is whichever is smaller",
+  );
+  assert.deepEqual(childSlotIds("alice"), ["alice-0", "alice-1", "alice-2", "alice-3", "alice-4", "alice-5"]);
+});
+
+test("the user document cannot be deleted by anyone holding a browser", () => {
+  const rules = readFileSync(new URL("../firestore.rules", import.meta.url), "utf8");
+  const users = /match \/users\/\{uid\} \{([\s\S]*?)\n    \}/.exec(rules);
+  assert.ok(users, "firestore.rules must still have a users match");
+  assert.match(users[1], /allow delete: if false;/, "the billing identity is not the client's to destroy");
+  assert.doesNotMatch(users[1], /allow delete: if isOwner/);
+
+  /* And the app must not still be trying: a client-side deletion path
+     would now half-delete an account and leave Stripe billing. */
+  const backend = readFileSync(new URL("../src/lib/firebase/backend.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(backend, /deleteDoc\(doc\(db, "users"/, "deletion goes through /api/account/delete");
+  assert.match(backend, /await callApi\("\/api\/account\/delete", \{\}\);/);
 });

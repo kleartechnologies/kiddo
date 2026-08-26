@@ -136,7 +136,6 @@ function byColour(rng: Rng, level: Level, tiles: number): MatchBoard {
 export const matchingActivity = defineGeneratedActivity({
   id: "matching",
   packId: "shapes",
-  title: "Find the one that matches",
   category: "shapes",
   activityType: "matching",
   kind: "choice",
@@ -266,7 +265,6 @@ function pair(a: Sym, b: Sym): Sym {
 export const sameDifferentActivity = defineGeneratedActivity({
   id: "same-different",
   packId: "shapes",
-  title: "Same or different?",
   category: "shapes",
   activityType: "same-or-different",
   kind: "choice",

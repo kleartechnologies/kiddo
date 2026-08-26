@@ -21,13 +21,20 @@
  *
  *   node scripts/measure-worlds.mjs [--quick] [--shots=<dir>] [http://host:port]
  *
- * Expects a server already running (`npm run build && npm start -- -p 4310`).
+ * Expects a measuring server: the specimen pages this drives are `.dev.tsx`
+ * and only exist when the build asked for them.
+ *
+ *     KIDDO_DEV_PAGES=1 npm run build && npm start -- -p 4310
+ *
+ * A deployed KIDDO does not serve `/playground/*` at all, and must not be
+ * changed so that it does — see `next.config.ts` and docs/SECURITY.md.
  * The browser driver is in `scripts/cdp.mjs`.
  */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 import { VIEWPORTS, applyViewport, clickAt, evaluate, openBrowser, settle, visit } from "./cdp.mjs";
+import { requireDevPages } from "./measure-mode.mjs";
 
 const ARGS = process.argv.slice(2);
 const QUICK = ARGS.includes("--quick");
@@ -271,6 +278,7 @@ async function playConnect(cdp, sessionId, reduced, partnerMotion, joinedMotion)
 /* ---- run ----------------------------------------------------------------- */
 
 const { cdp, sessionId, close } = await openBrowser(9340);
+await requireDevPages(cdp, sessionId, PAGE);
 try {
   await cdp.send("Page.enable", {}, sessionId);
   await cdp.send("Page.addScriptToEvaluateOnNewDocument", { source: WATCH_FOR_TROUBLE }, sessionId);

@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import { Check } from "lucide-react";
 
@@ -6,6 +8,8 @@ import { getCharacter } from "@/data/characters";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { doorKey, worldBlurbKey, worldNameKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import { activitiesOf, type PlayableWorldId } from "@/lib/worlds/activities";
 import { WORLD_PLACES } from "@/lib/worlds/places";
 import { SectionIntro } from "./SectionIntro";
@@ -19,41 +23,31 @@ import { SectionIntro } from "./SectionIntro";
  * taken from the running app by `scripts/make-brand-assets.mjs`, so the page
  * cannot drift from what a child actually gets — if the board changes, the
  * script is run again and the picture changes with it.
+ *
+ * The world's name, its blurb and the three door titles are read from the
+ * catalogue by id rather than from `WORLD_PLACES` and `WORLD_ACTIVITIES`
+ * directly, so this page says exactly what the child's home screen says in
+ * whichever language the parent is reading — one set of words, one place.
  */
 
-/** One sentence per world, for a parent: what the child actually does. */
-const INSIDE: Record<PlayableWorldId, string> = {
-  counting: "Children discover numbers through the apples, flowers and pebbles in a little garden.",
-  animals: "Children meet the animals, learn where each one lives, and walk them home across the land.",
-  words: "Children open a storybook and find letters, rhymes and sounds growing on its pages.",
-};
-
-/** The screenshots, in the order the worlds stand on the map. */
-const SHOTS: Record<PlayableWorldId, { src: string; alt: string }> = {
-  counting: {
-    src: "/illustrations/landing/round-counting.webp",
-    alt: "Count the Apples: KIDDO asks how many can you count, above a garden where number signs stand in the grass.",
-  },
-  animals: {
-    src: "/illustrations/landing/round-animals.webp",
-    alt: "Find the Home: animals on one side of the land, their homes on the other, waiting to be joined.",
-  },
-  words: {
-    src: "/illustrations/landing/round-words.webp",
-    alt: "Rhyming Friends: two pages of an open storybook with words on each side to match with a ribbon.",
-  },
+/** The screenshots, in the order the worlds stand on the map. The picture is
+ *  the same in both languages; only its description is translated. */
+const SHOTS: Record<PlayableWorldId, string> = {
+  counting: "/illustrations/landing/round-counting.webp",
+  animals: "/illustrations/landing/round-animals.webp",
+  words: "/illustrations/landing/round-words.webp",
 };
 
 export function WorldShowcase({ worlds }: { worlds: readonly PlayableWorldId[] }) {
+  const t = useT();
   return (
     <section aria-labelledby="worlds-heading" className="scroll-mt-24" id="worlds">
       <SectionIntro
         id="worlds-heading"
-        eyebrow="Not one game screen"
-        title="Three little worlds, each its own place."
+        eyebrow={t("landing.worlds.eyebrow")}
+        title={t("landing.worlds.title")}
       >
-        Children don’t just answer questions. They enter a world, and the lesson is
-        what that world is made of.
+        {t("landing.worlds.body")}
       </SectionIntro>
 
       <ol className="mt-10 flex list-none flex-col gap-8 sm:mt-12 sm:gap-12">
@@ -68,10 +62,12 @@ export function WorldShowcase({ worlds }: { worlds: readonly PlayableWorldId[] }
 }
 
 function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
+  const t = useT();
   const place = WORLD_PLACES[id];
   const accent = ACCENTS[place.accent];
   const activities = activitiesOf(id);
-  const shot = SHOTS[id];
+  const name = t(worldNameKey(id));
+  const alt = t(`landing.worlds.shot.${id}`);
 
   return (
     <article
@@ -92,7 +88,7 @@ function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
               accent.text,
             )}
           >
-            World {worldNumber(id)}
+            {t(`landing.worlds.number.${id}`)}
           </span>
         </div>
         <div className="flex flex-1 flex-col gap-4 p-6 sm:p-8">
@@ -100,18 +96,21 @@ function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
             <CharacterFigure id={place.friend} size="sm" />
             <div>
               <h3 className="font-display text-2xl leading-tight font-semibold sm:text-3xl">
-                {place.name}
+                {name}
               </h3>
               <p className={cn("text-sm font-semibold", accent.text)}>
-                with {getCharacter(place.friend).name}
+                {t("landing.worlds.with", { name: getCharacter(place.friend).name })}
               </p>
             </div>
           </div>
           <p className="text-ink-900 text-lg leading-relaxed text-pretty sm:text-xl">
-            {INSIDE[id]}
+            {t(`landing.worlds.inside.${id}`)}
           </p>
-          <p className="text-ink-500 text-base leading-snug">{place.blurb}</p>
-          <ul className="mt-1 flex list-none flex-col gap-2" aria-label={`Activities in ${place.name}`}>
+          <p className="text-ink-500 text-base leading-snug">{t(worldBlurbKey(id))}</p>
+          <ul
+            className="mt-1 flex list-none flex-col gap-2"
+            aria-label={t("landing.worlds.activitiesIn", { world: name })}
+          >
             {activities.map((activity) => (
               <li key={activity.id} className="flex items-start gap-2.5 text-base">
                 <span
@@ -124,8 +123,8 @@ function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
                   <Check className="size-3.5" strokeWidth={3} aria-hidden />
                 </span>
                 <span>
-                  <span className="text-ink-900 font-semibold">{activity.title}</span>
-                  <span className="text-ink-500"> — {activity.blurb}</span>
+                  <span className="text-ink-900 font-semibold">{t(doorKey(activity, "title"))}</span>
+                  <span className="text-ink-500"> — {t(doorKey(activity, "blurb"))}</span>
                 </span>
               </li>
             ))}
@@ -143,20 +142,16 @@ function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
       >
         <div className="bg-ink-900 w-full max-w-[16rem] rounded-t-[2.25rem] p-2 pb-0 shadow-lift sm:max-w-[17rem]">
           <Image
-            src={shot.src}
-            alt={shot.alt}
+            src={SHOTS[id]}
+            alt={alt}
             width={390}
             height={560}
             sizes="(min-width: 640px) 272px, 256px"
             className="bg-cream-100 block h-auto w-full rounded-t-[1.75rem] object-cover object-top"
           />
         </div>
-        <figcaption className="sr-only">{shot.alt}</figcaption>
+        <figcaption className="sr-only">{alt}</figcaption>
       </figure>
     </article>
   );
-}
-
-function worldNumber(id: PlayableWorldId): string {
-  return { counting: "one", animals: "two", words: "three" }[id];
 }

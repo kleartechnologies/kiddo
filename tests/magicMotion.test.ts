@@ -30,7 +30,7 @@ const code = (path: string) =>
 const LIB = "src/lib/magicMotion.ts";
 const COMPONENT = "src/components/kiddo/MagicMotion.tsx";
 const PLAYGROUND = "src/components/dev/MagicPlayground.tsx";
-const PAGE = "src/app/playground/magic/page.tsx";
+const PAGE = "src/app/playground/magic/page.dev.tsx";
 
 /** The last value a target reaches for one property. */
 function endOf(value: unknown): unknown {

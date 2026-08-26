@@ -107,7 +107,6 @@ function trayOrder(
 export const sizeOrderActivity = defineGeneratedActivity({
   id: "size-order",
   packId: "shapes",
-  title: "Smallest to biggest",
   category: "shapes",
   activityType: "size-comparison",
   kind: "order",

@@ -145,9 +145,17 @@ export function captionOf(item: ContentItem): string {
  * dots drawn on it and a "4" printed underneath reads as two answers — but a
  * screen reader has only the words, so it gets the whole of what is on screen,
  * counted and pluralised. "1 dots" is nobody's transcription of anything.
+ *
+ * Counting is one of the few things in here that is language rather than
+ * content, so a group of dots is also the one item that carries its spoken
+ * name: a round said in Malay arrives with `spoken` already set to "4 titik",
+ * and every stage that asks what a tile is called gets it without knowing the
+ * round was ever said in anything else. English never sets it — the words
+ * below are the words. See `content/i18n`.
  */
 export function spokenOf(item: ContentItem): string {
   if (item.kind !== "count") return labelOf(item);
+  if (item.spoken) return item.spoken;
   return item.value === 1 ? "1 dot" : `${item.value} dots`;
 }
 

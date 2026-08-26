@@ -96,7 +96,6 @@ const HINTS = [
 export const oppositePartnersActivity = defineGeneratedActivity({
   id: "opposite-partners",
   packId: "match",
-  title: "Words and their opposites",
   category: "english",
   activityType: "opposites",
   kind: "connect",

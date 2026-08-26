@@ -187,7 +187,6 @@ const COUNT_GAP: LevelTable<number> = { 1: 2, 2: 2, 3: 1 };
 export const oddOneOutActivity = defineGeneratedActivity({
   id: "odd-one-out",
   packId: "logic",
-  title: "Odd one out",
   category: "logic",
   activityType: "odd-one-out",
   kind: "choice",

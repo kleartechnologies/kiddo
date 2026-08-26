@@ -1,18 +1,24 @@
 import type { Game } from "@/lib/games/types";
+import type { MessageKey } from "@/lib/i18n/messages";
 
 /**
  * The KIDDO catalogue.
  *
  * Local TypeScript on purpose: no database, no CMS. Adding a game means adding
  * an entry here and a component under `components/games`.
+ *
+ * Every word a person reads is a message key, never a string: the shelf holds
+ * a game's *shape* — its id, route, colour, cast, artwork and themes — and the
+ * catalogue in `lib/i18n/messages` holds its words. So a new language adds
+ * lines to two files and touches nothing here, and a game cannot ship with a
+ * name in one language only, because `MessageKey` will not let it.
  */
 export const GAMES: Game[] = [
   {
     id: "memory-match",
-    title: "Memory Match",
-    tagline: "Find the matching friends!",
-    parentSummary:
-      "Flip cards and remember where each friend is hiding. Builds visual memory and concentration.",
+    title: "game.memory-match.title",
+    tagline: "game.memory-match.tagline",
+    parentSummary: "game.memory-match.summary",
     category: "memory",
     ageRange: { min: 4, max: 8 },
     difficulty: "gentle",
@@ -29,18 +35,22 @@ export const GAMES: Game[] = [
     access: "free",
     status: "ready",
     themes: [
-      { id: "friends", title: "KIDDO & Friends", accent: "sage", access: "free" },
-      { id: "animals", title: "Animals", accent: "sprout", access: "free" },
-      { id: "shapes", title: "Shapes", accent: "tide", access: "premium" },
-      { id: "colours", title: "Colours", accent: "blossom", access: "premium" },
+      { id: "friends", title: "game.memory-match.theme.friends", accent: "sage", access: "free" },
+      { id: "animals", title: "game.memory-match.theme.animals", accent: "sprout", access: "free" },
+      { id: "shapes", title: "game.memory-match.theme.shapes", accent: "tide", access: "premium" },
+      {
+        id: "colours",
+        title: "game.memory-match.theme.colours",
+        accent: "blossom",
+        access: "premium",
+      },
     ],
   },
   {
     id: "find-it",
-    title: "Find It!",
-    tagline: "Can you find the right one?",
-    parentSummary:
-      "Spot the named character or object among several choices. Builds recognition and vocabulary.",
+    title: "game.find-it.title",
+    tagline: "game.find-it.tagline",
+    parentSummary: "game.find-it.summary",
     category: "discovery",
     ageRange: { min: 4, max: 7 },
     difficulty: "gentle",
@@ -57,17 +67,16 @@ export const GAMES: Game[] = [
     access: "free",
     status: "ready",
     themes: [
-      { id: "friends", title: "KIDDO & Friends", accent: "apricot", access: "free" },
-      { id: "animals", title: "Animals", accent: "sprout", access: "free" },
-      { id: "colours", title: "Colours", accent: "blossom", access: "premium" },
+      { id: "friends", title: "game.find-it.theme.friends", accent: "apricot", access: "free" },
+      { id: "animals", title: "game.find-it.theme.animals", accent: "sprout", access: "free" },
+      { id: "colours", title: "game.find-it.theme.colours", accent: "blossom", access: "premium" },
     ],
   },
   {
     id: "math-quest",
-    title: "Math Quest",
-    tagline: "Let's play with numbers!",
-    parentSummary:
-      "Ten questions drawn fresh each time: counting, number recognition, bigger and smaller, adding and taking away, number sequences and patterns.",
+    title: "game.math-quest.title",
+    tagline: "game.math-quest.tagline",
+    parentSummary: "game.math-quest.summary",
     category: "numbers",
     ageRange: { min: 4, max: 8 },
     difficulty: "growing",
@@ -86,19 +95,23 @@ export const GAMES: Game[] = [
     /* One chip per group of activities the Math pack actually deals. Every
        round mixes all of them, so none of it sits behind a lock. */
     themes: [
-      { id: "counting", title: "Counting 1-10", accent: "tide", access: "free" },
-      { id: "numbers", title: "Number Friends", accent: "honey", access: "free" },
-      { id: "compare", title: "Bigger or Smaller", accent: "sage", access: "free" },
-      { id: "adding", title: "Adding & Taking Away", accent: "apricot", access: "free" },
-      { id: "patterns", title: "Patterns & Sequences", accent: "blossom", access: "free" },
+      { id: "counting", title: "game.math-quest.theme.counting", accent: "tide", access: "free" },
+      { id: "numbers", title: "game.math-quest.theme.numbers", accent: "honey", access: "free" },
+      { id: "compare", title: "game.math-quest.theme.compare", accent: "sage", access: "free" },
+      { id: "adding", title: "game.math-quest.theme.adding", accent: "apricot", access: "free" },
+      {
+        id: "patterns",
+        title: "game.math-quest.theme.patterns",
+        accent: "blossom",
+        access: "free",
+      },
     ],
   },
   {
     id: "english-quest",
-    title: "English Quest",
-    tagline: "Let's play with letters and words!",
-    parentSummary:
-      "Ten questions drawn fresh each time: naming letters, matching big and little letters, hearing the sound a word starts with, and finding the letter missing from a word.",
+    title: "game.english-quest.title",
+    tagline: "game.english-quest.tagline",
+    parentSummary: "game.english-quest.summary",
     category: "letters",
     ageRange: { min: 4, max: 8 },
     difficulty: "growing",
@@ -116,18 +129,27 @@ export const GAMES: Game[] = [
     /* One chip per activity the English pack actually deals. Every round
        mixes all four, so none of it sits behind a lock. */
     themes: [
-      { id: "letters", title: "Knowing Letters", accent: "blossom", access: "free" },
-      { id: "case", title: "Big & Little Letters", accent: "sage", access: "free" },
-      { id: "sounds", title: "Beginning Sounds", accent: "sprout", access: "free" },
-      { id: "spelling", title: "Finishing Words", accent: "apricot", access: "free" },
+      {
+        id: "letters",
+        title: "game.english-quest.theme.letters",
+        accent: "blossom",
+        access: "free",
+      },
+      { id: "case", title: "game.english-quest.theme.case", accent: "sage", access: "free" },
+      { id: "sounds", title: "game.english-quest.theme.sounds", accent: "sprout", access: "free" },
+      {
+        id: "spelling",
+        title: "game.english-quest.theme.spelling",
+        accent: "apricot",
+        access: "free",
+      },
     ],
   },
   {
     id: "logic-quest",
-    title: "Logic Quest",
-    tagline: "Let's work it out together!",
-    parentSummary:
-      "Ten puzzles drawn fresh each time: finishing a repeating pattern, spotting the one that does not belong, sorting things into the group they fit, and working out what comes next in a sequence.",
+    title: "game.logic-quest.title",
+    tagline: "game.logic-quest.tagline",
+    parentSummary: "game.logic-quest.summary",
     category: "patterns",
     ageRange: { min: 4, max: 8 },
     difficulty: "growing",
@@ -146,18 +168,32 @@ export const GAMES: Game[] = [
     /* One chip per activity the Logic pack actually deals. Every round mixes
        all four, so none of it sits behind a lock. */
     themes: [
-      { id: "patterns", title: "Finishing Patterns", accent: "sprout", access: "free" },
-      { id: "odd-one-out", title: "Odd One Out", accent: "apricot", access: "free" },
-      { id: "sorting", title: "Sorting Things Out", accent: "tide", access: "free" },
-      { id: "sequences", title: "What Comes Next", accent: "honey", access: "free" },
+      {
+        id: "patterns",
+        title: "game.logic-quest.theme.patterns",
+        accent: "sprout",
+        access: "free",
+      },
+      {
+        id: "odd-one-out",
+        title: "game.logic-quest.theme.odd-one-out",
+        accent: "apricot",
+        access: "free",
+      },
+      { id: "sorting", title: "game.logic-quest.theme.sorting", accent: "tide", access: "free" },
+      {
+        id: "sequences",
+        title: "game.logic-quest.theme.sequences",
+        accent: "honey",
+        access: "free",
+      },
     ],
   },
   {
     id: "shapes-colours-quest",
-    title: "Shapes & Colours Quest",
-    tagline: "Let's look closely together!",
-    parentSummary:
-      "Ten pictures drawn fresh each time: naming shapes and colours, matching one thing while ignoring another, big and small, counting, corners and sides, where things are, mirror shapes, and patterns of colour and size.",
+    title: "game.shapes-colours-quest.title",
+    tagline: "game.shapes-colours-quest.tagline",
+    parentSummary: "game.shapes-colours-quest.summary",
     category: "shapes",
     ageRange: { min: 3, max: 8 },
     difficulty: "growing",
@@ -179,19 +215,43 @@ export const GAMES: Game[] = [
     /* One chip per group of activities the Shapes pack actually deals. Every
        round mixes them, so none of it sits behind a lock. */
     themes: [
-      { id: "shapes", title: "Knowing Shapes", accent: "honey", access: "free" },
-      { id: "colours", title: "Knowing Colours", accent: "blossom", access: "free" },
-      { id: "matching", title: "Same or Different", accent: "tide", access: "free" },
-      { id: "counting", title: "How Many?", accent: "sage", access: "free" },
-      { id: "space", title: "Where Things Are", accent: "apricot", access: "free" },
+      {
+        id: "shapes",
+        title: "game.shapes-colours-quest.theme.shapes",
+        accent: "honey",
+        access: "free",
+      },
+      {
+        id: "colours",
+        title: "game.shapes-colours-quest.theme.colours",
+        accent: "blossom",
+        access: "free",
+      },
+      {
+        id: "matching",
+        title: "game.shapes-colours-quest.theme.matching",
+        accent: "tide",
+        access: "free",
+      },
+      {
+        id: "counting",
+        title: "game.shapes-colours-quest.theme.counting",
+        accent: "sage",
+        access: "free",
+      },
+      {
+        id: "space",
+        title: "game.shapes-colours-quest.theme.space",
+        accent: "apricot",
+        access: "free",
+      },
     ],
   },
   {
     id: "match-quest",
-    title: "Match Quest",
-    tagline: "Find the friends that belong together!",
-    parentSummary:
-      "Ten boards drawn fresh each time. Every capital letter has its lower case partner hiding among the others, and the child pairs them up by tapping one card and then the other, or by dragging one onto the other. Nothing is lost by a pair that does not hold.",
+    title: "game.match-quest.title",
+    tagline: "game.match-quest.tagline",
+    parentSummary: "game.match-quest.summary",
     category: "letters",
     ageRange: { min: 4, max: 7 },
     difficulty: "growing",
@@ -213,15 +273,14 @@ export const GAMES: Game[] = [
        shelf that grows sideways: a second chip is a second activity, not a
        second game. */
     themes: [
-      { id: "case", title: "Big & Little Letters", accent: "tide", access: "free" },
+      { id: "case", title: "game.match-quest.theme.case", accent: "tide", access: "free" },
     ],
   },
   {
     id: "general-knowledge-quest",
-    title: "General Knowledge Quest",
-    tagline: "Let's find out about the world!",
-    parentSummary:
-      "Ten questions drawn fresh each time from nearly four hundred facts: animals and their homes, sounds, babies and food; plants, weather and seasons; food, clothes and the things in a house; vehicles, the people who help us and the places we go; the body, the senses, the sky, and staying safe.",
+    title: "game.general-knowledge-quest.title",
+    tagline: "game.general-knowledge-quest.tagline",
+    parentSummary: "game.general-knowledge-quest.summary",
     category: "discovery",
     ageRange: { min: 3, max: 8 },
     difficulty: "growing",
@@ -241,12 +300,42 @@ export const GAMES: Game[] = [
     /* One chip per corner of the world the pack covers. Every round tours
        several of them, so none of it sits behind a lock. */
     themes: [
-      { id: "animals", title: "Animals", accent: "sprout", access: "free" },
-      { id: "nature", title: "Nature & Weather", accent: "tide", access: "free" },
-      { id: "everyday", title: "Everyday Things", accent: "apricot", access: "free" },
-      { id: "people", title: "People & Places", accent: "blossom", access: "free" },
-      { id: "body", title: "My Body", accent: "sage", access: "free" },
-      { id: "space", title: "Space & Safety", accent: "honey", access: "free" },
+      {
+        id: "animals",
+        title: "game.general-knowledge-quest.theme.animals",
+        accent: "sprout",
+        access: "free",
+      },
+      {
+        id: "nature",
+        title: "game.general-knowledge-quest.theme.nature",
+        accent: "tide",
+        access: "free",
+      },
+      {
+        id: "everyday",
+        title: "game.general-knowledge-quest.theme.everyday",
+        accent: "apricot",
+        access: "free",
+      },
+      {
+        id: "people",
+        title: "game.general-knowledge-quest.theme.people",
+        accent: "blossom",
+        access: "free",
+      },
+      {
+        id: "body",
+        title: "game.general-knowledge-quest.theme.body",
+        accent: "sage",
+        access: "free",
+      },
+      {
+        id: "space",
+        title: "game.general-knowledge-quest.theme.space",
+        accent: "honey",
+        access: "free",
+      },
     ],
   },
 ];
@@ -258,5 +347,14 @@ export function getGame(id: string): Game | undefined {
 /**
  * Themes queued for later content packs. Shown to the child as a gentle
  * "more is coming" row, and to us as the roadmap.
+ *
+ * Keys, like everything else on this shelf: the roadmap is read by a child
+ * too, and a chip saying "Science" to a Malay-speaking five year old would be
+ * the one word on the screen they could not read.
  */
-export const UPCOMING_THEMES = ["Science", "Time", "Music", "Feelings"] as const;
+export const UPCOMING_THEMES = [
+  "upcoming.science",
+  "upcoming.time",
+  "upcoming.music",
+  "upcoming.feelings",
+] as const satisfies readonly MessageKey[];

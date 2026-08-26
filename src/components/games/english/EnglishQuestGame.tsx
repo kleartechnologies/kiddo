@@ -7,6 +7,7 @@ import { ChoiceStage } from "@/components/games/engines/ChoiceStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
 import { isKind } from "@/lib/content/engine";
+import { useT } from "@/lib/i18n/useLocale";
 import { useEnglishQuest } from "@/lib/games/useEnglishQuest";
 import type { Game } from "@/lib/games/types";
 import { worldOf } from "@/lib/worlds/worlds";
@@ -24,6 +25,7 @@ import { worldOf } from "@/lib/worlds/worlds";
  * There is no `EnglishChoiceStage`, and there was never a reason for one.
  */
 export function EnglishQuestGame({ game }: { game: Game }) {
+  const t = useT();
   const english = useEnglishQuest();
   const { challenge, phase, answerLabel } = english;
 
@@ -31,23 +33,24 @@ export function EnglishQuestGame({ game }: { game: Game }) {
      itself — the mascot is the one who reacts, and only KIDDO has the poses. */
   const prompt =
     phase === "intro"
-      ? "Hello! I'm KIDDO. Shall we play with letters and words?"
+      ? t("game.english-quest.hello")
       : phase === "correct"
-        ? (challenge?.explanation ?? `Yes! It's ${answerLabel}.`)
+        ? (challenge?.explanation ??
+          t("game.english-quest.yes", { answer: answerLabel }))
         : phase === "incorrect"
-          ? "Ooh, so close! Have another go."
+          ? t("game.english-quest.retry")
           : (challenge?.prompt.speech ?? "");
 
   /* The same thing in words, for a screen reader, because the bubble above
      lives in a paragraph nobody is focused on. */
-  const step = `Question ${english.progress.current + 1} of ${english.progress.total}`;
+  const step = { current: english.progress.current + 1, total: english.progress.total };
   const announcement =
     phase === "correct"
-      ? `Yes, the answer is ${answerLabel}. ${step} done.`
+      ? t("quest.answered", { answer: answerLabel, ...step })
       : phase === "incorrect"
-        ? "Not quite. Have another go."
+        ? t("quest.notQuite")
         : phase === "awaitingAnswer" && challenge
-          ? `${step}. ${challenge.prompt.speech}`
+          ? t("quest.asking", { question: challenge.prompt.speech, ...step })
           : "";
 
   return (
@@ -61,8 +64,8 @@ export function EnglishQuestGame({ game }: { game: Game }) {
       feedback={english.feedback}
       status={english.status}
       celebration={{
-        title: "You did the whole quest!",
-        message: "Ten letters, sounds and words, all the way to the end. Wonderful reading!",
+        title: t("game.english-quest.done.title"),
+        message: t("game.english-quest.done.message"),
         onPlayAgain: english.restart,
       }}
       /* One board leaves before the next arrives: the stage is keyed on
@@ -74,7 +77,7 @@ export function EnglishQuestGame({ game }: { game: Game }) {
       announce={announcement}
     >
       {phase === "intro" || !challenge ? (
-        <Intro onStart={english.begin} />
+        <Intro label={t("game.english-quest.start")} onStart={english.begin} />
       ) : isKind(challenge, "choice") ? (
         <ChoiceStage
           challenge={challenge}
@@ -103,12 +106,12 @@ export function EnglishQuestGame({ game }: { game: Game }) {
  * A four year old should not arrive mid-question. Bibi is standing here
  * because this is her world, and there is exactly one thing to press.
  */
-function Intro({ onStart }: { onStart: () => void }) {
+function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
       <CharacterFigure id="bibi" size="lg" pose="wave" />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-        Let&apos;s play!
+        {label}
       </Button>
     </div>
   );

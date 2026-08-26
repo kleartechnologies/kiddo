@@ -11,6 +11,8 @@ import { captionOf, spokenOf } from "@/lib/content/challenges";
 import type { ChallengeEngineProps } from "@/lib/content/engine";
 import type { ContentItem } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
+import type { MessageKey, Translate } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import { popIn, staggerChildren } from "@/lib/motion";
 import { ContentItemView } from "./ContentItemView";
 import { PromptDisplay } from "./PromptDisplay";
@@ -98,19 +100,25 @@ export interface ChoiceStageProps extends ChallengeEngineProps<"choice"> {
   stateOf?: (optionId: string) => ChoiceState;
 }
 
+/**
+ * What each state is called out loud. Exhaustive over `ChoiceState`, so a
+ * sixth state cannot be added without deciding what it sounds like.
+ *
+ * `dimmed` is a tile that is out of the way rather than out of play, and to
+ * someone listening it is still an ordinary choice — which is exactly what
+ * the `default` branch this table replaced used to say.
+ */
+const CHOICE_WORDS: Record<ChoiceState, MessageKey> = {
+  correct: "stage.choice.correct",
+  wrong: "stage.choice.wrong",
+  tried: "stage.choice.tried",
+  dimmed: "stage.choice.idle",
+  idle: "stage.choice.idle",
+};
+
 /** The whole instruction, with the state in words so nothing rests on colour. */
-function srLabelOf(item: ContentItem, state: ChoiceState): string {
-  const name = spokenOf(item);
-  switch (state) {
-    case "correct":
-      return `${name}, that's the one`;
-    case "wrong":
-      return `${name}, not this one`;
-    case "tried":
-      return `Choose ${name}, already tried`;
-    default:
-      return `Choose ${name}`;
-  }
+function srLabelOf(item: ContentItem, state: ChoiceState, t: Translate): string {
+  return t(CHOICE_WORDS[state], { name: spokenOf(item) });
 }
 
 export function ChoiceStage({
@@ -119,6 +127,7 @@ export function ChoiceStage({
   accepting = true,
   stateOf,
 }: ChoiceStageProps) {
+  const t = useT();
   const { options } = challenge.payload;
   /* Every option, not the first: a board can mix kinds — "which one is a
      letter?" puts an A beside a shape — and one tile's kind is a poor guess at
@@ -178,6 +187,16 @@ export function ChoiceStage({
           <motion.li
             key={option.id}
             variants={popIn}
+            /* Measurement hooks, the same pair `ConnectStage` and `OrderStage`
+               already carry as `data-node-id` and `data-item-id`. The id is
+               the answer's identity and must be the same word in every
+               language; the state is what the board is saying about it. A
+               browser cannot read either from a tile otherwise, so
+               `scripts/measure-language.mjs` could not tell a round that was
+               translated from a round that was dealt again. Nothing reads
+               them at runtime. */
+            data-option-id={option.id}
+            data-option-state={state}
             /* A sign has a post under it; the row keeps room for the post. */
             className={cn(layout.item, tiles === "sign" && "pb-4")}
           >
@@ -190,7 +209,7 @@ export function ChoiceStage({
                 shape={tileShape}
                 look={tiles}
                 label={captionOf(option.item)}
-                srLabel={srLabelOf(option.item, state)}
+                srLabel={srLabelOf(option.item, state, t)}
                 state={state}
                 disabled={!accepting}
                 onSelect={() =>

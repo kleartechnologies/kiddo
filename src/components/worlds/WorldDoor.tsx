@@ -6,6 +6,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { popIn, tappableCard } from "@/lib/motion";
 import type { WorldProgress } from "@/lib/journey/journey";
 import type { WorldPlace } from "@/lib/worlds/places";
@@ -34,6 +35,7 @@ export function WorldDoor({
   /** The world "continue" would take the child to. Marked, not moved. */
   suggested?: boolean;
 }) {
+  const t = useT();
   const accent = ACCENTS[place.accent];
   const state =
     progress.complete ? "done" : progress.done === 0 ? "new" : "going";
@@ -49,13 +51,19 @@ export function WorldDoor({
     >
       <Link
         href={place.route}
-        aria-label={`${place.name}. ${place.line} ${
-          state === "done"
-            ? "Everything found."
-            : state === "new"
-              ? "New."
-              : `${progress.done} of ${progress.total} done.`
-        }`}
+        aria-label={t("worlds.door.sr", {
+          name: t(place.name),
+          line: t(place.line),
+          state:
+            state === "done"
+              ? t("worlds.door.state.done")
+              : state === "new"
+                ? t("worlds.door.state.new")
+                : t("worlds.door.state.going", {
+                    done: progress.done,
+                    total: progress.total,
+                  }),
+        })}
         className={cn(
           "group flex h-full flex-col overflow-hidden rounded-card",
           "bg-paper border border-edge shadow-soft",
@@ -74,12 +82,16 @@ export function WorldDoor({
           >
             {state === "done" ? (
               <span className="inline-flex items-center gap-1">
-                <Check className="size-4" strokeWidth={3} aria-hidden /> All found
+                <Check className="size-4" strokeWidth={3} aria-hidden />{" "}
+                {t("worlds.door.allFound")}
               </span>
             ) : state === "new" ? (
-              "New"
+              t("worlds.door.new")
             ) : (
-              `${progress.done} of ${progress.total} done`
+              t("worlds.door.progress", {
+                done: progress.done,
+                total: progress.total,
+              })
             )}
           </span>
         </div>
@@ -90,10 +102,10 @@ export function WorldDoor({
               "font-display text-2xl leading-tight font-semibold @min-[19.5rem]:text-[1.75rem]",
             )}
           >
-            {place.name}
+            {t(place.name)}
           </h3>
           <p className="text-ink-500 text-base leading-snug @min-[19.5rem]:text-lg line-clamp-2 min-h-[2lh]">
-            {place.line}
+            {t(place.line)}
           </p>
 
           <div className="mt-auto flex items-center justify-between gap-3 pt-4">

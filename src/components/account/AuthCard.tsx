@@ -7,6 +7,11 @@ import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { sendPasswordReset, signIn, signUp } from "@/lib/cloud/session";
 import type { AuthFailure } from "@/lib/cloud/types";
+import { around } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useTranslation } from "@/lib/i18n/useLocale";
 
 /**
  * Where a parent signs in or creates the account their child will play
@@ -19,22 +24,41 @@ import type { AuthFailure } from "@/lib/cloud/types";
  * the boxes rather than in a toast that vanishes.
  */
 
-const WORDS: Record<AuthFailure, string> = {
-  "invalid-email": "That doesn’t look like an email address.",
-  "weak-password": "Please choose a password with at least 6 characters.",
-  "email-in-use": "There is already a KIDDO account for that email. Try signing in.",
-  "wrong-password": "That email and password don’t match.",
-  "no-account": "No KIDDO account has that email yet. Create one below.",
-  "too-many-attempts": "Too many tries for now. Please wait a little and try again.",
-  offline: "KIDDO can’t reach the internet right now. Check the connection and try again.",
-  "bad-link": "That link has expired. Ask for a new one below.",
-  "recent-login": "Please sign in again first.",
-  "billing-unavailable": "Subscriptions aren’t set up on this KIDDO yet.",
-  unknown: "Something went wrong. Please try again.",
+/**
+ * The one sentence a failed sign-in gets, whatever went wrong. "No account
+ * has that email" and "that password is wrong" are the two halves of an
+ * account-enumeration oracle: either one, asked repeatedly, sorts a list
+ * of addresses into customers and strangers. `wrong-password` and
+ * `no-account` therefore point at the *same* key, in every language — a
+ * translator who gave them two different sentences would reopen the oracle
+ * without ever touching the code.
+ */
+const SAME_EITHER_WAY: MessageKey = "auth.error.sameEitherWay";
+
+const WORDS: Record<AuthFailure, MessageKey> = {
+  "invalid-email": "auth.error.invalid-email",
+  "weak-password": "auth.error.weak-password",
+  /* Says what happened without confirming an account exists. Firebase
+     itself still answers `email-already-in-use` on the wire, which no
+     wording here can hide — see docs/SECURITY.md. */
+  "email-in-use": "auth.error.email-in-use",
+  /* Signing in never says which half was wrong, and never says whether
+     the email is one KIDDO knows. Firebase itself has to be told the same
+     — turn on Email Enumeration Protection in the Console (see
+     docs/SECURITY.md), or the network answer tells an attacker what this
+     sentence will not. */
+  "wrong-password": SAME_EITHER_WAY,
+  "no-account": SAME_EITHER_WAY,
+  "too-many-attempts": "auth.error.too-many-attempts",
+  offline: "auth.error.offline",
+  "bad-link": "auth.error.bad-link",
+  "recent-login": "auth.error.recent-login",
+  "billing-unavailable": "auth.error.billing-unavailable",
+  unknown: "auth.error.unknown",
 };
 
 /** Not an auth failure — the two password boxes simply differ. */
-const MISMATCH = "Those two passwords don’t match.";
+const MISMATCH: MessageKey = "auth.error.mismatch";
 
 export type Mode = "signin" | "signup" | "forgot";
 
@@ -45,7 +69,8 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null);
+  const { locale, t } = useTranslation();
   const id = useId();
   const creating = mode === "signup";
   const forgot = mode === "forgot";
@@ -93,15 +118,15 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
           </span>
           <div className="space-y-1">
             <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-              Check your email
+              {t("auth.sent.title")}
             </h1>
             <p className="text-ink-700 text-base leading-snug" role="status">
-              If there is a KIDDO account for <span className="font-semibold">{sent}</span>, a link to choose a new password is on its way. It only works once and expires after a while.
+              <SentSentence locale={locale} email={sent} />
             </p>
           </div>
         </div>
         <Button variant="soft" size="md" onClick={() => switchTo("signin")} className="self-start" data-auth-switch>
-          Back to sign in
+          {t("auth.switch.backToSignIn")}
         </Button>
       </Card>
     );
@@ -115,14 +140,10 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
         </span>
         <div className="space-y-1">
           <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {forgot ? "Forgot your password?" : creating ? "Create a KIDDO account" : "Sign in to KIDDO"}
+            {t(forgot ? "auth.forgot.title" : creating ? "auth.signup.title" : "auth.signin.title")}
           </h1>
           <p className="text-ink-700 text-base leading-snug">
-            {forgot
-              ? "Type the email your KIDDO account is under and we’ll send a link to choose a new one."
-              : creating
-                ? "An account for you, the grown-up. Your child never signs in — they just play, and their progress follows them to any device you sign in on."
-                : "Your child’s progress and name are kept with your account."}
+            {t(forgot ? "auth.forgot.blurb" : creating ? "auth.signup.blurb" : "auth.signin.blurb")}
           </p>
         </div>
       </div>
@@ -130,7 +151,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
       <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
         <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-email`} className="text-ink-700 text-base font-semibold">
-            Your email
+            {t("auth.field.email")}
           </label>
           <input
             id={`${id}-email`}
@@ -149,11 +170,11 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-baseline justify-between gap-3">
             <label htmlFor={`${id}-password`} className="text-ink-700 text-base font-semibold">
-              Password
+              {t("auth.field.password")}
             </label>
             {!creating && (
               <button type="button" onClick={() => switchTo("forgot")} className="text-ink-700 -my-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-4" data-auth-forgot>
-                Forgot password?
+                {t("auth.forgotLink")}
               </button>
             )}
           </div>
@@ -172,7 +193,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
           />
           {creating && (
             <p id={`${id}-hint`} className="text-ink-500 text-sm">
-              At least 6 characters.
+              {t("auth.field.passwordHint")}
             </p>
           )}
         </div>
@@ -180,7 +201,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
         {creating && (
           <div className="flex flex-col gap-2">
             <label htmlFor={`${id}-confirm`} className="text-ink-700 text-base font-semibold">
-              Confirm password
+              {t("auth.field.confirm")}
             </label>
             <input
               id={`${id}-confirm`}
@@ -198,7 +219,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
         )}
 
         <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-auth-error>
-          {error ?? ""}
+          {error ? t(error) : ""}
         </p>
 
         <Button
@@ -210,21 +231,58 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
           aria-busy={busy}
           data-auth-submit
         >
-          {busy ? "One moment…" : forgot ? "Send reset link" : creating ? "Create account" : "Sign in"}
+          {t(
+            busy
+              ? "auth.submit.busy"
+              : forgot
+                ? "auth.submit.forgot"
+                : creating
+                  ? "auth.submit.signup"
+                  : "auth.submit.signin",
+          )}
         </Button>
       </form>
 
       <p className="text-ink-700 text-base">
-        {forgot ? "Remembered it?" : creating ? "Already have an account?" : "New to KIDDO?"}{" "}
+        {t(
+          forgot
+            ? "auth.switch.rememberedIt"
+            : creating
+              ? "auth.switch.haveAccount"
+              : "auth.switch.newHere",
+        )}{" "}
         <button
           type="button"
           onClick={() => switchTo(forgot || creating ? "signin" : "signup")}
           className="text-ink-900 -my-3 inline-flex min-h-12 items-center font-semibold underline underline-offset-4"
           data-auth-switch
         >
-          {forgot ? "Back to sign in" : creating ? "Sign in instead" : "Create an account"}
+          {t(
+            forgot
+              ? "auth.switch.backToSignIn"
+              : creating
+                ? "auth.switch.signInInstead"
+                : "auth.switch.createAccount",
+          )}
         </button>
       </p>
     </Card>
+  );
+}
+
+/**
+ * "If there is a KIDDO account for **you@example.com**, …" — one sentence,
+ * with the address emphasised wherever the language puts it. `around` splits
+ * the translated sentence at its `{email}` hole rather than KIDDO gluing two
+ * fragments together, so Malay is free to lead with the address.
+ */
+function SentSentence({ locale, email }: { locale: Locale; email: string }) {
+  const { before, after } = around(translate(locale, "auth.sent.body"), "email");
+  return (
+    <>
+      {before}
+      <span className="font-semibold">{email}</span>
+      {after}
+    </>
   );
 }

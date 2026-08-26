@@ -89,7 +89,6 @@ function pattern({ id, level, unit, shown, extra }: PatternDef): ChallengeSpec {
 export const patternActivity = defineStaticActivity({
   id: "pattern",
   packId: "math",
-  title: "What comes next in the pattern",
   category: "math",
   activityType: "patterns",
   kind: "choice",

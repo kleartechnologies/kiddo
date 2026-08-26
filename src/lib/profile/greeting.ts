@@ -1,3 +1,6 @@
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
+import { translate, type MessageKey } from "@/lib/i18n/messages";
+
 import { isLongChildName } from "./child";
 
 /**
@@ -15,6 +18,12 @@ import { isLongChildName } from "./child";
  *
  * Pure and seeded, with no clock and no randomness of its own, so a test can
  * walk every greeting this component is capable of producing.
+ *
+ * The lines themselves live in the catalogue, and only their *keys* are
+ * chosen here. That is what lets a child who is greeted "Selamat kembali,
+ * Adam!" be greeted the same way, at the same seed, in English — the visit
+ * picks a greeting, not a sentence, so changing the language changes the
+ * words and nothing else about the screen.
  */
 
 export interface Greeting {
@@ -32,11 +41,11 @@ export interface Greeting {
  * with the child's own name.
  */
 const HELLOS = [
-  "Hi, {name}!",
-  "Hey, {name}!",
-  "Welcome back, {name}!",
-  "Yay, {name} is here!",
-] as const;
+  "greeting.hello.1",
+  "greeting.hello.2",
+  "greeting.hello.3",
+  "greeting.hello.4",
+] as const satisfies readonly MessageKey[];
 
 /**
  * The two that still fit around a long name at the hero's size.
@@ -47,11 +56,11 @@ const HELLOS = [
 const SHORT_HELLOS = 2;
 
 const INVITATIONS = [
-  "What do you want to play?",
-  "Ready to play?",
-  "What shall we discover today?",
-  "Where should we explore?",
-] as const;
+  "greeting.invite.1",
+  "greeting.invite.2",
+  "greeting.invite.3",
+  "greeting.invite.4",
+] as const satisfies readonly MessageKey[];
 
 /**
  * What a child who has never had a name typed in for them sees.
@@ -60,10 +69,15 @@ const INVITATIONS = [
  * and not a variation: the fallback is the product's normal state, so it is
  * the one line that should feel written rather than chosen.
  */
-export const FALLBACK_GREETING: Greeting = {
-  hello: "Hi!",
-  invitation: "What do you want to play?",
-};
+export function fallbackGreeting(locale: Locale): Greeting {
+  return {
+    hello: translate(locale, "greeting.fallback.hello"),
+    invitation: translate(locale, "greeting.fallback.invite"),
+  };
+}
+
+/** The same greeting in English, for the tests and for anything unlocalized. */
+export const FALLBACK_GREETING: Greeting = fallbackGreeting(DEFAULT_LOCALE);
 
 /**
  * The greeting for this child, on this visit.
@@ -73,8 +87,12 @@ export const FALLBACK_GREETING: Greeting = {
  * parts of it so the two lines vary independently, rather than there being
  * four possible screens.
  */
-export function greetingFor(name: string | null, seed: number): Greeting {
-  if (!name) return FALLBACK_GREETING;
+export function greetingFor(
+  name: string | null,
+  seed: number,
+  locale: Locale = DEFAULT_LOCALE,
+): Greeting {
+  if (!name) return fallbackGreeting(locale);
 
   /* Guard the arithmetic rather than trusting the caller: a NaN or a negative
      seed would index out of the array and put "undefined" on a child's
@@ -87,7 +105,10 @@ export function greetingFor(name: string | null, seed: number): Greeting {
     INVITATIONS[Math.floor(safe / HELLOS.length) % INVITATIONS.length] ??
     INVITATIONS[0];
 
-  return { hello: hello.replace("{name}", name), invitation };
+  return {
+    hello: translate(locale, hello, { name }),
+    invitation: translate(locale, invitation),
+  };
 }
 
 /** How many distinct greetings exist. Exported for the test that walks them. */

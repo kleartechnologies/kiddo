@@ -215,7 +215,6 @@ function namingQuestion(name: string, level: 1 | 2 | 3): Question {
 
 export const animalRecognition = defineQuizActivity({
   id: "animal-names",
-  title: "Which Animal Is It?",
   activityType: "animal-recognition",
   ageRange: { min: 3, max: 6 },
   host: "foxy",
@@ -269,7 +268,6 @@ const SOUND_AVOIDS: Readonly<Record<string, readonly string[]>> = {
 
 export const animalSounds = defineQuizActivity({
   id: "animal-sounds",
-  title: "Who Made That Sound?",
   activityType: "animal-sounds",
   ageRange: { min: 3, max: 6 },
   host: "pip",
@@ -305,7 +303,6 @@ const BABY_TILES = BABIES.map(tileOf);
  */
 export const babyAnimals = defineQuizActivity({
   id: "baby-animals",
-  title: "Baby Animals",
   activityType: "baby-animals",
   ageRange: { min: 3, max: 6 },
   host: "bibi",
@@ -364,7 +361,6 @@ const DIET_AVOIDS: Readonly<Record<string, readonly string[]>> = {
  */
 export const animalDiet = defineQuizActivity({
   id: "animal-diet",
-  title: "What Do Animals Eat?",
   activityType: "animal-diet",
   ageRange: { min: 3, max: 6 },
   host: "foxy",
@@ -520,7 +516,6 @@ const babyId = (animal: Animal) => `baby-${animal.baby}`;
 export const babyPartners = defineGeneratedActivity({
   id: "animal-babies",
   packId: "general-knowledge",
-  title: "Animals and Their Babies",
   category: "general-knowledge",
   activityType: "baby-animals",
   kind: "connect",

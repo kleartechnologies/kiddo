@@ -6,6 +6,8 @@ import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { createChildProfile, suggestedChildName } from "@/lib/cloud/session";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useT } from "@/lib/i18n/useLocale";
 import { MAX_CHILD_NAME_LENGTH } from "@/lib/profile/child";
 
 /**
@@ -19,15 +21,18 @@ import { MAX_CHILD_NAME_LENGTH } from "@/lib/profile/child";
  */
 export function ChildOnboarding({
   heading: Heading = "h1",
-  title = "Welcome to KIDDO",
+  title = "onboarding.title",
 }: {
   /** `h2` where the page already has its own heading — see `/welcome`. */
   heading?: "h1" | "h2";
-  title?: string;
+  /** A catalogue key rather than a sentence, so `/welcome` cannot hand this
+   *  card an English heading above a Malay question. */
+  title?: MessageKey;
 } = {}) {
   const [name, setName] = useState(() => suggestedChildName() ?? "");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null);
+  const t = useT();
   const id = useId();
 
   async function submit(event: FormEvent) {
@@ -37,9 +42,9 @@ export function ChildOnboarding({
     setError(null);
     try {
       const kept = await createChildProfile(name);
-      if (!kept) setError("Please type your child’s first name.");
+      if (!kept) setError("onboarding.error.empty");
     } catch {
-      setError("KIDDO couldn’t save that just now. Please try again.");
+      setError("onboarding.error.save");
     } finally {
       setBusy(false);
     }
@@ -53,10 +58,10 @@ export function ChildOnboarding({
         </span>
         <div className="space-y-1">
           <Heading id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {title}
+            {t(title)}
           </Heading>
           <p className="text-ink-700 text-base leading-snug">
-            One last thing: what’s your child’s first name? KIDDO uses it to say hello. Only the first word is kept.
+            {t("onboarding.blurb")}
           </p>
         </div>
       </div>
@@ -64,7 +69,7 @@ export function ChildOnboarding({
       <form onSubmit={submit} className="flex flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label htmlFor={`${id}-name`} className="text-ink-700 text-base font-semibold">
-            Your child’s first name
+            {t("onboarding.field")}
           </label>
           <input
             id={`${id}-name`}
@@ -80,10 +85,10 @@ export function ChildOnboarding({
           />
         </div>
         <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-onboarding-error>
-          {error ?? ""}
+          {error ? t(error) : ""}
         </p>
         <Button type="submit" size="md" icon={<ArrowRight className="size-5" aria-hidden />} iconRight className="self-start" aria-busy={busy} data-onboarding-submit>
-          {busy ? "One moment…" : "Start KIDDO"}
+          {t(busy ? "common.oneMoment" : "sub.start")}
         </Button>
       </form>
     </Card>

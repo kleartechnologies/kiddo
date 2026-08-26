@@ -1,4 +1,7 @@
 import { getActivity } from "@/lib/content/registry";
+import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
+import { translate, type MessageKey } from "@/lib/i18n/messages";
+import { tierKey } from "@/lib/i18n/names";
 import type { ActivityId } from "@/lib/content/types";
 import {
   continueTarget,
@@ -14,7 +17,6 @@ import {
   activitiesOf,
   PLAYABLE_WORLDS,
   TIERS,
-  TIER_WORDS,
   WORLD_ACTIVITIES,
   type PlayableWorldId,
   type WorldActivity,
@@ -35,16 +37,22 @@ import { WORLD_PLACES, type WorldPlace } from "@/lib/worlds/places";
  * That is also why there is so little here. A journey knows which doors
  * were finished and which was opened last. It does not know when, how long,
  * how many tries or how well, and this file does not pretend it does.
+ *
+ * The sentences take a `locale` and default to English, the same way
+ * `lib/billing/subscription` does. The default is not for convenience: it
+ * keeps every existing test calling these functions with one argument and
+ * reading the same English back, so translation cannot quietly change what
+ * a number means.
  */
 
 /* ---- What time it is, said warmly -------------------------------------- */
 
 /** "Good morning" until noon, "Good afternoon" until six, then evening. */
-export function daypartGreeting(hour: number): string {
+export function daypartGreeting(hour: number, locale: Locale = DEFAULT_LOCALE): string {
   const h = Number.isFinite(hour) ? ((Math.trunc(hour) % 24) + 24) % 24 : 12;
-  if (h < 12) return "Good morning";
-  if (h < 18) return "Good afternoon";
-  return "Good evening";
+  if (h < 12) return translate(locale, "parents.greeting.morning");
+  if (h < 18) return translate(locale, "parents.greeting.afternoon");
+  return translate(locale, "parents.greeting.evening");
 }
 
 /* ---- Worlds ------------------------------------------------------------ */
@@ -72,10 +80,14 @@ export function worldSummaries(journey: Journey): WorldSummary[] {
 }
 
 /** "2 of 3 activities explored", never a bar alone. */
-export function progressLabel(progress: WorldProgress): string {
-  if (progress.complete) return `All ${progress.total} activities explored`;
-  if (progress.done === 0) return `Not explored yet · ${progress.total} activities`;
-  return `${progress.done} of ${progress.total} activities explored`;
+export function progressLabel(
+  progress: WorldProgress,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const total = progress.total;
+  if (progress.complete) return translate(locale, "parents.progress.all", { total });
+  if (progress.done === 0) return translate(locale, "parents.progress.none", { total });
+  return translate(locale, "parents.progress.some", { done: progress.done, total });
 }
 
 /* ---- Recent ------------------------------------------------------------ */
@@ -129,8 +141,12 @@ export function nextUp(journey: Journey): NextUp | null {
 
 export interface Concept {
   id: ActivityId;
-  /** The grown-up facing title of the content activity, e.g. "Counting". */
-  title: string;
+  /**
+   * What the lesson is called, as a key — "Counting", "Mengira". The words
+   * are in the catalogues; the activity only carries the key. See
+   * `conceptKey`.
+   */
+  title: MessageKey;
   /** True once a door that draws from this activity has been finished. */
   practised: boolean;
 }
@@ -176,13 +192,24 @@ export function conceptsOf(journey: Journey, world: PlayableWorldId): Concept[] 
  * been taken. Never a score, never a claim about mastery: only which sizes
  * of the challenge have been finished at least once.
  */
-export function tiersLabel(journey: Journey, id: WorldActivityId): string {
-  const words = TIERS.filter((tier) => tierCompleted(journey, id, tier)).map(
-    (tier) => TIER_WORDS[tier],
+export function tiersLabel(
+  journey: Journey,
+  id: WorldActivityId,
+  locale: Locale = DEFAULT_LOCALE,
+): string {
+  const words = TIERS.filter((tier) => tierCompleted(journey, id, tier)).map((tier) =>
+    translate(locale, tierKey(tier)),
   );
-  if (words.length === 0) return "Not completed yet.";
-  if (words.length === TIERS.length) return "Completed Easy, Medium and Hard.";
-  return `Completed ${words.join(" and ")}.`;
+  if (words.length === 0) return translate(locale, "parents.tiers.none");
+  return translate(locale, "parents.tiers.done", {
+    tiers: listOf(words, translate(locale, "common.and")),
+  });
+}
+
+/** "Easy", "Easy and Medium", "Easy, Medium and Hard" — in either language. */
+function listOf(words: string[], and: string): string {
+  if (words.length < 2) return words[0] ?? "";
+  return `${words.slice(0, -1).join(", ")} ${and} ${words[words.length - 1]}`;
 }
 
 export function conceptsByWorld(journey: Journey): WorldConcepts[] {
@@ -217,11 +244,21 @@ export function journeySummary(journey: Journey): JourneySummary {
 }
 
 /** "3 activities completed across 2 worlds." — the one-line overview. */
-export function overviewLine(journey: Journey): string {
+export function overviewLine(journey: Journey, locale: Locale = DEFAULT_LOCALE): string {
   const s = journeySummary(journey);
-  if (s.activitiesDone === 0) return "The adventure has not started yet.";
-  if (s.everything) return `Every activity completed across all ${s.worldsTotal} worlds.`;
-  const acts = `${s.activitiesDone} ${s.activitiesDone === 1 ? "activity" : "activities"}`;
-  const worlds = `${s.worldsVisited} ${s.worldsVisited === 1 ? "world" : "worlds"}`;
-  return `${acts} completed across ${worlds}.`;
+  if (s.activitiesDone === 0) return translate(locale, "parents.overview.none");
+  if (s.everything) {
+    return translate(locale, "parents.overview.all", { worlds: s.worldsTotal });
+  }
+  /* Counted phrases rather than a number and a noun glued together: English
+     inflects the noun and Malay does not, and only the catalogue knows. */
+  const activities =
+    s.activitiesDone === 1
+      ? translate(locale, "parents.count.activity")
+      : translate(locale, "parents.count.activities", { n: s.activitiesDone });
+  const worlds =
+    s.worldsVisited === 1
+      ? translate(locale, "parents.count.world")
+      : translate(locale, "parents.count.worlds", { n: s.worldsVisited });
+  return translate(locale, "parents.overview.line", { activities, worlds });
 }

@@ -5,9 +5,11 @@ import { useEffect, useId, useState } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { PLANS, PLAN_ORDER, hasAccess, type Plan } from "@/lib/billing/subscription";
+import { planText, PLAN_ORDER, hasAccess, type Plan } from "@/lib/billing/subscription";
 import { openBillingPortal, signOut, startCheckout, useSession } from "@/lib/cloud/session";
 import type { AuthFailure } from "@/lib/cloud/types";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useTranslation } from "@/lib/i18n/useLocale";
 
 import { useCheckoutReturn } from "./checkoutReturn";
 
@@ -30,10 +32,10 @@ import { useCheckoutReturn } from "./checkoutReturn";
  * subscription the server wrote becomes active.
  */
 
-const WORDS: Partial<Record<AuthFailure, string>> = {
-  offline: "KIDDO can’t reach the internet right now. Check the connection and try again.",
-  "billing-unavailable": "Subscriptions aren’t set up on this KIDDO yet. Please try again later.",
-  "no-account": "Please sign in again and then choose a plan.",
+const WORDS: Partial<Record<AuthFailure, MessageKey>> = {
+  offline: "auth.error.offline",
+  "billing-unavailable": "join.error.billing-unavailable",
+  "no-account": "join.error.no-account",
 };
 
 export function SubscriptionGate() {
@@ -41,7 +43,8 @@ export function SubscriptionGate() {
   const checkout = useCheckoutReturn();
   const [plan, setPlan] = useState<Plan>("yearly");
   const [busy, setBusy] = useState<"checkout" | "portal" | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null);
+  const { locale, t } = useTranslation();
   const id = useId();
   const sub = session.subscription;
   const status = sub?.status ?? "none";
@@ -66,7 +69,7 @@ export function SubscriptionGate() {
     const failure = await startCheckout(plan, "/parents");
     if (failure) {
       setBusy(null);
-      setError(WORDS[failure] ?? "Something went wrong starting the payment. Please try again.");
+      setError(WORDS[failure] ?? "join.error.checkout");
     }
     /* On success the browser is on its way to Stripe; keep the button busy. */
   }
@@ -78,7 +81,7 @@ export function SubscriptionGate() {
     const failure = await openBillingPortal("/parents");
     if (failure) {
       setBusy(null);
-      setError(WORDS[failure] ?? "KIDDO couldn’t open billing just now. Please try again.");
+      setError(WORDS[failure] ?? "sub.error.portal");
     }
   }
 
@@ -86,34 +89,34 @@ export function SubscriptionGate() {
     return (
       <Card as="section" aria-labelledby={`${id}-title`} padding="lg" radius="hero" className="flex flex-col gap-4" data-subscription-gate="confirming" aria-busy>
         <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-          We’re confirming your KIDDO access
+          {t("sub.confirming.title")}
         </h1>
         <p className="text-ink-700 text-base leading-snug" role="status">
-          Thank you! Your payment went through to Stripe and KIDDO is opening up. This usually takes a few seconds — there’s nothing you need to do.
+          {t("sub.confirming.body")}
         </p>
       </Card>
     );
   }
 
-  const headline =
+  const headline: MessageKey =
     status === "past_due"
-      ? "A payment didn’t go through"
+      ? "sub.headline.past_due"
       : status === "cancelled" || status === "expired"
-        ? "Welcome back to KIDDO"
+        ? "sub.headline.returning"
         : status === "incomplete"
-          ? "Your payment is still being confirmed"
-          : "Your child’s adventure is ready.";
+          ? "sub.headline.incomplete"
+          : "sub.headline.ready";
 
-  const lead =
+  const lead: MessageKey =
     status === "past_due"
-      ? "KIDDO is paused until the payment goes through. Updating the card in billing usually sorts it out straight away."
+      ? "sub.lead.past_due"
       : status === "cancelled" || status === "expired"
-        ? "Your subscription has ended. Choose a plan and everything your child played is right where they left it."
+        ? "sub.lead.ended"
         : status === "incomplete"
-          ? "Stripe hasn’t confirmed the first payment yet. If it was declined, you can try again below; a pending payment opens KIDDO as soon as it clears."
+          ? "sub.lead.incomplete"
           : stale
-            ? "We haven’t heard back from the payment yet. If your card was charged, KIDDO will open on its own shortly — please don’t pay twice. If the payment didn’t go through, you can try again below."
-            : "One subscription opens every world, every game and every new story for your child. No ads, nothing to buy inside.";
+            ? "sub.lead.stale"
+            : "sub.lead.default";
 
   return (
     <Card as="section" aria-labelledby={`${id}-title`} padding="lg" radius="hero" className="flex flex-col gap-6" data-subscription-gate={status} data-checkout-return={checkout ?? undefined}>
@@ -124,12 +127,12 @@ export function SubscriptionGate() {
         <div className="space-y-1">
           <p className="text-ink-500 text-xs font-semibold tracking-wide uppercase">KIDDO</p>
           <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {headline}
+            {t(headline)}
           </h1>
-          <p className="text-ink-700 text-base leading-snug">{lead}</p>
+          <p className="text-ink-700 text-base leading-snug">{t(lead)}</p>
           {checkout === "cancelled" && status !== "past_due" && (
             <p className="text-ink-500 text-sm" role="status" data-checkout-cancelled>
-              No payment was made. Whenever you’re ready, the plans are below.
+              {t("sub.cancelledNote")}
             </p>
           )}
         </div>
@@ -138,14 +141,14 @@ export function SubscriptionGate() {
       {status === "past_due" ? (
         <div className="flex flex-col gap-3">
           <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-subscription-error>
-            {error ?? ""}
+            {error ? t(error) : ""}
           </p>
           <div className="flex flex-wrap gap-3">
             <Button onClick={() => void manage()} aria-busy={busy === "portal"} icon={<ArrowRight className="size-5" aria-hidden />} iconRight data-billing-manage>
-              {busy === "portal" ? "One moment…" : "Update payment details"}
+              {t(busy === "portal" ? "common.oneMoment" : "sub.updatePayment")}
             </Button>
             <Button variant="quiet" onClick={() => void signOut()}>
-              Sign out
+              {t("common.signOut")}
             </Button>
           </div>
         </div>
@@ -158,9 +161,9 @@ export function SubscriptionGate() {
           className="flex flex-col gap-4"
         >
           <fieldset className="flex flex-col gap-3">
-            <legend className="sr-only">Choose a plan</legend>
+            <legend className="sr-only">{t("join.plan.legend")}</legend>
             {PLAN_ORDER.map((key) => {
-              const p = PLANS[key];
+              const p = planText(key, locale);
               const selected = plan === key;
               return (
                 <label
@@ -198,24 +201,24 @@ export function SubscriptionGate() {
           </fieldset>
 
           <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-subscription-error>
-            {error ?? ""}
+            {error ? t(error) : ""}
           </p>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <Button type="submit" size="lg" aria-busy={busy === "checkout"} icon={<ArrowRight className="size-5" aria-hidden />} iconRight data-subscription-start>
-              {busy === "checkout" ? "One moment…" : "Start KIDDO"}
+              {t(busy === "checkout" ? "common.oneMoment" : "sub.start")}
             </Button>
-            <p className="text-ink-500 text-sm">Cancel anytime. Payments are handled by Stripe.</p>
+            <p className="text-ink-500 text-sm">{t("sub.footnote")}</p>
           </div>
 
           <div className="flex flex-wrap items-center gap-x-4 gap-y-1">
             {sub?.stripeCustomerId && (
               <button type="button" onClick={() => void manage()} className="text-ink-900 -my-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-4" data-billing-manage>
-                Billing history
+                {t("sub.billingHistory")}
               </button>
             )}
             <button type="button" onClick={() => void signOut()} className="text-ink-700 -my-3 inline-flex min-h-12 items-center text-sm font-semibold underline underline-offset-4" data-gate-signout>
-              Sign out
+              {t("common.signOut")}
             </button>
           </div>
         </form>

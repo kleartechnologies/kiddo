@@ -1,4 +1,7 @@
+"use client";
+
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 
 /**
  * How far through a round the child is. Dots rather than a bar or a number,
@@ -14,13 +17,15 @@ export function ProgressDots({
   current: number;
   className?: string;
 }) {
+  const t = useT();
+
   return (
     <div
       role="progressbar"
       aria-valuemin={0}
       aria-valuemax={total}
       aria-valuenow={current}
-      aria-label={`Step ${current + 1} of ${total}`}
+      aria-label={t("chrome.step", { current: current + 1, total })}
       className={cn("flex items-center gap-1.5", className)}
     >
       {Array.from({ length: total }, (_, index) => (

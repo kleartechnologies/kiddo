@@ -3,6 +3,9 @@ import { test } from "node:test";
 import { readFileSync } from "node:fs";
 
 import { getActivity } from "@/lib/content/registry";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
 import {
   EMPTY_JOURNEY,
   continueTarget,
@@ -23,7 +26,13 @@ import {
   tiersLabel,
   worldSummaries,
 } from "@/lib/parents/dashboard";
-import { PLAYABLE_WORLDS, TIERS, WORLD_ACTIVITIES, activitiesOf } from "@/lib/worlds/activities";
+import {
+  PLAYABLE_WORLDS,
+  TIERS,
+  WORLD_ACTIVITIES,
+  activitiesOf,
+  type PlayableWorldId,
+} from "@/lib/worlds/activities";
 
 /**
  * The parent dashboard, checked as a grown-up would read it.
@@ -123,7 +132,11 @@ test("next up is exactly what the child's Continue button points at", () => {
   assert.equal(nextUp(partial)?.mode, "continue");
   /* The child was last in the animal world, so that is where next is. */
   assert.equal(nextUp(partial)?.activity.world, "animals");
-  assert.equal(nextUp(partial)?.place.name, "Animal Adventure");
+  /* A place carries the key its name is looked up under, not the name — so
+     the dashboard says "Animal Adventure" to one parent and "Pengembaraan
+     Haiwan" to another from the same journey. */
+  assert.equal(nextUp(partial)?.place.name, "world.animals.name");
+  assert.equal(en["world.animals.name"], "Animal Adventure");
 });
 
 /* 5 — recent --------------------------------------------------------------- */
@@ -160,13 +173,28 @@ test("learning concepts come from the doors' own plans, and only from them", () 
       assert.equal(concept.practised, false);
     }
   }
-  /* The examples the brief gave, in the content's own words. */
-  const counting = conceptsOf(EMPTY_JOURNEY, "counting").map((c) => c.title);
+  /* The examples the brief gave, in the content's own words — which are now
+     the catalogue's, so a lesson is named in the language the parent reads
+     rather than in English under a Malay heading. */
+  const named = (world: PlayableWorldId, locale: Locale) =>
+    conceptsOf(EMPTY_JOURNEY, world).map((c) => translate(locale, c.title));
+  const counting = named("counting", "en");
   assert.ok(counting.includes("Counting"));
   assert.ok(counting.includes("Knowing numbers"));
-  const words = conceptsOf(EMPTY_JOURNEY, "words").map((c) => c.title);
+  const words = named("words", "en");
   assert.ok(words.includes("Knowing letters"));
   assert.ok(words.includes("Words That Rhyme"));
+  /* And every one of them says something in Malay too, different from the
+     English — an untranslated lesson would come back word for word. */
+  for (const world of PLAYABLE_WORLDS) {
+    const english = named(world, "en");
+    const malay = named(world, "ms");
+    assert.equal(new Set(english).size, english.length, `${world} names a lesson twice`);
+    for (const [index, line] of malay.entries()) {
+      assert.ok(line.trim().length > 0, `${world} has an unnamed lesson`);
+      assert.notEqual(line, english[index], `${world} left "${line}" in English`);
+    }
+  }
 
   /* Finishing a door ticks the skills it drew from, and no others. */
   const ticked = conceptsOf(partial, "counting");
@@ -193,7 +221,7 @@ test("the tier line is factual: which sizes were finished, and nothing more", ()
   assert.equal(tiersLabel(markCompletedAt(EMPTY_JOURNEY, apples.id, 2), apples.id), "Completed Medium.");
   /* And the dashboard says the line next to each recent door. */
   const dash = read("src/components/parents/ParentDashboard.tsx");
-  assert.match(dash, /tiersLabel\(journey, activity\.id\)/);
+  assert.match(dash, /tiersLabel\(journey, activity\.id, locale\)/);
   assert.match(dash, /data-parent-tiers/);
 });
 
@@ -225,8 +253,11 @@ test("the greeting follows the clock and never breaks on a bad hour", () => {
 /* 9 — navigation ----------------------------------------------------------- */
 test("parent and child are one deliberate link apart in each direction", () => {
   const parents = read("src/app/parents/page.tsx");
-  assert.match(parents, /href=\{KIDDO_HOME\}[\s\S]{0,400}Open KIDDO/, "the way back to the child is named");
-  assert.match(parents, /Parent area/);
+  /* The link, and — through the catalogue — the words on it. */
+  assert.match(parents, /href=\{KIDDO_HOME\}[\s\S]{0,400}page\.openKiddo/, "the way back to the child is named");
+  assert.equal(en["page.openKiddo"], "Open KIDDO");
+  assert.match(parents, /page\.parentArea/);
+  assert.equal(en["page.parentArea"], "Parent area");
   const header = read("src/components/kiddo/WorldHeader.tsx");
   assert.match(header, /href="\/parents"/, "the child's header keeps its grown-up door");
   /* The parent page must not draw the child's hero or music. */

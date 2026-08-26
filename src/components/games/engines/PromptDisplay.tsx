@@ -1,3 +1,5 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 import type { ReactNode } from "react";
 
@@ -11,6 +13,8 @@ import type {
   PromptSymbol,
 } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
+import type { MessageKey, Translate } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import { ContentItemView } from "./ContentItemView";
 
 /**
@@ -62,15 +66,22 @@ import { ContentItemView } from "./ContentItemView";
 /** Seconds between one thing appearing and the next. */
 const POP_STAGGER = 0.1;
 
-const SYMBOL_WORDS: Record<PromptSymbol, string> = {
-  plus: "plus",
-  minus: "take away",
-  equals: "equals",
-  question: "what",
-  less: "is less than",
-  greater: "is greater than",
+/**
+ * What each symbol is called out loud, as a message key.
+ *
+ * A key rather than a word, because "take away" is "tolak" and a sum read
+ * aloud in the wrong language is a question the child cannot answer. The
+ * template type below checks every symbol has a line in every catalogue.
+ */
+const SYMBOL_WORDS: Record<PromptSymbol, MessageKey> = {
+  plus: "prompt.plus",
+  minus: "prompt.minus",
+  equals: "prompt.equals",
+  question: "prompt.question",
+  less: "prompt.less",
+  greater: "prompt.greater",
   /* Read as the step it is: "1 then 2 then 3, what?" */
-  arrow: "then",
+  arrow: "prompt.arrow",
 };
 
 /**
@@ -99,9 +110,9 @@ function SymbolPart({ symbol }: { symbol: PromptSymbol }) {
   );
 }
 
-function spoken(part: PromptPart): string {
-  if (part.kind === "blank") return "what?";
-  if (part.kind === "symbol") return SYMBOL_WORDS[part.symbol];
+function spoken(part: PromptPart, t: Translate): string {
+  if (part.kind === "blank") return t("prompt.blank");
+  if (part.kind === "symbol") return t(SYMBOL_WORDS[part.symbol]);
   /* A group of dots is described as a group of dots. The count is the whole
      of what is on screen, so leaving it out would not be a fair transcription
      of the question — it would be a harder question. */
@@ -131,6 +142,7 @@ export function PromptDisplay({
   surface?: "card" | "open";
   className?: string;
 }) {
+  const t = useT();
   /* One part, and only one part. See the block above. */
   const subject = layout === "subject" && parts.length === 1;
   /* A subject is already one big thing to look at; never draw two. */
@@ -171,7 +183,7 @@ export function PromptDisplay({
     >
       <p className="sr-only">
         {(shownAnchor ? `${spokenOf(shownAnchor)}. ` : "") +
-          parts.map(spoken).join(" ")}
+          parts.map((part) => spoken(part, t)).join(" ")}
       </p>
 
       {/* The anchor is simply there, like a subject: `pop` is the group's

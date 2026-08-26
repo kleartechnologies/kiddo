@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 
+import { useSaid } from "@/lib/content/i18n/useSaid";
 import { currentChallenge } from "@/lib/content/progress";
 import { createRng, randomSeed } from "@/lib/content/rng";
 import {
@@ -71,17 +72,22 @@ export function useMathQuestGame() {
     [],
   );
 
+  /* The round, said in the reader's language, on the way out — never on
+     the way in. Switching language is a re-render and nothing more; the
+     reducer above never hears about it. See `useSaid`. */
+  const said = useSaid(state);
+
   return useMemo(() => {
-    const challenge = currentChallenge(state.run);
+    const challenge = currentChallenge(said.run);
 
     const isNudged = (optionId: string) =>
-      phase === "incorrect" && optionId === state.picked;
+      phase === "incorrect" && optionId === said.picked;
 
     return {
       /** Null only once the round is over. */
       challenge,
       phase,
-      progress: mathQuestProgress(state),
+      progress: mathQuestProgress(said),
       /** What the right answer is called, so KIDDO can say it out loud. */
       answerLabel: answerLabelOf(challenge),
 
@@ -99,16 +105,16 @@ export function useMathQuestGame() {
 
       /** The answer, once it has been found. Nothing else is ever ticked. */
       isCorrect: (optionId: string) =>
-        phase === "correct" && optionId === state.picked,
+        phase === "correct" && optionId === said.picked,
       /** The one just tapped that was not it, for the length of the nudge. */
       isNudged,
       /** Ruled out earlier this question. Still tappable, just quieter. */
       isTried: (optionId: string) =>
-        state.tried.includes(optionId) && !isNudged(optionId),
+        said.tried.includes(optionId) && !isNudged(optionId),
 
       begin,
       answer,
       restart,
     };
-  }, [state, phase, begin, answer, restart]);
+  }, [said, phase, begin, answer, restart]);
 }

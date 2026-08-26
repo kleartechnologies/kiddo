@@ -1,7 +1,11 @@
+"use client";
+
 import { Compass, ShieldCheck, Star } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { WorldDoor } from "@/components/worlds/WorldDoor";
+import type { MessageKey } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import type { WorldProgress } from "@/lib/journey/journey";
 import type { PlayableWorldId } from "@/lib/worlds/activities";
 import { doorsOf, WORLD_PLACES } from "@/lib/worlds/places";
@@ -24,46 +28,43 @@ function exampleProgress(world: PlayableWorldId): WorldProgress {
   return { done, total, complete: done === total };
 }
 
-const AFTER: { title: string; detail: string; icon: ReactNode; tone: string }[] = [
+const AFTER: { title: MessageKey; detail: MessageKey; icon: ReactNode; tone: string }[] = [
   {
-    title: "Keepsakes, not scores",
-    detail:
-      "Each finished activity becomes something that stays in its world — a flower in the garden, an animal met, a page in the book. There are no points and no streaks.",
+    title: "landing.progress.keepsakes.title",
+    detail: "landing.progress.keepsakes.detail",
     icon: <Star className="size-6 fill-honey-base" aria-hidden />,
     tone: "bg-honey-soft text-honey-ink",
   },
   {
-    title: "Continue the adventure",
-    detail:
-      "The home screen remembers where your child was and offers the next door, so a return visit picks up where the last one stopped.",
+    title: "landing.progress.continue.title",
+    detail: "landing.progress.continue.detail",
     icon: <Compass className="size-6" aria-hidden />,
     tone: "bg-tide-soft text-tide-ink",
   },
   {
-    title: "A quiet page for grown-ups",
-    detail:
-      "The parent area shows the same journey in plain words: what was explored, what is next, and what it was practising.",
+    title: "landing.progress.parents.title",
+    detail: "landing.progress.parents.detail",
     icon: <ShieldCheck className="size-6" aria-hidden />,
     tone: "bg-sage-soft text-sage-ink",
   },
 ];
 
 export function Progression() {
+  const t = useT();
   return (
     <section aria-labelledby="progress-heading" className="scroll-mt-24">
       <SectionIntro
         id="progress-heading"
-        eyebrow="After the round"
-        title="Little discoveries become a bigger adventure."
+        eyebrow={t("landing.progress.eyebrow")}
+        title={t("landing.progress.title")}
       >
-        KIDDO isn’t a pile of quizzes. Every world keeps what a child has found in it,
-        and the doors on the home screen show it — in the world’s own things.
+        {t("landing.progress.body")}
       </SectionIntro>
 
       <div className="mt-10 sm:mt-12">
         <ul
           className="grid list-none grid-cols-1 gap-5 [grid-auto-rows:1fr] sm:gap-6 md:grid-cols-3"
-          aria-label="Example world doors after a few visits"
+          aria-label={t("landing.progress.doorsAria")}
           data-landing-doors
         >
           {(Object.keys(EXAMPLE) as PlayableWorldId[]).map((id) => (
@@ -77,8 +78,7 @@ export function Progression() {
           ))}
         </ul>
         <p className="text-ink-500 mt-4 text-center text-sm">
-          An example after a few visits: one world finished, one part-way, one still new.
-          The ringed door is the one KIDDO would suggest next.
+          {t("landing.progress.caption")}
         </p>
       </div>
 
@@ -88,8 +88,8 @@ export function Progression() {
             <span className={`flex size-12 shrink-0 items-center justify-center rounded-2xl ${item.tone}`}>
               {item.icon}
             </span>
-            <h3 className="font-display text-xl font-semibold">{item.title}</h3>
-            <p className="text-ink-700 text-base leading-relaxed">{item.detail}</p>
+            <h3 className="font-display text-xl font-semibold">{t(item.title)}</h3>
+            <p className="text-ink-700 text-base leading-relaxed">{t(item.detail)}</p>
           </li>
         ))}
       </ul>

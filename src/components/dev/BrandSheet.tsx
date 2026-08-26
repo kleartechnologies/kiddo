@@ -2,6 +2,8 @@ import { KiddoWordmark } from "@/components/kiddo/KiddoWordmark";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Hills, Sun, Cloud, GroundThing } from "@/components/kiddo/world/scenery";
 import { WorldScene } from "@/components/worlds/WorldScene";
+import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 import { WORLD_PLACES } from "@/lib/worlds/places";
 
@@ -81,7 +83,9 @@ export function BrandSheet() {
                     <WorldScene world={id} />
                   </div>
                   <p className="font-display text-ink-900 truncate pt-2 pb-1 text-center text-sm font-semibold">
-                    {WORLD_PLACES[id].name}
+                    {/* English: the store listing and the press kit are one
+                        set of pictures, and this sheet is what makes them. */}
+                    {translate(DEFAULT_LOCALE, WORLD_PLACES[id].name)}
                   </p>
                 </li>
               ))}

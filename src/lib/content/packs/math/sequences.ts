@@ -47,7 +47,6 @@ function howTheyGo(run: Run): string {
 export const numberSequenceActivity = defineGeneratedActivity({
   id: "number-sequence",
   packId: "math",
-  title: "What comes next",
   category: "math",
   activityType: "number-sequence",
   kind: "choice",
@@ -80,7 +79,6 @@ export const numberSequenceActivity = defineGeneratedActivity({
 export const missingNumberActivity = defineGeneratedActivity({
   id: "missing-number",
   packId: "math",
-  title: "The missing number",
   category: "math",
   activityType: "missing-number",
   kind: "choice",

@@ -22,6 +22,9 @@ export const dynamic = "force-dynamic";
  * updated / deleted. Everything else is acknowledged and ignored. No card
  * data is on any of these events and none is stored.
  */
+/** Stripe's own documented ceiling for an event payload, rounded up. */
+export const MAX_WEBHOOK_BYTES = 1024 * 1024;
+
 export const HANDLED_EVENTS = new Set([
   "checkout.session.completed",
   "customer.subscription.created",
@@ -36,7 +39,17 @@ export async function POST(request: Request) {
 
   const signature = request.headers.get("stripe-signature");
   if (!signature) return problem(400, "missing-signature");
+
+  /* The one route that must not go through the shared JSON parser: the
+     signature is over the bytes exactly as Stripe sent them, so the body
+     is read raw and parsed only by `constructEvent`. The ceiling is generous because
+     a real Stripe event is legitimately far larger than KIDDO's own
+     bodies, and it is a ceiling rather than nothing because an unsigned
+     stranger can still open this connection and start sending. */
+  const declared = Number(request.headers.get("content-length") ?? "");
+  if (Number.isFinite(declared) && declared > MAX_WEBHOOK_BYTES) return problem(413, "body-too-large");
   const raw = await request.text();
+  if (raw.length > MAX_WEBHOOK_BYTES) return problem(413, "body-too-large");
 
   let event: Stripe.Event;
   try {

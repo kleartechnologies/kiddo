@@ -126,7 +126,6 @@ function subject(ask: Ask, level: Level, rng: Rng): number {
 export const beforeAndAfterActivity = defineGeneratedActivity({
   id: "before-and-after",
   packId: "math",
-  title: "Before and after",
   category: "math",
   activityType: "before-and-after",
   kind: "choice",

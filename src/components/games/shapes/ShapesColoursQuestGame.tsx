@@ -7,6 +7,7 @@ import { ChoiceStage } from "@/components/games/engines/ChoiceStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
 import { isKind } from "@/lib/content/engine";
+import { useT } from "@/lib/i18n/useLocale";
 import { useShapesColoursQuest } from "@/lib/games/useShapesColoursQuest";
 import type { Game } from "@/lib/games/types";
 import { worldOf } from "@/lib/worlds/worlds";
@@ -27,6 +28,7 @@ import { worldOf } from "@/lib/worlds/worlds";
  * not its owner.
  */
 export function ShapesColoursQuestGame({ game }: { game: Game }) {
+  const t = useT();
   const quest = useShapesColoursQuest();
   const { challenge, phase, answerLabel } = quest;
 
@@ -35,25 +37,26 @@ export function ShapesColoursQuestGame({ game }: { game: Game }) {
      the poses. */
   const prompt =
     phase === "intro"
-      ? "Hello! I'm KIDDO. Shall we look at some shapes and colours?"
+      ? t("game.shapes-colours-quest.hello")
       : phase === "correct"
-        ? (challenge?.explanation ?? `Yes! It's ${answerLabel}.`)
+        ? (challenge?.explanation ??
+          t("game.shapes-colours-quest.yes", { answer: answerLabel }))
         : phase === "incorrect"
-          ? "Almost! Let's take another look."
+          ? t("game.shapes-colours-quest.retry")
           : /* The question — or, once one has been missed, where to look.
                Never the answer, and never the same sentence twice in a row. */
             quest.question;
 
   /* The same thing in words, for a screen reader, because the bubble above
      lives in a paragraph nobody is focused on. */
-  const step = `Question ${quest.progress.current + 1} of ${quest.progress.total}`;
+  const step = { current: quest.progress.current + 1, total: quest.progress.total };
   const announcement =
     phase === "correct"
-      ? `Yes, the answer is ${answerLabel}. ${step} done.`
+      ? t("quest.answered", { answer: answerLabel, ...step })
       : phase === "incorrect"
-        ? "Not quite. Have another go."
+        ? t("quest.notQuite")
         : phase === "awaitingAnswer" && challenge
-          ? `${step}. ${quest.question}`
+          ? t("quest.asking", { question: quest.question, ...step })
           : "";
 
   return (
@@ -67,9 +70,8 @@ export function ShapesColoursQuestGame({ game }: { game: Game }) {
       feedback={quest.feedback}
       status={quest.status}
       celebration={{
-        title: "You looked at every one!",
-        message:
-          "Ten pictures, all the way to the end. You spotted every shape and every colour.",
+        title: t("game.shapes-colours-quest.done.title"),
+        message: t("game.shapes-colours-quest.done.message"),
         onPlayAgain: quest.restart,
       }}
       /* One board leaves before the next arrives: the stage is keyed on
@@ -81,7 +83,7 @@ export function ShapesColoursQuestGame({ game }: { game: Game }) {
       announce={announcement}
     >
       {phase === "intro" || !challenge ? (
-        <Intro onStart={quest.begin} />
+        <Intro label={t("game.shapes-colours-quest.start")} onStart={quest.begin} />
       ) : isKind(challenge, "choice") ? (
         <ChoiceStage
           challenge={challenge}
@@ -110,12 +112,12 @@ export function ShapesColoursQuestGame({ game }: { game: Game }) {
  * A four year old should not arrive mid-question. Pip is standing here because
  * this is their world, and there is exactly one thing to press.
  */
-function Intro({ onStart }: { onStart: () => void }) {
+function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
       <CharacterFigure id="pip" size="lg" pose="wave" />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
-        Let&apos;s look!
+        {label}
       </Button>
     </div>
   );

@@ -113,7 +113,6 @@ const TILES: LevelTable<number> = { 1: 3, 2: 3, 3: 4 };
 export const spellingActivity = defineGeneratedActivity({
   id: "spelling",
   packId: "english",
-  title: "Finishing words",
   category: "english",
   activityType: "spelling",
   kind: "choice",

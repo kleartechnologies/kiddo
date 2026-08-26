@@ -1,6 +1,8 @@
-import { isPlan } from "@/lib/billing/subscription";
+import { isPlan, type Plan } from "@/lib/billing/subscription";
+import { requireAppCheck } from "@/server/appCheck";
 import { customerFor, liveSubscriptions } from "@/server/billing";
-import { billingUnavailable, json, problem, readJson, requireCaller, safePath, siteUrl } from "@/server/http";
+import { billingUnavailable, json, problem, readJson, requireCaller, safePath, siteUrl, tooMany } from "@/server/http";
+import { consume, LIMITS } from "@/server/rateLimit";
 import { priceIds, stripe } from "@/server/stripe";
 
 export const runtime = "nodejs";
@@ -18,12 +20,22 @@ export const dynamic = "force-dynamic";
 export async function POST(request: Request) {
   const down = billingUnavailable();
   if (down) return down;
+  const attested = await requireAppCheck(request);
+  if (attested) return attested;
   const caller = await requireCaller(request);
   if (caller instanceof Response) return caller;
 
   const body = await readJson(request);
-  if (!isPlan(body.plan)) return problem(400, "bad-plan");
+  if (body instanceof Response) return body;
+  const plan: Plan | null = isPlan(body.plan) ? body.plan : null;
+  if (!plan) return problem(400, "bad-plan");
   const returnTo = safePath(body.returnTo, "/parents");
+
+  /* Keyed on the verified uid, not the IP: this is where a signed-in
+     caller could otherwise make Stripe create sessions all day. It sits
+     after the token check so an unauthenticated flood never reaches it. */
+  const budget = await consume(LIMITS.checkout, caller.uid);
+  if (!budget.allowed) return tooMany(budget.retryAfterS);
 
   try {
     const customer = await customerFor(caller.uid, caller.email);
@@ -35,17 +47,18 @@ export async function POST(request: Request) {
       return problem(409, "already-subscribed");
     }
     const base = siteUrl(request);
+    if (!base) return problem(503, "site-url-not-configured");
     const joiner = returnTo.includes("?") ? "&" : "?";
     const session = await stripe().checkout.sessions.create({
       mode: "subscription",
       customer,
       client_reference_id: caller.uid,
-      line_items: [{ price: priceIds()[body.plan], quantity: 1 }],
+      line_items: [{ price: priceIds()[plan], quantity: 1 }],
       success_url: `${base}${returnTo}${joiner}checkout=success`,
       cancel_url: `${base}${returnTo}${joiner}checkout=cancelled`,
       allow_promotion_codes: false,
-      subscription_data: { metadata: { uid: caller.uid, plan: body.plan } },
-      metadata: { uid: caller.uid, plan: body.plan },
+      subscription_data: { metadata: { uid: caller.uid, plan } },
+      metadata: { uid: caller.uid, plan },
     });
     if (!session.url) return problem(502, "stripe-no-url");
     return json({ url: session.url });

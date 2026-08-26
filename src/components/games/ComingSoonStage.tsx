@@ -1,3 +1,5 @@
+"use client";
+
 import { Lock, Sparkles } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
@@ -6,6 +8,7 @@ import { Card, Chip } from "@/components/ui/Card";
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
 import type { Game } from "@/lib/games/types";
+import { useT } from "@/lib/i18n/useLocale";
 
 /**
  * The holding screen for a game that has a card but no playfield yet.
@@ -14,6 +17,7 @@ import type { Game } from "@/lib/games/types";
  * shell), and it shows the themes already described in `data/games.ts`.
  */
 export function ComingSoonStage({ game }: { game: Game }) {
+  const t = useT();
   const accent = ACCENTS[game.accent];
 
   return (
@@ -29,16 +33,14 @@ export function ComingSoonStage({ game }: { game: Game }) {
           <Sparkles className="size-8" aria-hidden />
         </span>
 
-        <h2 className="font-display text-3xl font-bold sm:text-4xl">
-          Almost ready!
-        </h2>
+        <h2 className="font-display text-3xl font-bold sm:text-4xl">{t("soon.title")}</h2>
         <p className="text-ink-500 mt-2 text-lg text-balance sm:text-xl">
-          {game.parentSummary}
+          {t(game.parentSummary)}
         </p>
 
         <div className="border-edge mt-6 border-t pt-6">
           <p className="text-ink-500 text-sm font-semibold tracking-wide uppercase">
-            What you will play
+            {t("soon.themes")}
           </p>
           <ul className="mt-3 flex flex-wrap justify-center gap-2">
             {game.themes.map((theme) => (
@@ -55,7 +57,7 @@ export function ComingSoonStage({ game }: { game: Game }) {
                     ) : null
                   }
                 >
-                  {theme.title}
+                  {t(theme.title)}
                 </Chip>
               </li>
             ))}
@@ -63,7 +65,7 @@ export function ComingSoonStage({ game }: { game: Game }) {
         </div>
 
         <ButtonLink href={KIDDO_HOME} size="lg" className="mt-8">
-          Back to KIDDO World
+          {t("soon.back")}
         </ButtonLink>
       </Card>
     </div>

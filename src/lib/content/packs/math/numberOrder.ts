@@ -164,7 +164,6 @@ function howTheyGo(step: number): string {
 export const numberOrderActivity = defineGeneratedActivity({
   id: "number-order",
   packId: "math",
-  title: "Numbers In Order",
   category: "math",
   activityType: "number-sequence",
   kind: "order",

@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useReducer } from "react";
 
+import { useSaidChallenge } from "@/lib/content/i18n/useSaid";
 import { createRng, randomSeed } from "@/lib/content/rng";
 import { useConnect } from "./engines/useConnect";
 import {
@@ -89,11 +90,17 @@ export function useMatchQuestGame() {
     });
   }, []);
 
+  /* The board on the table, said in the reader's language, on the way out.
+     `useConnect` above keeps running the English one it was handed, so a
+     language change never moves a board the child is halfway through: the
+     node ids a joined line is made of are the same in both. See `useSaid`. */
+  const said = useSaidChallenge(board.challenge);
+
   return useMemo(
     () => ({
       phase,
       /** The board on the table. Never null; see `boardOf`. */
-      challenge: board.challenge,
+      challenge: said,
       /** How many boards in, out of how many. Not pairs — boards. */
       progress: matchQuestProgress(state),
       /** Pairs found on this board, out of how many it holds. */
@@ -121,6 +128,6 @@ export function useMatchQuestGame() {
       begin,
       restart,
     }),
-    [state, phase, board, begin, restart],
+    [state, phase, board, said, begin, restart],
   );
 }

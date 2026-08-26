@@ -14,7 +14,13 @@
  * wrong-tile, finished and reduced-motion checks — the ones worth re-running
  * while an interaction is being fixed.
  *
- * Expects a server already running (`npm run build && npm start`).
+ * Expects a measuring server: the specimen pages this drives are `.dev.tsx`
+ * and only exist when the build asked for them.
+ *
+ *     KIDDO_DEV_PAGES=1 npm run build && npm start -- -p 4310
+ *
+ * A deployed KIDDO does not serve `/playground/*` at all, and must not be
+ * changed so that it does — see `next.config.ts` and docs/SECURITY.md.
  * The browser driver is in `scripts/cdp.mjs`.
  */
 import {
@@ -29,6 +35,7 @@ import {
   settle,
   visit,
 } from "./cdp.mjs";
+import { requireDevPages } from "./measure-mode.mjs";
 
 const ARGS = process.argv.slice(2);
 const BEHAVIOUR_ONLY = ARGS.includes("--behaviour-only");
@@ -165,6 +172,7 @@ let browser;
 
 try {
   browser = await openBrowser(9334);
+  await requireDevPages(browser.cdp, browser.sessionId, URL_UNDER_TEST);
   const { cdp, sessionId } = browser;
 
   console.log(`\n  ${URL_UNDER_TEST}\n`);

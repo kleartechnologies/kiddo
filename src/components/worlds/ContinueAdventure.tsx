@@ -5,6 +5,8 @@ import { Compass, Star } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import { cn } from "@/lib/cn";
+import { doorKey, worldNameKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import {
   continueTarget,
   everythingDone,
@@ -28,6 +30,7 @@ import { activityRoute, WORLD_PLACES } from "@/lib/worlds/places";
  * door, shown as stars and a count, never as a score against anything.
  */
 export function ContinueAdventure({ className }: { className?: string }) {
+  const t = useT();
   const journey = useJourney();
   /* Under reduced motion the panel is simply there, like everything else. */
   const reduced = useReducedMotion();
@@ -37,14 +40,26 @@ export function ContinueAdventure({ className }: { className?: string }) {
   const returning = journey.last !== null;
 
   const heading = done
-    ? "You explored every world!"
+    ? t("worlds.continue.done")
     : returning
-      ? "Continue your adventure"
-      : "Start your adventure";
+      ? t("worlds.continue.back")
+      : t("worlds.continue.start");
 
+  /* One whole sentence either way rather than a label glued to a colon: a
+     language that says "the first stop is X" has nowhere to put a fragment. */
   const detail = target
-    ? `${returning ? "Next up" : "First stop"}: ${target.title} in ${WORLD_PLACES[target.world].name}`
-    : "Every door is open. Play any of them again, any time.";
+    ? t(returning ? "worlds.continue.next" : "worlds.continue.first", {
+        door: t(doorKey(target, "title")),
+        world: t(worldNameKey(target.world)),
+      })
+    : t("worlds.continue.allOpen");
+
+  /* "1 sticker" / "3 stickers" — counted in the catalogue, so a language
+     that does not change the noun simply does not change it. */
+  const stickerCount =
+    stickers === 1
+      ? t("worlds.stickers.one")
+      : t("worlds.stickers.many", { count: stickers });
 
   const href = target
     ? activityRoute(target)
@@ -70,16 +85,14 @@ export function ContinueAdventure({ className }: { className?: string }) {
         {stickers > 0 ? (
           <p
             className="text-honey-ink inline-flex items-center gap-1.5 pt-1 text-base font-semibold"
-            aria-label={`${stickers} ${stickers === 1 ? "sticker" : "stickers"} earned`}
+            aria-label={t("worlds.stickers.earned", { stickers: stickerCount })}
           >
             <span aria-hidden className="inline-flex">
               {Array.from({ length: Math.min(stickers, 5) }, (_, index) => (
                 <Star key={index} className="size-5 fill-honey-base text-honey-deep" />
               ))}
             </span>
-            <span aria-hidden>
-              {stickers} {stickers === 1 ? "sticker" : "stickers"}
-            </span>
+            <span aria-hidden>{stickerCount}</span>
           </p>
         ) : null}
       </div>
@@ -91,7 +104,11 @@ export function ContinueAdventure({ className }: { className?: string }) {
         className="shrink-0"
         data-continue-link
       >
-        {done ? "Visit the worlds" : returning ? "Continue" : "Let's go!"}
+        {done
+          ? t("worlds.continue.goDone")
+          : returning
+            ? t("worlds.continue.goBack")
+            : t("worlds.continue.goStart")}
       </ButtonLink>
     </motion.section>
   );

@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { continueTarget, worldProgress } from "@/lib/journey/journey";
 import { useJourney } from "@/lib/journey/useJourney";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
@@ -19,6 +20,7 @@ import { WorldDoor } from "./WorldDoor";
  * to be told where to go next is told, and one who does not is not.
  */
 export function WorldMap({ className }: { className?: string }) {
+  const t = useT();
   const journey = useJourney();
   const suggested = continueTarget(journey)?.world ?? null;
 
@@ -27,7 +29,7 @@ export function WorldMap({ className }: { className?: string }) {
       variants={staggerChildren(0.08, 0.05)}
       initial="hidden"
       animate="show"
-      aria-label="Worlds"
+      aria-label={t("worlds.map")}
       className={cn(
         "grid list-none grid-cols-1 gap-5 [grid-auto-rows:1fr] sm:gap-6 md:grid-cols-3",
         className,

@@ -23,6 +23,23 @@ import { createRng } from "@/lib/content/rng";
 import type { Challenge, ChallengeOf } from "@/lib/content/types";
 import { validatePack } from "@/lib/content/validate";
 import { GAMES, getGame } from "@/data/games";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
+import { assertNothingScolds } from "./helpers/words";
+
+/** The lines KIDDO has for a pair that lands, and for one that does not. */
+const PRAISE_KEYS = [
+  "game.match-quest.praise.1",
+  "game.match-quest.praise.2",
+  "game.match-quest.praise.3",
+  "game.match-quest.praise.4",
+] as const;
+
+const NUDGE_KEYS = [
+  "game.match-quest.nudge.1",
+  "game.match-quest.nudge.2",
+  "game.match-quest.nudge.3",
+] as const;
 import {
   boardOf,
   buildMatchQuestSession,
@@ -723,12 +740,24 @@ test("sound comes from the shell, and there is only one shell", () => {
 test("a pair that does not hold is never punished in words", () => {
   const game = source("src/components/games/match/MatchQuestGame.tsx");
 
-  assert.match(game, /Great match!/);
-  assert.match(game, /Those two belong together!/);
-  assert.match(game, /Not these two yet\./);
-  assert.match(game, /Have another look\./);
-  assert.match(game, /Who could be its friend\?/);
+  /* Several of each, so nobody is talked at by one sentence forty times —
+     the game names the keys, the catalogues hold the lines. */
+  assert.match(game, /const PRAISE = \[/);
+  assert.match(game, /const NUDGES = \[/);
+  assert.equal(en["game.match-quest.praise.1"], "Great match!");
+  assert.equal(en["game.match-quest.praise.2"], "Those two belong together!");
+  assert.equal(en["game.match-quest.nudge.1"], "Not these two yet.");
+  assert.equal(en["game.match-quest.nudge.2"], "Have another look.");
+  assert.equal(en["game.match-quest.nudge.3"], "Who could be its friend?");
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    const praise = PRAISE_KEYS.map((key) => words[key]);
+    const nudges = NUDGE_KEYS.map((key) => words[key]);
+    assert.equal(new Set(praise).size, PRAISE_KEYS.length, "a language repeats a cheer");
+    assert.equal(new Set(nudges).size, NUDGE_KEYS.length, "a language repeats a nudge");
+  }
 
+  /* And nothing under this game scolds, in either language. */
+  assertNothingScolds(assert, "game.match-quest.", "stage.match.");
   for (const forbidden of ["Wrong", "Failed", "Incorrect", "Oops", "No,", "Try harder"]) {
     assert.ok(
       !game.includes(forbidden),

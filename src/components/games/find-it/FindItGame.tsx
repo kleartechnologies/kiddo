@@ -4,6 +4,8 @@ import { GameShell } from "@/components/games/GameShell";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { around } from "@/lib/i18n/format";
+import { useT } from "@/lib/i18n/useLocale";
 import { useFindItGame } from "@/lib/games/useFindItGame";
 import type { FindItItem } from "@/lib/games/findIt";
 import type { Game } from "@/lib/games/types";
@@ -22,6 +24,7 @@ import { FindItBoard } from "./FindItBoard";
  * way round.
  */
 export function FindItGame({ game }: { game: Game }) {
+  const t = useT();
   const find = useFindItGame();
   const { target, picked } = find;
 
@@ -31,35 +34,37 @@ export function FindItGame({ game }: { game: Game }) {
      hunting for a second KIDDO. */
   const isHost = target.id === "kiddo";
 
-  const prompt =
-    find.phase === "correct" ? (
-      <PromptLine lead="Yes! That's" item={target} text={`${target.label}!`} />
-    ) : find.phase === "incorrect" && picked ? (
-      /* Never "wrong", never "no". The child is told what they did find —
-         which is worth knowing — and then pointed back at the question. */
-      <PromptLine
-        lead={`That's ${picked.label}! Can you find`}
-        item={target}
-        text={`${target.label}?`}
-      />
-    ) : (
-      <PromptLine
-        lead={isHost ? "Can you find me," : "Can you find"}
-        item={target}
-        text={`${target.label}?`}
-      />
-    );
+  /* One whole sentence, split either side of the thing being named, so the
+     picture can ride inside it. A language that puts the name first gets
+     that for free: `around` hands back an empty `before` and the chip leads
+     the line. See `lib/i18n/format`. */
+  const line = around(
+    find.phase === "correct"
+      ? t("game.find-it.yes", { name: target.label })
+      : find.phase === "incorrect" && picked
+        ? /* Never "wrong", never "no". The child is told what they did find —
+             which is worth knowing — and then pointed back at the question. */
+          t("game.find-it.wrong", { picked: picked.label, name: target.label })
+        : isHost
+          ? t("game.find-it.askMe", { name: target.label })
+          : t("game.find-it.ask", { name: target.label }),
+    "name",
+  );
+
+  const prompt = (
+    <PromptLine before={line.before} item={target} name={target.label} after={line.after} />
+  );
 
   /* The same thing again in words, for a screen reader, because the prompt
      above lives in a paragraph nobody is focused on. */
-  const round = `Round ${find.roundIndex + 1} of ${find.totalRounds}`;
+  const round = { current: find.roundIndex + 1, total: find.totalRounds };
   const announcement =
     find.phase === "correct"
-      ? `Yes, that is ${target.label}. ${round} done.`
+      ? t("game.find-it.saidYes", { name: target.label, ...round })
       : find.phase === "incorrect" && picked
-        ? `That is ${picked.label}. Keep looking for ${target.label}.`
+        ? t("game.find-it.saidWrong", { picked: picked.label, name: target.label })
         : find.phase === "awaitingChoice"
-          ? `${round}. Find ${target.label}.`
+          ? t("game.find-it.saidAsking", { name: target.label, ...round })
           : "";
 
   return (
@@ -71,8 +76,8 @@ export function FindItGame({ game }: { game: Game }) {
       feedback={find.feedback}
       status={find.status}
       celebration={{
-        title: "You found them all!",
-        message: "Every single friend. Great looking!",
+        title: t("game.find-it.done.title"),
+        message: t("game.find-it.done.message"),
         onPlayAgain: find.restart,
       }}
     >
@@ -95,19 +100,24 @@ export function FindItGame({ game }: { game: Game }) {
 
 /** A few words, then the thing itself. The picture never leaves the screen. */
 function PromptLine({
-  lead,
+  before,
   item,
-  text,
+  name,
+  after,
 }: {
-  lead: string;
+  /** The sentence up to the thing being named. */
+  before: string;
   item: FindItItem;
-  text: string;
+  /** What the thing is called. */
+  name: string;
+  /** The rest of the sentence — in every line KIDDO has, its punctuation. */
+  after: string;
 }) {
   const accent = ACCENTS[item.accent];
 
   return (
     <span className="flex flex-wrap items-center gap-x-2 gap-y-1">
-      <span>{lead}</span>
+      <span>{before.trimEnd()}</span>
       {/* The name rides inside the chip, punctuation and all, so it can never
           wrap away from the picture it belongs to. */}
       <span
@@ -120,7 +130,7 @@ function PromptLine({
         {item.kind === "character" ? (
           <CharacterFigure id={item.characterId} size="sm" alive={false} />
         ) : null}
-        <span className={accent.text}>{text}</span>
+        <span className={accent.text}>{`${name}${after}`}</span>
       </span>
     </span>
   );

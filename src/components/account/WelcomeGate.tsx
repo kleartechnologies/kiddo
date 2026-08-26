@@ -8,6 +8,7 @@ import { Card } from "@/components/ui/Card";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { hasAccess } from "@/lib/billing/subscription";
 import { useSession } from "@/lib/cloud/session";
+import { useT } from "@/lib/i18n/useLocale";
 import { KIDDO_HOME, PARENTS, PRICING } from "@/lib/routes";
 
 import { ChildOnboarding } from "./ChildOnboarding";
@@ -35,6 +36,7 @@ import { useCheckoutReturn } from "./checkoutReturn";
  */
 export function WelcomeGate() {
   const session = useSession();
+  const t = useT();
   const checkout = useCheckoutReturn();
   const [now] = useState(() => Date.now());
   const [stale, setStale] = useState(false);
@@ -51,7 +53,7 @@ export function WelcomeGate() {
       <div className="flex flex-col gap-6" data-welcome="open">
         <Celebration />
         {session.status === "needs-child" && (
-          <ChildOnboarding heading="h2" title="Who’s playing?" />
+          <ChildOnboarding heading="h2" title="welcome.who" />
         )}
       </div>
     );
@@ -60,13 +62,10 @@ export function WelcomeGate() {
   if (session.status === "signed-out" || session.status === "unavailable") {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-welcome="signed-out">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">Sign in to finish</h1>
-        <p className="text-ink-700 text-base leading-snug">
-          We can’t see your account on this device, so KIDDO can’t check your subscription.
-          Sign in and the parent area will show exactly where things stand.
-        </p>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("welcome.signedOut.title")}</h1>
+        <p className="text-ink-700 text-base leading-snug">{t("welcome.signedOut.body")}</p>
         <ButtonLink href={PARENTS} size="md" iconRight icon={<ArrowRight className="size-5" aria-hidden />} className="self-start">
-          Go to the parent area
+          {t("welcome.toParents")}
         </ButtonLink>
       </Card>
     );
@@ -75,13 +74,10 @@ export function WelcomeGate() {
   if (checkout === "cancelled") {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-welcome="cancelled">
-        <h1 className="font-display text-2xl font-semibold sm:text-3xl">No payment was made</h1>
-        <p className="text-ink-700 text-base leading-snug">
-          You left the checkout before paying, and nothing was charged. The plans are
-          waiting whenever you are.
-        </p>
+        <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("welcome.cancelled.title")}</h1>
+        <p className="text-ink-700 text-base leading-snug">{t("welcome.cancelled.body")}</p>
         <ButtonLink href={PRICING} size="md" iconRight icon={<ArrowRight className="size-5" aria-hidden />} className="self-start">
-          See the plans
+          {t("welcome.cancelled.cta")}
         </ButtonLink>
       </Card>
     );
@@ -91,12 +87,10 @@ export function WelcomeGate() {
     return (
       <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-welcome="confirming" aria-busy>
         <h1 className="font-display text-2xl font-semibold sm:text-3xl">
-          We’re confirming your KIDDO access
+          {t("welcome.confirming.title")}
         </h1>
         <p className="text-ink-700 text-base leading-snug" role="status">
-          Thank you! Your payment reached Stripe and KIDDO is opening up. This usually
-          takes a few seconds — there’s nothing you need to do, and this page will move on
-          by itself.
+          {t("welcome.confirming.body")}
         </p>
       </Card>
     );
@@ -104,14 +98,12 @@ export function WelcomeGate() {
 
   return (
     <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-welcome="waiting">
-      <h1 className="font-display text-2xl font-semibold sm:text-3xl">Still confirming</h1>
+      <h1 className="font-display text-2xl font-semibold sm:text-3xl">{t("welcome.waiting.title")}</h1>
       <p className="text-ink-700 text-base leading-snug" role="status">
-        We haven’t heard back about the payment yet. If your card was charged, KIDDO will
-        open on its own shortly — please don’t pay twice. The parent area always shows the
-        current state of your subscription.
+        {t("welcome.waiting.body")}
       </p>
       <ButtonLink href={PARENTS} size="md" variant="soft" className="self-start">
-        Go to the parent area
+        {t("welcome.toParents")}
       </ButtonLink>
     </Card>
   );
@@ -119,6 +111,7 @@ export function WelcomeGate() {
 
 /** The moment itself: KIDDO, the two sentences, and the door. */
 function Celebration() {
+  const t = useT();
   return (
     <Card
       as="section"
@@ -130,10 +123,10 @@ function Celebration() {
       <CharacterFigure id="kiddo" size="xl" pose="cheer" />
       <div className="flex flex-col items-center gap-4 sm:items-start">
         <h1 className="font-display text-3xl font-bold text-balance sm:text-4xl">
-          Welcome to KIDDO! 🎉
+          {t("welcome.title")}
         </h1>
         <p className="text-ink-700 max-w-xl text-lg leading-relaxed text-pretty">
-          Your KIDDO adventure starts here.
+          {t("welcome.body")}
         </p>
         <ButtonLink
           href={KIDDO_HOME}
@@ -142,7 +135,7 @@ function Celebration() {
           icon={<ArrowRight className="size-6" aria-hidden />}
           data-welcome-enter
         >
-          Enter KIDDO
+          {t("common.enterKiddo")}
         </ButtonLink>
       </div>
     </Card>

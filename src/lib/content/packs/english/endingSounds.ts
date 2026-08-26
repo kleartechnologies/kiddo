@@ -174,7 +174,6 @@ function askForTheWord(
 export const endingSoundsActivity = defineGeneratedActivity({
   id: "ending-sounds",
   packId: "english",
-  title: "Ending sounds",
   category: "english",
   activityType: "ending-sounds",
   kind: "choice",

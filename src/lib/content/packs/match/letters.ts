@@ -91,7 +91,6 @@ const HINTS = [
 export const letterPartnersActivity = defineGeneratedActivity({
   id: "letter-partners",
   packId: "match",
-  title: "Big letters and little letters",
   category: "english",
   activityType: "letter-case",
   kind: "connect",

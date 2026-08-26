@@ -3,8 +3,11 @@
 import { ArrowRight, Check, Lock } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import type { MessageKey } from "@/lib/i18n/messages";
+import { tierKey } from "@/lib/i18n/names";
+import { useT } from "@/lib/i18n/useLocale";
 import type { TierState } from "@/lib/journey/journey";
-import { TIERS, TIER_WORDS, type Tier } from "@/lib/worlds/activities";
+import { TIERS, type Tier } from "@/lib/worlds/activities";
 
 /**
  * Three buttons: Easy, Medium, Hard.
@@ -38,10 +41,10 @@ const TIER_HEIGHT: Readonly<Record<Tier, string>> = {
   3: "min-h-14",
 };
 
-const STATE_WORDS: Record<TierState, string> = {
-  done: "Completed",
-  ready: "Unlocked",
-  locked: "Locked",
+const STATE_WORDS: Record<TierState, MessageKey> = {
+  done: "worlds.tier.done",
+  ready: "worlds.tier.ready",
+  locked: "worlds.tier.locked",
 };
 
 export function TierPicker({
@@ -53,10 +56,11 @@ export function TierPicker({
   selected: Tier | null;
   onSelect: (tier: Tier) => void;
 }) {
+  const t = useT();
   return (
     <div
       role="group"
-      aria-label="How big a challenge"
+      aria-label={t("worlds.tier.group")}
       /* Standing on one line, so the three grow *upward*: centred, the same
          three heights read as a hill rather than a staircase. */
       className="flex flex-wrap items-end justify-center gap-2"
@@ -73,7 +77,10 @@ export function TierPicker({
             data-tier-state={state}
             aria-pressed={active}
             aria-disabled={locked || undefined}
-            aria-label={`${TIER_WORDS[tier]}. ${STATE_WORDS[state]}.`}
+            aria-label={t("worlds.tier.sr", {
+              tier: t(tierKey(tier)),
+              state: t(STATE_WORDS[state]),
+            })}
             onClick={() => {
               if (!locked) onSelect(tier);
             }}
@@ -93,7 +100,7 @@ export function TierPicker({
             ) : (
               <ArrowRight className="size-4" aria-hidden />
             )}
-            {TIER_WORDS[tier]}
+            {t(tierKey(tier))}
           </button>
         );
       })}

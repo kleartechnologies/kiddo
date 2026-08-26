@@ -24,6 +24,9 @@ import {
   type GeneralKnowledgeAction,
   type GeneralKnowledgeState,
 } from "@/lib/games/generalKnowledgeQuest";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
+import { assertChoiceStatesAreSaid, assertNothingScolds } from "./helpers/words";
 
 /**
  * A whole round of General Knowledge Quest, played without React.
@@ -523,15 +526,14 @@ test("General Knowledge Quest is in the catalogue and wired to a route of its ow
 test("a wrong answer is never punished in words, in the game or in the rules", () => {
   const game = source("src/components/games/general-knowledge/GeneralKnowledgeQuestGame.tsx");
 
-  /* The words a child sees. Nothing here says no. */
-  assert.match(game, /Ooh, not that one\. Try again!/);
-  assert.match(game, /You know so much!/);
-  for (const forbidden of ["Wrong", "failed", "Oops", "No,", "Incorrect", "Sorry"]) {
-    assert.ok(
-      !game.includes(forbidden),
-      `GeneralKnowledgeQuestGame says "${forbidden}" to a four year old`,
-    );
-  }
+  /* The words a child sees. The game names the keys; the catalogues hold the
+     sentences. Nothing under either of them says no — in either language. */
+  assert.match(game, /t\("game\.general-knowledge-quest\.retry"\)/);
+  assert.match(game, /t\("game\.general-knowledge-quest\.done\.title"\)/);
+  assert.equal(en["game.general-knowledge-quest.retry"], "Ooh, not that one. Try again!");
+  assert.equal(en["game.general-knowledge-quest.done.title"], "You know so much!");
+  const lines = assertNothingScolds(assert, "game.general-knowledge-quest.", "quest.");
+  assert.ok(lines.length >= 40, "the round's words went missing from the catalogues");
 
   /* No score, no lives, no clock — not in the game and not in its rules.
      "lives" is looked for as a game mechanic rather than as a word, because
@@ -591,9 +593,10 @@ test("the way out and the way through are both reachable without a mouse", () =>
      using a screen reader has — which is why no tile is called after the word
      the question is looking for. */
   const stage = source("src/components/games/engines/ChoiceStage.tsx");
-  assert.match(stage, /that's the one/);
-  assert.match(stage, /not this one/);
-  assert.match(stage, /already tried/);
+  assertChoiceStatesAreSaid(assert, stage);
+  assert.match(en["stage.choice.correct"], /that's the one/);
+  assert.match(en["stage.choice.wrong"], /not this one/);
+  assert.match(en["stage.choice.tried"], /already tried/);
 
   /* And the round says out loud where it has got to, and what was asked, for
      a child who cannot see the dots or the bubble. */
@@ -605,8 +608,24 @@ test("the way out and the way through are both reachable without a mouse", () =>
   const frame = source("src/components/games/GameShell.tsx");
   assert.match(frame, /role="status"/);
   assert.match(frame, /aria-live="polite"/);
-  assert.match(game, /Question \$\{quest\.progress\.current \+ 1\}/);
-  assert.match(game, /the answer is \$\{answerLabel\}/);
+  /* Which question this is, and what the answer turned out to be — said as
+     keys, with the step numbers handed in. A catalogue that dropped
+     `{current}` would leave a listening child with no place in the round, so
+     the holes are checked in every language rather than the sentence in one. */
+  assert.match(game, /t\("quest\.asking", \{ question: quest\.question, \.\.\.step \}\)/);
+  assert.match(game, /t\("quest\.answered", \{ answer: answerLabel, \.\.\.step \}\)/);
+  assert.match(
+    game,
+    /const step = \{ current: quest\.progress\.current \+ 1, total: quest\.progress\.total \}/,
+  );
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    for (const hole of ["{current}", "{total}", "{question}"]) {
+      assert.ok(words["quest.asking"].includes(hole), `quest.asking lost ${hole}`);
+    }
+    for (const hole of ["{current}", "{total}", "{answer}"]) {
+      assert.ok(words["quest.answered"].includes(hole), `quest.answered lost ${hole}`);
+    }
+  }
 });
 
 /* 16 --------------------------------------------------------------------- */
@@ -766,10 +785,26 @@ test("the animal walks home in the real Quest, and nothing else in it moves", ()
   assert.doesNotMatch(game, /MagicMotion/);
   /* The bubble is sized for everything KIDDO can say about the question. */
   assert.match(game, /promptReserve=\{phase === "intro" \? \[\] : lines\}/);
-  /* A board keeps its own quiet words. */
-  for (const said of ["Yes! That's the one.", "Ooh, not that one. Have another go."]) {
-    assert.ok(game.includes(said), `the board no longer says "${said}"`);
+  /* A board keeps its own quiet words, separate from the question's — the
+     game reads its own two keys, and the catalogue still holds the wording. */
+  assert.match(game, /t\("game\.general-knowledge-quest\.yesBoard"\)/);
+  assert.match(game, /t\("game\.general-knowledge-quest\.retryBoard"\)/);
+  assert.equal(en["game.general-knowledge-quest.yesBoard"], "Yes! That's the one.");
+  assert.equal(
+    en["game.general-knowledge-quest.retryBoard"],
+    "Ooh, not that one. Have another go.",
+  );
+  /* And they are the board's own in Malay as well, not the question's reused. */
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    assert.notEqual(
+      words["game.general-knowledge-quest.yesBoard"],
+      words["game.general-knowledge-quest.retryBoard"],
+    );
   }
   /* And a screen reader hears the join land, by count rather than by motion. */
-  assert.match(game, /of \$\{board\.progress\.total\} joined\./);
+  assert.match(game, /t\("quest\.joined", \{/);
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    assert.ok(words["quest.joined"].includes("{current}"));
+    assert.ok(words["quest.joined"].includes("{total}"));
+  }
 });

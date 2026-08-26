@@ -1,6 +1,10 @@
+"use client";
+
 import { Check, Minus } from "lucide-react";
 
 import { cn } from "@/lib/cn";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useT } from "@/lib/i18n/useLocale";
 import { SectionIntro } from "./SectionIntro";
 
 /**
@@ -12,44 +16,47 @@ import { SectionIntro } from "./SectionIntro";
  * observations, one about an endless feed and one about KIDDO, each of
  * which is either obviously true or is something the product actually does
  * and the rest of this page shows.
+ *
+ * The lists are keys rather than sentences now, so the observations are the
+ * same four in either language and the catalogue is the only place the
+ * wording lives.
  */
-const FEED = [
-  "One video leads into the next, chosen to keep watching.",
-  "Nothing is left behind when the tablet goes down.",
-  "Adverts and things to buy, aimed straight at your child.",
-  "Hard to tell, afterwards, what they actually did.",
+const FEED: MessageKey[] = [
+  "landing.screenTime.feed.1",
+  "landing.screenTime.feed.2",
+  "landing.screenTime.feed.3",
+  "landing.screenTime.feed.4",
 ];
 
-const KIDDO = [
-  "Short rounds with a beginning and an end.",
-  "Every finished activity leaves something in its world.",
-  "No adverts, nothing to buy, and never a price on a child’s screen.",
-  "A parent page that says exactly what was explored.",
+const KIDDO: MessageKey[] = [
+  "landing.screenTime.kiddo.1",
+  "landing.screenTime.kiddo.2",
+  "landing.screenTime.kiddo.3",
+  "landing.screenTime.kiddo.4",
 ];
 
 export function ScreenTime() {
+  const t = useT();
   return (
     <section aria-labelledby="screen-time-heading" id="why-kiddo" className="scroll-mt-24">
       <SectionIntro
         id="screen-time-heading"
-        eyebrow="Why KIDDO"
-        title="Screen time is going to happen. This is what it could be instead."
+        eyebrow={t("landing.screenTime.eyebrow")}
+        title={t("landing.screenTime.title")}
       >
-        An hour on YouTube or a social feed goes by and leaves nothing behind, and it is
-        genuinely hard to tell a video that teaches from one that is only good at holding
-        attention. KIDDO is the other thing to hand over when the tablet comes out.
+        {t("landing.screenTime.body")}
       </SectionIntro>
 
       <div className="mt-10 grid grid-cols-1 gap-4 sm:mt-12 md:grid-cols-2 md:gap-6">
         <Column
-          title="An endless feed"
+          title={t("landing.screenTime.feed.title")}
           items={FEED}
           tone="bg-ink-900/5 text-ink-500"
           icon={<Minus className="size-4" strokeWidth={3} aria-hidden />}
           muted
         />
         <Column
-          title="An afternoon in KIDDO"
+          title={t("landing.screenTime.kiddo.title")}
           items={KIDDO}
           tone="bg-sage-soft text-sage-ink"
           icon={<Check className="size-4" strokeWidth={3} aria-hidden />}
@@ -67,11 +74,12 @@ function Column({
   muted,
 }: {
   title: string;
-  items: string[];
+  items: MessageKey[];
   tone: string;
   icon: React.ReactNode;
   muted?: boolean;
 }) {
+  const t = useT();
   return (
     <div
       className={cn(
@@ -87,7 +95,7 @@ function Column({
               {icon}
             </span>
             <span className={cn("text-base leading-snug", muted ? "text-ink-700" : "text-ink-900")}>
-              {item}
+              {t(item)}
             </span>
           </li>
         ))}

@@ -10,6 +10,11 @@ import { previewEnabled } from "@/lib/cloud/preview";
 import { checkResetLink, finishEmailVerification, finishPasswordReset } from "@/lib/cloud/session";
 import { CLOUD_CONFIGURED } from "@/lib/firebase/config";
 import type { AuthFailure } from "@/lib/cloud/types";
+import { around } from "@/lib/i18n/format";
+import type { Locale } from "@/lib/i18n/locale";
+import { translate } from "@/lib/i18n/messages";
+import type { MessageKey } from "@/lib/i18n/messages/en";
+import { useTranslation } from "@/lib/i18n/useLocale";
 import { PARENTS } from "@/lib/routes";
 
 /**
@@ -35,10 +40,10 @@ type Stage =
   | { kind: "offline" }
   | { kind: "unavailable" };
 
-const WORDS: Partial<Record<AuthFailure, string>> = {
-  "weak-password": "Please choose a password with at least 6 characters.",
-  "bad-link": "This link has expired or has already been used.",
-  offline: "KIDDO can’t reach the internet right now. Check the connection and try again.",
+const WORDS: Partial<Record<AuthFailure, MessageKey>> = {
+  "weak-password": "auth.error.weak-password",
+  "bad-link": "reset.error.badLink",
+  offline: "auth.error.offline",
 };
 
 export function ResetPassword() {
@@ -46,7 +51,8 @@ export function ResetPassword() {
   const [code, setCode] = useState("");
   const [password, setPassword] = useState("");
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<MessageKey | null>(null);
+  const { locale, t } = useTranslation();
   const id = useId();
 
   useEffect(() => {
@@ -91,13 +97,13 @@ export function ResetPassword() {
     const failure = await finishPasswordReset(code, password);
     setBusy(false);
     if (failure === "bad-link") setStage({ kind: "bad-link" });
-    else if (failure) setError(WORDS[failure] ?? "Something went wrong. Please try again.");
+    else if (failure) setError(WORDS[failure] ?? "common.somethingWentWrong");
     else setStage({ kind: "done-reset" });
   }
 
   const back = (
     <ButtonLink href={PARENTS} size="md" icon={<ArrowRight className="size-5" aria-hidden />} iconRight className="self-start" data-reset-back>
-      Go to sign in
+      {t("reset.back")}
     </ButtonLink>
   );
 
@@ -109,22 +115,22 @@ export function ResetPassword() {
         </span>
         <div className="space-y-1">
           <h1 id={`${id}-title`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {stage.kind === "checking" && "One moment…"}
-            {stage.kind === "reset" && "Choose a new password"}
-            {stage.kind === "done-reset" && "Your password is changed"}
-            {stage.kind === "done-verify" && "Your email is verified"}
-            {stage.kind === "bad-link" && "This link doesn’t work any more"}
-            {stage.kind === "offline" && "KIDDO can’t reach the internet"}
-            {stage.kind === "unavailable" && "Accounts aren’t set up on this KIDDO"}
+            {stage.kind === "checking" && t("common.oneMoment")}
+            {stage.kind === "reset" && t("reset.title.reset")}
+            {stage.kind === "done-reset" && t("reset.title.doneReset")}
+            {stage.kind === "done-verify" && t("reset.title.doneVerify")}
+            {stage.kind === "bad-link" && t("reset.title.badLink")}
+            {stage.kind === "offline" && t("reset.title.offline")}
+            {stage.kind === "unavailable" && t("reset.title.unavailable")}
           </h1>
           <p className="text-ink-700 text-base leading-snug" role="status">
-            {stage.kind === "checking" && "Checking your link."}
-            {stage.kind === "reset" && `For ${stage.email}. At least 6 characters.`}
-            {stage.kind === "done-reset" && "Sign in with it to get back to your child’s KIDDO."}
-            {stage.kind === "done-verify" && "Thank you. You can carry on in the parent area."}
-            {stage.kind === "bad-link" && "Password links expire after a while and only work once. Go to sign in and choose “Forgot password?” to get a new one."}
-            {stage.kind === "offline" && "Check the connection and open the link from your email again."}
-            {stage.kind === "unavailable" && "This KIDDO keeps everything on the device, so there is no password to reset."}
+            {stage.kind === "checking" && t("reset.body.checking")}
+            {stage.kind === "reset" && t("reset.body.reset", { email: stage.email })}
+            {stage.kind === "done-reset" && t("reset.body.doneReset")}
+            {stage.kind === "done-verify" && t("reset.body.doneVerify")}
+            {stage.kind === "bad-link" && t("reset.body.badLink")}
+            {stage.kind === "offline" && t("reset.body.offline")}
+            {stage.kind === "unavailable" && t("reset.body.unavailable")}
           </p>
         </div>
       </div>
@@ -133,7 +139,7 @@ export function ResetPassword() {
         <form onSubmit={submit} className="flex flex-col gap-4" noValidate>
           <div className="flex flex-col gap-2">
             <label htmlFor={`${id}-password`} className="text-ink-700 text-base font-semibold">
-              New password
+              {t("reset.field")}
             </label>
             <input
               id={`${id}-password`}
@@ -149,10 +155,10 @@ export function ResetPassword() {
             />
           </div>
           <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-reset-error>
-            {error ?? ""}
+            {error ? t(error) : ""}
           </p>
           <Button type="submit" size="md" icon={<ArrowRight className="size-5" aria-hidden />} iconRight className="self-start" aria-busy={busy} data-reset-submit>
-            {busy ? "One moment…" : "Save new password"}
+            {t(busy ? "common.oneMoment" : "reset.submit")}
           </Button>
         </form>
       )}
@@ -160,9 +166,26 @@ export function ResetPassword() {
       {(stage.kind === "done-reset" || stage.kind === "done-verify" || stage.kind === "bad-link" || stage.kind === "unavailable") && back}
       {stage.kind === "offline" && (
         <p className="text-ink-700 text-base">
-          Or <Link href={PARENTS} className="text-ink-900 font-semibold underline underline-offset-4">go to sign in</Link>.
+          <OrSignIn locale={locale} />
         </p>
       )}
     </Card>
+  );
+}
+
+/**
+ * "Or go to sign in." — one sentence with a link inside it, split at its
+ * `{link}` hole so the words either side stay the translator's, not KIDDO's.
+ */
+function OrSignIn({ locale }: { locale: Locale }) {
+  const { before, after } = around(translate(locale, "reset.orSignIn"), "link");
+  return (
+    <>
+      {before}
+      <Link href={PARENTS} className="text-ink-900 font-semibold underline underline-offset-4">
+        {translate(locale, "reset.orSignIn.link")}
+      </Link>
+      {after}
+    </>
   );
 }

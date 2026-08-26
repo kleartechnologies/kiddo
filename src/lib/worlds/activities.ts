@@ -45,12 +45,8 @@ export type Tier = 1 | 2 | 3;
 /** The tiers in the order they unlock. */
 export const TIERS: readonly Tier[] = [1, 2, 3];
 
-/** What a child (and a parent) calls each tier. */
-export const TIER_WORDS: Readonly<Record<Tier, "Easy" | "Medium" | "Hard">> = {
-  1: "Easy",
-  2: "Medium",
-  3: "Hard",
-};
+/* What a child (and a parent) *calls* each tier is language, so it lives in
+   the catalogue rather than here: `tierKey` in `lib/i18n/names`. */
 
 /**
  * The thing the world gives back. Each world has exactly one kind, and it is
@@ -62,14 +58,6 @@ export interface WorldActivity {
   id: WorldActivityId;
   world: PlayableWorldId;
   slug: WorldActivitySlug;
-  /** What the door is called. Short, and about what the child will *do*. */
-  title: string;
-  /** One line under the title, for a grown-up reading over a shoulder. */
-  blurb: string;
-  /** What KIDDO says on the way in. */
-  intro: string;
-  /** What KIDDO says at the end, before the reward is named. */
-  done: string;
   /**
    * The round itself, at each tier. Same number of questions at every tier —
    * harder is never *longer* — but a harder tier deals from higher levels of
@@ -94,29 +82,19 @@ export interface WorldActivity {
   travel?: boolean;
 }
 
-/** Each world's reward, said the way the world would say it. */
-export const WORLD_REWARDS: Readonly<
-  Record<GameWorldId, { kind: WorldRewardKind; one: string; many: string; earned: string }>
-> = {
-  meadow: { kind: "flower", one: "flower", many: "flowers", earned: "A flower for the meadow!" },
-  counting: {
-    kind: "flower",
-    one: "flower",
-    many: "flowers",
-    earned: "A new flower has grown in your garden!",
-  },
-  animals: {
-    kind: "animal",
-    one: "animal",
-    many: "animals",
-    earned: "A new animal friend has joined your adventure!",
-  },
-  words: {
-    kind: "page",
-    one: "page",
-    many: "pages",
-    earned: "A new page has been added to your storybook!",
-  },
+/**
+ * What each world gives back — the thing itself, not its name.
+ *
+ * A flower is a flower in both languages; "a new flower has grown in your
+ * garden!" is not. So the kind stays here, where the scenery reads it to
+ * decide what to draw, and the three ways of saying it live in the catalogue
+ * under `rewardKey`.
+ */
+export const WORLD_REWARDS: Readonly<Record<GameWorldId, WorldRewardKind>> = {
+  meadow: "flower",
+  counting: "flower",
+  animals: "animal",
+  words: "page",
 };
 
 const five = (level: 1 | 2 | 3, from: SessionPlan["slots"][number]["from"]) =>
@@ -131,10 +109,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "counting.count-the-apples",
     world: "counting",
     slug: "count-the-apples",
-    title: "Count the Apples",
-    blurb: "Count the things in the garden and pick how many.",
-    intro: "Let's count in the garden!",
-    done: "You counted every single one!",
     plans: {
       /* Small groups, and every one of them a group of *things*. The pip
          boards `math.counting` deals are the same question with the apples
@@ -158,10 +132,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "counting.count-the-flowers",
     world: "counting",
     slug: "count-the-flowers",
-    title: "Count the Flowers",
-    blurb: "Bigger groups to count, and a few more to choose from.",
-    intro: "More things have grown! Let's count them.",
-    done: "What a lot of counting. Brilliant!",
     plans: {
       1: {
         slots: [
@@ -189,10 +159,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "counting.find-the-number",
     world: "counting",
     slug: "find-the-number",
-    title: "Find the Number",
-    blurb: "Know the numbers by name and find the one KIDDO asks for.",
-    intro: "Can you find the number I say?",
-    done: "You know your numbers!",
     plans: {
       1: {
         slots: [
@@ -222,10 +188,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "animals.find-the-home",
     world: "animals",
     slug: "find-the-home",
-    title: "Find the Home",
-    blurb: "Join each animal to the place it lives, and watch it go home.",
-    intro: "Help each animal find its way home!",
-    done: "Every animal is home safe and sound!",
     plans: {
       /* Two pairs, the best-known animals, pictures on both sides. */
       1: { slots: five(1, ["general-knowledge.home-partners"]).slice(0, 3) },
@@ -240,10 +202,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "animals.who-lives-here",
     world: "animals",
     slug: "who-lives-here",
-    title: "Who Lives Here?",
-    blurb: "Name the animals, hear their sounds and meet their babies.",
-    intro: "Who's that over there? Let's find out!",
-    done: "You know all the animals!",
     plans: {
       1: {
         slots: five(1, [
@@ -275,10 +233,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "animals.land-or-sea",
     world: "animals",
     slug: "land-or-sea",
-    title: "Land or Sea?",
-    blurb: "Where things live, what they eat, and land and water.",
-    intro: "Some live on the land, some in the water. Which is which?",
-    done: "Land, sea and sky — you found them all!",
     plans: {
       1: {
         /* Land and water at *its* entry level, not at the top of its ladder.
@@ -314,10 +268,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "words.alphabet-adventure",
     world: "words",
     slug: "alphabet-adventure",
-    title: "Alphabet Adventure",
-    blurb: "Find the letters KIDDO says, big ones and little ones.",
-    intro: "Let's open the word book and find some letters!",
-    done: "You found every letter!",
     plans: {
       1: {
         slots: [
@@ -345,10 +295,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "words.rhyming-friends",
     world: "words",
     slug: "rhyming-friends",
-    title: "Rhyming Friends",
-    blurb: "Join the words that sound the same at the end.",
-    intro: "Cat, hat, bat! Let's find the words that rhyme.",
-    done: "Every word found its rhyming friend!",
     plans: {
       /* Two pairs from the twelve first rhymes. */
       1: { slots: five(1, ["english.rhyming-partners"]).slice(0, 3) },
@@ -362,10 +308,6 @@ const DOORS: readonly WorldActivitySpec[] = [
     id: "words.word-discovery",
     world: "words",
     slug: "word-discovery",
-    title: "Word Discovery",
-    blurb: "Beginning sounds, ending sounds and finishing words.",
-    intro: "Listen to the sounds. What word is hiding?",
-    done: "You discovered so many words!",
     plans: {
       1: {
         slots: [

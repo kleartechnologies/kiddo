@@ -21,6 +21,9 @@ import {
   type ShapesQuestState,
 } from "@/lib/games/shapesColoursQuest";
 import { SHAPES_ACTIVITIES } from "@/lib/content/packs/shapes";
+import { ALL_CATALOGUES } from "@/lib/i18n/messages";
+import { en } from "@/lib/i18n/messages/en";
+import { assertChoiceStatesAreSaid, assertNothingScolds } from "./helpers/words";
 
 /**
  * A whole round of Shapes & Colours Quest, played without React.
@@ -470,14 +473,11 @@ test("Shapes & Colours Quest is in the catalogue and wired to a route of its own
 test("a wrong answer is never punished in words, in the game or in the shell", () => {
   const game = source("src/components/games/shapes/ShapesColoursQuestGame.tsx");
 
-  /* The words a child sees. Nothing here says no. */
-  assert.match(game, /Almost!/);
-  for (const forbidden of ["Wrong", "failed", "Oops", "No,", "Incorrect"]) {
-    assert.ok(
-      !game.includes(forbidden),
-      `ShapesColoursQuestGame says "${forbidden}" to a four year old`,
-    );
-  }
+  /* The words a child sees. The game names the keys; the catalogues hold the
+     sentences. Nothing under either of them says no — in either language. */
+  assert.match(game, /t\("game\.shapes-colours-quest\.retry"\)/);
+  assert.equal(en["game.shapes-colours-quest.retry"], "Almost! Let's take another look.");
+  assertNothingScolds(assert, "game.shapes-colours-quest.", "quest.");
 
   /* No score, no lives, no clock — not in the game and not in its rules.
      "lives" is looked for as a game mechanic rather than as a word, because
@@ -530,9 +530,7 @@ test("the way out and the way through are both reachable without a mouse", () =>
   /* Nothing rests on colour alone: the state is in the accessible name. This
      is the whole reason a pack about colour is safe to build on this engine. */
   const stage = source("src/components/games/engines/ChoiceStage.tsx");
-  assert.match(stage, /that's the one/);
-  assert.match(stage, /not this one/);
-  assert.match(stage, /already tried/);
+  assertChoiceStatesAreSaid(assert, stage);
 
   /* And the round says out loud where it has got to, for a child who cannot
      see the dots. */
@@ -543,7 +541,15 @@ test("the way out and the way through are both reachable without a mouse", () =>
   const frame = source("src/components/games/GameShell.tsx");
   assert.match(frame, /role="status"/);
   assert.match(frame, /aria-live="polite"/);
-  assert.match(game, /Question \$\{quest\.progress\.current \+ 1\}/);
+  /* Which question this is, said as a key with the step numbers handed in —
+     and the hole is checked in every language, because a catalogue that lost
+     `{current}` would leave a listening child with no place in the round. */
+  assert.match(game, /t\("quest\.asking", \{ question: quest\.question, \.\.\.step \}\)/);
+  for (const words of Object.values(ALL_CATALOGUES)) {
+    for (const hole of ["{current}", "{total}", "{question}"]) {
+      assert.ok(words["quest.asking"].includes(hole), `quest.asking lost ${hole}`);
+    }
+  }
 });
 
 /* 16 --------------------------------------------------------------------- */

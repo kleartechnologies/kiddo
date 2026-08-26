@@ -16,6 +16,7 @@ import { useDuckedMusic, useSoundCue } from "@/lib/audio/useAudio";
 import type { SoundId } from "@/lib/audio/tracks";
 import { ACCENTS } from "@/lib/accents";
 import { cn } from "@/lib/cn";
+import { useT } from "@/lib/i18n/useLocale";
 import { riseIn, springSoft } from "@/lib/motion";
 import type { Pose } from "@/components/character/poses";
 import type { CharacterId, Game } from "@/lib/games/types";
@@ -117,6 +118,7 @@ export function GameShell({
   exit,
   children,
 }: GameShellProps) {
+  const t = useT();
   const accent = ACCENTS[game.accent];
   /* The playfield only ever comes back after a celebration, so "has this
      shell celebrated yet" is exactly "is this a return visit". */
@@ -175,7 +177,7 @@ export function GameShell({
               accent.text,
             )}
           >
-            {game.title}
+            {t(game.title)}
           </h1>
         </div>
 

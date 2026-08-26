@@ -8,6 +8,8 @@ import { captionOf, spokenOf } from "@/lib/content/challenges";
 import type { ChallengeEngineProps } from "@/lib/content/engine";
 import type { ContentItem, OrderItem } from "@/lib/content/types";
 import { cn } from "@/lib/cn";
+import type { Translate } from "@/lib/i18n/messages";
+import { useT } from "@/lib/i18n/useLocale";
 import { springSoft } from "@/lib/motion";
 import { ContentItemView } from "./ContentItemView";
 import { PromptDisplay } from "./PromptDisplay";
@@ -102,12 +104,11 @@ function trayLabelOf(
   place: number,
   total: number,
   selected: boolean,
+  t: Translate,
 ): string {
   const name = spokenOf(item);
-  if (selected) {
-    return `${name}, chosen. Choose it again to put it in place ${place} of ${total}.`;
-  }
-  return `${name}, waiting. Choose it to move it.`;
+  if (selected) return t("stage.order.chosen", { name, place, total });
+  return t("stage.order.waiting", { name });
 }
 
 /** The face of a tile: the thing itself, and its word when it needs one. */
@@ -140,6 +141,7 @@ export function OrderStage({
   attemptId = null,
   onSelect,
 }: OrderStageProps) {
+  const t = useT();
   const { items } = challenge.payload;
   const total = items.length;
   const reduced = useReducedMotion();
@@ -370,7 +372,11 @@ export function OrderStage({
                           <Check className="size-3.5" strokeWidth={3} />
                         </span>
                         <span className="sr-only">
-                          {`Place ${index + 1} of ${total}: ${spokenOf(filled.item)}.`}
+                          {t("stage.order.filled", {
+                            place: index + 1,
+                            total,
+                            name: spokenOf(filled.item),
+                          })}
                         </span>
                       </div>
                     </li>
@@ -383,7 +389,7 @@ export function OrderStage({
                       <div className={shell}>
                         {face}
                         <span className="sr-only">
-                          {`Place ${index + 1} of ${total}, still empty.`}
+                          {t("stage.order.empty", { place: index + 1, total })}
                         </span>
                       </div>
                     </li>
@@ -406,8 +412,12 @@ export function OrderStage({
                       aria-disabled={!armed}
                       aria-label={
                         selectedItem
-                          ? `Put ${spokenOf(selectedItem.item)} in place ${index + 1} of ${total}.`
-                          : `Place ${index + 1} of ${total}, next to fill. Choose a tile first.`
+                          ? t("stage.order.drop", {
+                              name: spokenOf(selectedItem.item),
+                              place: index + 1,
+                              total,
+                            })
+                          : t("stage.order.next", { place: index + 1, total })
                       }
                       onClick={(event) => {
                         /* Keyboard only. A pointer's click always follows its
@@ -452,6 +462,7 @@ export function OrderStage({
                       nextPlace + 1,
                       total,
                       selected,
+                      t,
                     )}
                     onPointerDown={handlePointerDown(entry.id)}
                     onPointerMove={handlePointerMove}

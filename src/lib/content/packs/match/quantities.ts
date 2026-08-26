@@ -119,7 +119,6 @@ const HINTS = [
 export const quantityPartnersActivity = defineGeneratedActivity({
   id: "quantity-partners",
   packId: "match",
-  title: "Numbers and how many",
   category: "math",
   activityType: "counting",
   kind: "connect",

@@ -1,11 +1,15 @@
+"use client";
+
 import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ButtonLink } from "@/components/ui/Button";
+import { useT } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
 /** The last thing on the page says the first thing again, with KIDDO next to it. */
 export function ClosingCall() {
+  const t = useT();
   return (
     <section
       aria-labelledby="closing-heading"
@@ -14,11 +18,10 @@ export function ClosingCall() {
       <CharacterFigure id="kiddo" size="lg" pose="point" />
       <div className="flex flex-1 flex-col items-center gap-4 sm:items-start">
         <h2 id="closing-heading" className="font-display text-3xl font-bold text-balance sm:text-4xl">
-          Ready when you are.
+          {t("landing.closing.title")}
         </h2>
         <p className="text-ink-700 max-w-xl text-lg leading-relaxed text-pretty">
-          Choose a plan, create your account, and hand over the tablet. Three worlds and
-          nine doors are open today, and more are on the way.
+          {t("landing.closing.body")}
         </p>
         <ButtonLink
           href={PRICING}
@@ -27,7 +30,7 @@ export function ClosingCall() {
           iconRight
           icon={<ArrowRight className="size-6" aria-hidden />}
         >
-          Start KIDDO
+          {t("landing.closing.cta")}
         </ButtonLink>
       </div>
     </section>

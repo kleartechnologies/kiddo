@@ -15,7 +15,21 @@
   publish = ".next"
 
 [build.environment]
-  # firebase-admin 14 requires Node >= 22 and next 16 requires >= 20.9.
-  # Netlify's default has moved over time, so the floor is pinned rather
-  # than assumed: a lower default would fail the build on the Admin SDK.
-  NODE_VERSION = "22"
+  # Node 24, and said twice on purpose.
+  #
+  # firebase-admin 14 reaches jwks-rsa 4, which declares `jose: ^6`, and
+  # jose 6 is ESM-only — so a CommonJS `require()` of it only works on a
+  # Node that supports require(esm), which landed in 22.12. Asking for
+  # "22" let Netlify pick any 22.x, and the one it gave the function was
+  # older than that: every route under src/app/api answered 500 with
+  #   ERR_REQUIRE_ESM: require() of ES Module .../jose/dist/webapi/index.js
+  #   from .../jwks-rsa/src/utils.js not supported
+  # while the pages, which are prerendered, served perfectly. A major on
+  # its own is a floor, not a version; this one is high enough that every
+  # release under it qualifies.
+  #
+  # The functions runtime normally follows the build's version, but that
+  # implicit mapping is exactly what failed here, so the Lambda runtime is
+  # named outright rather than inferred.
+  NODE_VERSION = "24"
+  AWS_LAMBDA_JS_RUNTIME = "nodejs24.x"

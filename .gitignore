@@ -54,3 +54,6 @@ next-env.d.ts
 # Claude Code local runtime state (session locks, machine-local settings)
 .claude/scheduled_tasks.lock
 .claude/settings.local.json
+
+# Local Netlify folder
+.netlify

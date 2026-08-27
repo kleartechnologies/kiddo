@@ -12,6 +12,11 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // What `netlify build` and `netlify serve` leave behind: the whole
+    // built app copied into a function bundle, plus the CLI's own plugin
+    // tree. Build output wearing source's clothes — it is gitignored, so
+    // linting it only ever reports on code nobody here wrote.
+    ".netlify/**",
     // The character sheet from Claude Design. Reference art, not source.
     "Character Vector Construction/**",
     // The approved visual design package. Prototypes and a design-tool

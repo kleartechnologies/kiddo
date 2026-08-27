@@ -57,3 +57,6 @@ next-env.d.ts
 
 # Local Netlify folder
 .netlify
+
+# The Netlify CLI's Deno cache for the edge-function bootstrap
+deno.lock

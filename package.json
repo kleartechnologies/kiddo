@@ -29,6 +29,9 @@
     "test:rules": "node scripts/test-rules.mjs",
     "measure:join": "node scripts/measure-join.mjs"
   },
+  "overrides": {
+    "jose": "^5.10.0"
+  },
   "dependencies": {
     "firebase": "^12.18.0",
     "firebase-admin": "^14.3.0",

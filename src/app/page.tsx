@@ -1,25 +1,28 @@
 import type { Metadata } from "next";
 
 import { ClosingCall } from "@/components/landing/ClosingCall";
+import { Faq } from "@/components/landing/Faq";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { JoinNotices } from "@/components/landing/JoinNotices";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHero } from "@/components/landing/LandingHero";
-import { ParentSection } from "@/components/landing/ParentSection";
+import { MeetKiddo } from "@/components/landing/MeetKiddo";
+import { PainPoints } from "@/components/landing/PainPoints";
 import { Pricing } from "@/components/landing/Pricing";
-import { Progression } from "@/components/landing/Progression";
-import { ScreenTime } from "@/components/landing/ScreenTime";
-import { WorldShowcase } from "@/components/landing/WorldShowcase";
+import { Testimonials } from "@/components/landing/Testimonials";
+import { TheShift } from "@/components/landing/TheShift";
+import { WhyParents } from "@/components/landing/WhyParents";
 import { Screen } from "@/components/ui/Screen";
-import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
+import { DEFAULT_LOCALE, LOCALE_HTML_LANG } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/messages";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 
 /**
- * The page's own metadata, read from the English catalogue.
+ * The page's own metadata, read from the default catalogue — which is to say
+ * from the Bahasa Melayu one.
  *
- * It is English and stays English, and that is a decision rather than an
+ * It is Malay and stays Malay, and that is a decision rather than an
  * omission. `metadata` is evaluated when the page is built, long before any
  * browser has said which language it wants; making it follow the reader
  * would mean rendering this page per request — the one thing `next.config.ts`
@@ -46,7 +49,7 @@ export const metadata: Metadata = {
     description: meta("landing.meta.ogDescription"),
     type: "website",
     siteName: "KIDDO",
-    locale: "en_GB",
+    locale: `${LOCALE_HTML_LANG[DEFAULT_LOCALE]}_MY`,
   },
   twitter: {
     card: "summary_large_image",
@@ -58,12 +61,25 @@ export const metadata: Metadata = {
 /**
  * The public front door. A parent arrives here; a child lives at `/play`.
  *
- * Read top to bottom the way a parent reads it in the thirty seconds they
- * give a new product: what it believes, what it is instead of, what is in
- * it, how one visit goes, what stays behind, what the grown-up gets, what
- * it costs, and the way in. Everything pictured is the running product —
- * the world scenes, the doors, the screenshots — so the page cannot promise
- * something the app does not do.
+ * The order is an argument, not a table of contents. A parent lands here from
+ * an advert on a phone, and the page walks the evening they already know:
+ * screen time need not be wasted time (the hero), here is your house on a
+ * Tuesday night (the four photographs), the problem was never the screen (the
+ * turning point), this is what we made instead (KIDDO and its three worlds),
+ * this is what an hour of it looks like (four steps and the child's real
+ * doors), this is what it gives you (the parents' half), here are other
+ * parents saying it in their own words, and then — only then — what it costs
+ * and the way in.
+ *
+ * The pain points come before the product on purpose. A parent who has not
+ * yet agreed there is a problem has no reason to read a feature list, and a
+ * page that opens on features is a page they close.
+ *
+ * Everything pictured after the turning point is the running product — the
+ * world scenes, the doors, the screenshots, the parents' space — so the page
+ * cannot promise something the app does not do. The four photographs before
+ * it are the only images here that are not the product, and they are not
+ * pretending to be.
  *
  * The way in is `#pricing`, not `/play`. KIDDO is a subscription: a parent
  * chooses a plan, makes an account and pays before there is anything for a
@@ -76,12 +92,14 @@ export default function LandingPage() {
       <LandingHeader />
       <main className="flex flex-col gap-20 select-text sm:gap-28">
         <LandingHero />
-        <ScreenTime />
-        <WorldShowcase worlds={PLAYABLE_WORLDS} />
+        <PainPoints />
+        <TheShift />
+        <MeetKiddo worlds={PLAYABLE_WORLDS} />
         <HowItWorks />
-        <Progression />
-        <ParentSection />
+        <WhyParents />
+        <Testimonials />
         <Pricing />
+        <Faq />
         <ClosingCall />
       </main>
       <LandingFooter />

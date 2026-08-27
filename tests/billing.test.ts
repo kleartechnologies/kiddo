@@ -117,14 +117,14 @@ test("changing a price means changing one file: nothing else writes an amount", 
 });
 
 test("the account area can say, in one word, what state the subscription is in", () => {
-  assert.equal(statusLabel(ACTIVE, NOW), "Active");
-  assert.equal(statusLabel({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW), "Ending");
-  assert.equal(statusLabel({ ...ACTIVE, currentPeriodEnd: NOW - 30 * DAY }, NOW), "Renewing", "an active row whose period ran out long ago is waiting on Stripe, not failing");
-  assert.equal(statusLabel({ ...ACTIVE, status: "past_due" }, NOW), "Payment failed");
-  assert.equal(statusLabel({ ...ACTIVE, status: "incomplete" }, NOW), "Confirming");
-  assert.equal(statusLabel({ ...ACTIVE, status: "cancelled" }, NOW), "Cancelled");
-  assert.equal(statusLabel({ ...ACTIVE, status: "expired" }, NOW), "Ended");
-  assert.equal(statusLabel(NO_SUBSCRIPTION, NOW), "No subscription");
+  assert.equal(statusLabel(ACTIVE, NOW, "en"), "Active");
+  assert.equal(statusLabel({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW, "en"), "Ending");
+  assert.equal(statusLabel({ ...ACTIVE, currentPeriodEnd: NOW - 30 * DAY }, NOW, "en"), "Renewing", "an active row whose period ran out long ago is waiting on Stripe, not failing");
+  assert.equal(statusLabel({ ...ACTIVE, status: "past_due" }, NOW, "en"), "Payment failed");
+  assert.equal(statusLabel({ ...ACTIVE, status: "incomplete" }, NOW, "en"), "Confirming");
+  assert.equal(statusLabel({ ...ACTIVE, status: "cancelled" }, NOW, "en"), "Cancelled");
+  assert.equal(statusLabel({ ...ACTIVE, status: "expired" }, NOW, "en"), "Ended");
+  assert.equal(statusLabel(NO_SUBSCRIPTION, NOW, "en"), "No subscription");
 });
 
 test("every Stripe status maps to an explicit KIDDO state, and only active opens KIDDO", () => {
@@ -193,8 +193,8 @@ test("a cancellation is read as cancel-at-period-end however Stripe words it", (
   const portal = stateFromStripe(stripeSub({ cancelAt: END }), PRICES, 1000);
   assert.equal(portal.cancelAtPeriodEnd, true);
   assert.equal(portal.status, "active", "Stripe still calls it active until the period ends");
-  assert.equal(statusLabel(portal, NOW), "Ending");
-  assert.match(describeSubscription(portal, NOW), /^Cancelled\. KIDDO stays open until /);
+  assert.equal(statusLabel(portal, NOW, "en"), "Ending");
+  assert.match(describeSubscription(portal, NOW, "en"), /^Cancelled\. KIDDO stays open until /);
 
   /* The older shape means the same thing and still reads the same way. */
   assert.equal(stateFromStripe(stripeSub({ cancel: true }), PRICES, 1000).cancelAtPeriodEnd, true);
@@ -206,8 +206,8 @@ test("a cancellation is read as cancel-at-period-end however Stripe words it", (
   /* Neither set: a subscription that really is renewing is left alone. */
   const renewing = stateFromStripe(stripeSub(), PRICES, 1000);
   assert.equal(renewing.cancelAtPeriodEnd, false);
-  assert.equal(statusLabel(renewing, NOW), "Active");
-  assert.match(describeSubscription(renewing, NOW), /Renews on /);
+  assert.equal(statusLabel(renewing, NOW, "en"), "Active");
+  assert.match(describeSubscription(renewing, NOW, "en"), /Renews on /);
   assert.deepEqual(
     { ...portal, cancelAtPeriodEnd: false },
     renewing,
@@ -217,7 +217,7 @@ test("a cancellation is read as cancel-at-period-end however Stripe words it", (
   /* One Stripe has already ended still maps by its status alone. */
   const ended = stateFromStripe(stripeSub({ status: "canceled", cancelAt: END }), PRICES, 1000);
   assert.equal(ended.status, "cancelled");
-  assert.equal(statusLabel(ended, NOW), "Cancelled");
+  assert.equal(statusLabel(ended, NOW, "en"), "Cancelled");
 
   /* Access is decided by status and period end. This flag never moves it. */
   assert.equal(hasAccess(portal, NOW), true, "cancelling keeps KIDDO open until the period ends");
@@ -248,16 +248,16 @@ test("a subscription read back from the cloud is parsed defensively", () => {
 });
 
 test("the billing line is a sentence a parent can act on, never a code", () => {
-  assert.match(describeSubscription(ACTIVE, NOW), /Yearly plan, RM59\.90 a year\. Renews on/);
-  assert.match(describeSubscription({ ...ACTIVE, plan: "monthly" }, NOW), /Monthly plan, RM9\.90 a month/);
-  assert.match(describeSubscription({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW), /Cancelled\. KIDDO stays open until/);
-  assert.match(describeSubscription({ ...ACTIVE, status: "past_due" }, NOW), /payment didn’t go through/);
-  assert.match(describeSubscription({ ...ACTIVE, status: "cancelled" }, NOW), /ended on/);
-  assert.match(describeSubscription({ ...ACTIVE, status: "expired" }, NOW), /has ended/);
-  assert.match(describeSubscription({ ...ACTIVE, status: "incomplete" }, NOW), /still being confirmed/);
-  assert.equal(describeSubscription(NO_SUBSCRIPTION, NOW), "No subscription yet.");
+  assert.match(describeSubscription(ACTIVE, NOW, "en"), /Yearly plan, RM59\.90 a year\. Renews on/);
+  assert.match(describeSubscription({ ...ACTIVE, plan: "monthly" }, NOW, "en"), /Monthly plan, RM9\.90 a month/);
+  assert.match(describeSubscription({ ...ACTIVE, cancelAtPeriodEnd: true }, NOW, "en"), /Cancelled\. KIDDO stays open until/);
+  assert.match(describeSubscription({ ...ACTIVE, status: "past_due" }, NOW, "en"), /payment didn’t go through/);
+  assert.match(describeSubscription({ ...ACTIVE, status: "cancelled" }, NOW, "en"), /ended on/);
+  assert.match(describeSubscription({ ...ACTIVE, status: "expired" }, NOW, "en"), /has ended/);
+  assert.match(describeSubscription({ ...ACTIVE, status: "incomplete" }, NOW, "en"), /still being confirmed/);
+  assert.equal(describeSubscription(NO_SUBSCRIPTION, NOW, "en"), "No subscription yet.");
   for (const status of ["active", "past_due", "cancelled", "expired", "incomplete", "none"] as const) {
-    assert.doesNotMatch(describeSubscription({ ...ACTIVE, status }, NOW), /past_due|incomplete_expired|stripe_|[a-z]+_[a-z]+/);
+    assert.doesNotMatch(describeSubscription({ ...ACTIVE, status }, NOW, "en"), /past_due|incomplete_expired|stripe_|[a-z]+_[a-z]+/);
   }
 });
 

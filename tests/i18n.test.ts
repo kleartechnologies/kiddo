@@ -12,7 +12,6 @@ import {
   LOCALE_HTML_LANG,
   LOCALE_LABELS,
   LOCALE_SHORT,
-  negotiate,
   type Locale,
 } from "@/lib/i18n/locale";
 import { around, fill, formatDay } from "@/lib/i18n/format";
@@ -149,7 +148,7 @@ test("nothing is left in English but the things that are the same in both", () =
 });
 
 /* 5 ---------------------------------------------------------------------- */
-test("a missing line falls back to English rather than to nothing", () => {
+test("a missing line falls back to the default language rather than to nothing", () => {
   /* The runtime backstop under the type guarantee. It exists for the hour a
      translator has cleared a line to come back to it: a button with the
      English word on it is usable, a button with no word on it is not. */
@@ -161,7 +160,7 @@ test("a missing line falls back to English rather than to nothing", () => {
   assert.equal(translate("ms", "chrome.back"), ms["chrome.back"]);
   assert.notEqual(ms["chrome.back"].trim(), "");
   /* And an unknown locale is the default rather than a crash. */
-  assert.equal(translate("zz" as Locale, "chrome.back"), en["chrome.back"]);
+  assert.equal(translate("zz" as Locale, "chrome.back"), ALL_CATALOGUES[DEFAULT_LOCALE]["chrome.back"]);
 });
 
 /* 6 ---------------------------------------------------------------------- */
@@ -280,45 +279,45 @@ const GAME_WORLDS_IDS = Object.keys(GAME_WORLDS) as (keyof typeof GAME_WORLDS)[]
 /* ---------------------------------------------- which language, and why -- */
 
 /* 12 --------------------------------------------------------------------- */
-test("KIDDO opens in English when nobody has said otherwise", () => {
-  assert.equal(DEFAULT_LOCALE, "en");
-  assert.equal(resolveLocale(null, null, []), "en");
-  assert.equal(resolveLocale(null, null, ["fr-FR", "de"]), "en");
-  assert.equal(resolveLocale(null, null, undefined), "en");
+test("KIDDO opens in Bahasa Melayu when nobody has said otherwise", () => {
+  /* Not a technical default: a decision about who KIDDO is for. It is written
+     for Malaysian parents, and the landing page they meet first is written in
+     Bahasa Melayu, so that is the language of the prerendered file too. */
+  assert.equal(DEFAULT_LOCALE, "ms");
+  assert.equal(resolveLocale(null, null), "ms");
+  assert.equal(resolveLocale(null), "ms");
 });
 
 /* 13 --------------------------------------------------------------------- */
-test("a Malay device opens in Bahasa Melayu, with nothing to configure", () => {
-  /* Matching is on the language subtag, because every real Malaysian device
-     says `ms-MY` rather than `ms`. */
-  assert.equal(resolveLocale(null, null, ["ms-MY", "en-US"]), "ms");
-  assert.equal(negotiate(["ms-SG"]), "ms");
-  assert.equal(negotiate(["MS"]), "ms");
-  assert.equal(negotiate(["en-GB", "ms"]), "en", "the device's own order decides");
+test("the device does not get a vote", () => {
+  /* KIDDO used to read `navigator.languages` and open in whatever the phone
+     said. It no longer does, and deliberately: a Malaysian phone is usually
+     set to English even in a household that speaks Malay all day, so the
+     device setting is precisely the wrong thing to infer a household's
+     language from. Nothing in the language layer reads it any more. */
+  const storage = read("src/lib/i18n/storage.ts");
+  assert.doesNotMatch(storage, /navigator/);
+  assert.doesNotMatch(read("src/lib/i18n/locale.ts"), /navigator/);
+  assert.doesNotMatch(read("src/lib/i18n/useLocale.ts"), /navigator\.languages/);
 
-  /* Indonesian is deliberately not folded into Malay: close enough that a
-     machine would, far enough apart that a Malaysian child would hear it. */
-  assert.equal(negotiate(["id-ID"]), null);
-  assert.equal(resolveLocale(null, null, ["id-ID"]), "en");
-
-  /* And nothing in the list is not a crash. */
-  assert.equal(negotiate([null as unknown as string, "ms"]), "ms");
-  assert.equal(negotiate(undefined), null);
+  /* Which leaves one tap in the header as the way to English — and it is on
+     the landing page a parent lands on, not buried in a settings screen. */
+  assert.match(read("src/components/landing/LandingHeader.tsx"), /LanguageSwitcher/);
 });
 
 /* 14 --------------------------------------------------------------------- */
 test("an explicit choice outranks everything, for ever", () => {
-  /* The rule the other three exist to protect (§3). A household that switched
-     to Bahasa Melayu once must never be handed back to English by a device
-     setting — and, just as importantly, a household that chose English on a
-     Malay phone must be left in English. */
-  assert.equal(resolveLocale("en", "ms", ["ms-MY"]), "en");
-  assert.equal(resolveLocale("ms", "en", ["en-US"]), "ms");
+  /* The rule the others exist to protect (§3). A household that switched to
+     English once must never be handed back to Bahasa Melayu by a default —
+     and a household that chose Bahasa Melayu on an account set to English
+     must be left in Bahasa Melayu. */
+  assert.equal(resolveLocale("en", "ms"), "en");
+  assert.equal(resolveLocale("ms", "en"), "ms");
 
-  /* An account preference outranks the device and loses to a choice made on
+  /* An account preference outranks the default and loses to a choice made on
      this device — the second-phone case. */
-  assert.equal(resolveLocale(null, "ms", ["en-US"]), "ms");
-  assert.equal(resolveLocale(null, null, ["en-US"]), "en");
+  assert.equal(resolveLocale(null, "en"), "en");
+  assert.equal(resolveLocale(null, null), "ms");
 });
 
 /* 15 --------------------------------------------------------------------- */
@@ -340,11 +339,11 @@ test("a choice is remembered, and rubbish in storage is not", () => {
     assert.equal(writeStoredLocale("ms"), "ms");
     assert.equal(store.get(LOCALE_KEY), "ms");
     assert.equal(readStoredLocale(), "ms");
-    assert.equal(resolveLocale(readStoredLocale(), null, ["en-US"]), "ms");
+    assert.equal(resolveLocale(readStoredLocale(), "en"), "ms");
 
     /* A value from an older shape, a different product, or a typo. Null is
-       the important answer: it hands the vote back to the device rather than
-       rendering a language that does not exist. */
+       the important answer: it hands the vote back to the account and then to
+       the default rather than rendering a language that does not exist. */
     store.set(LOCALE_KEY, "bm");
     assert.equal(readStoredLocale(), null);
     store.set(LOCALE_KEY, "en-US");
@@ -384,7 +383,7 @@ test("the codes are the standard ones and only the label is Malaysian", () => {
   /* §2, and the one place the product is allowed to disagree with BCP 47.
      `BM` is what a Malaysian reads at a glance; `ms` is what `<html lang>`,
      `Intl` and every dictionary KIDDO will ever add already agree on. */
-  assert.deepEqual([...LOCALES], ["en", "ms"]);
+  assert.deepEqual([...LOCALES], ["ms", "en"]);
   assert.ok(!(LOCALES as readonly string[]).includes("bm"));
   assert.equal(LOCALE_SHORT.ms, "BM");
   assert.equal(LOCALE_SHORT.en, "EN");
@@ -532,7 +531,7 @@ test("adding a language is a dictionary and a line in one list", () => {
      `LOCALES` breaks the build in exactly the places a translator has work to
      do — and nowhere else. */
   const locale = read("src/lib/i18n/locale.ts");
-  assert.match(locale, /export const LOCALES = \["en", "ms"\] as const/);
+  assert.match(locale, /export const LOCALES = \["ms", "en"\] as const/);
   assert.match(locale, /Record<Locale, string> = \{/);
 
   const index = read("src/lib/i18n/messages/index.ts");

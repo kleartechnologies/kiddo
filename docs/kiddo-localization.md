@@ -1,6 +1,7 @@
 # KIDDO in two languages
 
-KIDDO ships in English and Bahasa Melayu. Not a translated marketing page
+KIDDO ships in Bahasa Melayu and English. Bahasa Melayu is the default,
+because KIDDO is for Malaysian families. Not a translated marketing page
 over an English product — both languages go all the way down: the landing
 page, the pricing, signing up, paying, the parent dashboard, the worlds, the
 games, and the questions, hints and explanations inside them.
@@ -10,7 +11,7 @@ and what has to happen before a new game or a new word can ship.
 
 ```
 src/lib/i18n/                  interface language — what KIDDO's screens say
-  locale.ts                    LOCALES, DEFAULT_LOCALE, negotiate(), the labels
+  locale.ts                    LOCALES, DEFAULT_LOCALE, the labels
   storage.ts                   the one localStorage key, and resolveLocale()
   useLocale.ts                 the module store: useLocale(), setLocale()
   messages/{en,ms}.ts          the catalogue — every interface string, twice
@@ -96,17 +97,30 @@ tested and empty.
 `resolveLocale` decides which language KIDDO opens in, in this order:
 
 1. **What the parent explicitly chose** — for ever. A household that switched
-   to Bahasa Melayu once is never handed back to English by a device setting,
-   a new phone or a browser update.
+   to English once is never handed back by a default, a new phone or a browser
+   update.
 2. **What the account remembers** — reserved, unfilled today.
-3. **What the device asks for** — `navigator.languages`, matched on the
-   language subtag, so `ms`, `ms-MY` and `ms-SG` all open in Bahasa Melayu
-   with nothing to configure.
-4. **English**, because something has to be.
+3. **Bahasa Melayu**, because KIDDO is written for Malaysian parents and the
+   landing page they meet first is written in Malay.
+
+### The device does not get a vote
+
+KIDDO used to read `navigator.languages` and open in whatever the phone said.
+It no longer does, and the reason is worth writing down so nobody adds it
+back: a Malaysian phone is usually set to English even in a household that
+speaks Malay all day. The tags a device sends are a fact about the phone, not
+about the family, and negotiating against them handed most Malaysian parents
+an English page on a product built for them.
+
+So there is no guess. Everyone opens in Bahasa Melayu, and the switcher sits
+in the landing header — `BM | English`, one tap, first thing on the page — for
+the parent who would rather read English. That also means the prerendered
+landing HTML a CDN serves is Malay, with `<html lang="ms">` true before any
+JavaScript runs.
 
 Storage that throws — Safari private mode, a blocked iframe, site data off —
-is not an error. It means KIDDO opens in the device's language every visit
-instead of the remembered one, which is the mildest possible failure.
+is not an error. It means KIDDO opens in Bahasa Melayu every visit instead of
+the remembered choice, which is the mildest possible failure.
 
 ### `ms` means Malaysian Bahasa Melayu
 
@@ -115,11 +129,11 @@ dictionary KIDDO will ever add already agree on. The switcher says **BM**,
 because that is what a Malaysian reads at a glance. The two disagreeing is
 deliberate and is the only place they are allowed to.
 
-**Indonesian is not Malay.** A device set to `id` or `id-ID` gets English, not
-`ms`. The two are close enough that a machine would fold them together and far
-enough apart that a Malaysian child would hear the difference in the first
-sentence. When KIDDO has real Bahasa Indonesia, `id` becomes its own entry in
-`LOCALES`; until then it falls through to the default.
+**Indonesian is not Malay.** The two are close enough that a machine would
+fold them together and far enough apart that a Malaysian child would hear the
+difference in the first sentence, which is why `id` never became an alias for
+`ms` back when devices were consulted at all. When KIDDO has real Bahasa
+Indonesia, `id` becomes its own entry in `LOCALES`.
 
 ### Adding a third language
 

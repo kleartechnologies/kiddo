@@ -79,12 +79,12 @@ test("an empty journey is reported as not started, with nothing invented", () =>
     worldsTotal: 3,
     everything: false,
   });
-  assert.equal(overviewLine(EMPTY_JOURNEY), "The adventure has not started yet.");
+  assert.equal(overviewLine(EMPTY_JOURNEY, "en"), "The adventure has not started yet.");
   assert.deepEqual(recentActivities(EMPTY_JOURNEY), []);
   for (const world of worldSummaries(EMPTY_JOURNEY)) {
     assert.equal(world.state, "untouched");
     assert.equal(world.progress.done, 0);
-    assert.match(progressLabel(world.progress), /^Not explored yet/);
+    assert.match(progressLabel(world.progress, "en"), /^Not explored yet/);
   }
 });
 
@@ -95,17 +95,17 @@ test("a partial journey counts activities and worlds from the record alone", () 
   assert.equal(s.keepsakes, 3, "one keepsake per finished door, never more");
   assert.equal(s.worldsVisited, 2);
   assert.equal(s.everything, false);
-  assert.equal(overviewLine(partial), "3 activities completed across 2 worlds.");
+  assert.equal(overviewLine(partial, "en"), "3 activities completed across 2 worlds.");
 
   const [counting, animals, words] = worldSummaries(partial);
   assert.equal(counting.state, "started");
-  assert.equal(progressLabel(counting.progress), "2 of 3 activities explored");
+  assert.equal(progressLabel(counting.progress, "en"), "2 of 3 activities explored");
   assert.equal(animals.state, "started");
-  assert.equal(progressLabel(animals.progress), "1 of 3 activities explored");
+  assert.equal(progressLabel(animals.progress, "en"), "1 of 3 activities explored");
   assert.equal(words.state, "untouched");
 
   const one = markCompleted(EMPTY_JOURNEY, apples.id);
-  assert.equal(overviewLine(one), "1 activity completed across 1 world.");
+  assert.equal(overviewLine(one, "en"), "1 activity completed across 1 world.");
 });
 
 /* 3 — complete ------------------------------------------------------------- */
@@ -114,11 +114,11 @@ test("a finished journey says so everywhere, and has no next door", () => {
   assert.equal(s.activitiesDone, WORLD_ACTIVITIES.length);
   assert.equal(s.worldsVisited, PLAYABLE_WORLDS.length);
   assert.equal(s.everything, true);
-  assert.equal(overviewLine(all), "Every activity completed across all 3 worlds.");
+  assert.equal(overviewLine(all, "en"), "Every activity completed across all 3 worlds.");
   for (const world of worldSummaries(all)) {
     assert.equal(world.state, "complete");
     assert.equal(world.next, null);
-    assert.equal(progressLabel(world.progress), "All 3 activities explored");
+    assert.equal(progressLabel(world.progress, "en"), "All 3 activities explored");
   }
   assert.equal(nextUp(all), null);
 });
@@ -209,16 +209,16 @@ test("learning concepts come from the doors' own plans, and only from them", () 
 
 /* 6b — tiers --------------------------------------------------------------- */
 test("the tier line is factual: which sizes were finished, and nothing more", () => {
-  assert.equal(tiersLabel(EMPTY_JOURNEY, apples.id), "Not completed yet.");
+  assert.equal(tiersLabel(EMPTY_JOURNEY, apples.id, "en"), "Not completed yet.");
   const easy = markCompletedAt(EMPTY_JOURNEY, apples.id, 1);
-  assert.equal(tiersLabel(easy, apples.id), "Completed Easy.");
+  assert.equal(tiersLabel(easy, apples.id, "en"), "Completed Easy.");
   const medium = markCompletedAt(easy, apples.id, 2);
-  assert.equal(tiersLabel(medium, apples.id), "Completed Easy and Medium.");
+  assert.equal(tiersLabel(medium, apples.id, "en"), "Completed Easy and Medium.");
   const hard = markCompletedAt(medium, apples.id, 3);
-  assert.equal(tiersLabel(hard, apples.id), "Completed Easy, Medium and Hard.");
-  assert.equal(tiersLabel(hard, flowers.id), "Not completed yet.", "one door's finishes stay its own");
+  assert.equal(tiersLabel(hard, apples.id, "en"), "Completed Easy, Medium and Hard.");
+  assert.equal(tiersLabel(hard, flowers.id, "en"), "Not completed yet.", "one door's finishes stay its own");
   /* Skipping ahead is still reported honestly, word by word. */
-  assert.equal(tiersLabel(markCompletedAt(EMPTY_JOURNEY, apples.id, 2), apples.id), "Completed Medium.");
+  assert.equal(tiersLabel(markCompletedAt(EMPTY_JOURNEY, apples.id, 2), apples.id, "en"), "Completed Medium.");
   /* And the dashboard says the line next to each recent door. */
   const dash = read("src/components/parents/ParentDashboard.tsx");
   assert.match(dash, /tiersLabel\(journey, activity\.id, locale\)/);
@@ -229,8 +229,8 @@ test("the tier line is factual: which sizes were finished, and nothing more", ()
 test("after a reset the dashboard reads exactly as a first visit", () => {
   /* `resetJourney` writes EMPTY_JOURNEY; everything here is what it derives. */
   assert.equal(
-    overviewLine(EMPTY_JOURNEY),
-    overviewLine({ completed: [], medium: [], hard: [], last: null }),
+    overviewLine(EMPTY_JOURNEY, "en"),
+    overviewLine({ completed: [], medium: [], hard: [], last: null }, "en"),
   );
   assert.equal(nextUp(EMPTY_JOURNEY)?.activity, apples);
   assert.equal(nextUp(EMPTY_JOURNEY)?.mode, "start");
@@ -240,14 +240,14 @@ test("after a reset the dashboard reads exactly as a first visit", () => {
 
 /* 8 — greeting ------------------------------------------------------------- */
 test("the greeting follows the clock and never breaks on a bad hour", () => {
-  assert.equal(daypartGreeting(6), "Good morning");
-  assert.equal(daypartGreeting(11), "Good morning");
-  assert.equal(daypartGreeting(12), "Good afternoon");
-  assert.equal(daypartGreeting(17), "Good afternoon");
-  assert.equal(daypartGreeting(18), "Good evening");
-  assert.equal(daypartGreeting(23), "Good evening");
-  assert.equal(daypartGreeting(-1), "Good evening");
-  assert.equal(daypartGreeting(Number.NaN), "Good afternoon");
+  assert.equal(daypartGreeting(6, "en"), "Good morning");
+  assert.equal(daypartGreeting(11, "en"), "Good morning");
+  assert.equal(daypartGreeting(12, "en"), "Good afternoon");
+  assert.equal(daypartGreeting(17, "en"), "Good afternoon");
+  assert.equal(daypartGreeting(18, "en"), "Good evening");
+  assert.equal(daypartGreeting(23, "en"), "Good evening");
+  assert.equal(daypartGreeting(-1, "en"), "Good evening");
+  assert.equal(daypartGreeting(Number.NaN, "en"), "Good afternoon");
 });
 
 /* 9 — navigation ----------------------------------------------------------- */

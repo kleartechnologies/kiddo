@@ -24,7 +24,7 @@ import {
   type MathQuestAction,
   type MathQuestState,
 } from "@/lib/games/mathQuest";
-import { LOCALES } from "@/lib/i18n/locale";
+import { DEFAULT_LOCALE, LOCALES } from "@/lib/i18n/locale";
 import { dealRound, ROUND_NAMES } from "@/server/content";
 
 /**
@@ -436,19 +436,19 @@ test("a round dealt by the server arrives already said", () => {
 });
 
 /* 11 --------------------------------------------------------------------- */
-test("a language KIDDO does not speak is English, never an error", () => {
+test("a language KIDDO does not speak is the default, never an error", () => {
   /* The content is what was paid for. Refusing to deal a round over a bad
      `locale` string would be a new way to lock a child out of something they
      own, so an unknown language falls back rather than failing. */
   const name = ROUND_NAMES[0]!;
-  const english = dealRound(name, 1, 4, "en");
-  assert.ok(english);
+  const fallback = dealRound(name, 1, 4, DEFAULT_LOCALE);
+  assert.ok(fallback);
   for (const bad of ["bm", "ms-MY", "", null, undefined, 7, {}]) {
     const dealt = dealRound(name, 1, 4, bad);
     assert.ok(dealt, `${JSON.stringify(bad)} refused to deal`);
     assert.deepEqual(
       dealt.map((c) => c.prompt.speech),
-      english.map((c) => c.prompt.speech),
+      fallback.map((c) => c.prompt.speech),
     );
   }
 });

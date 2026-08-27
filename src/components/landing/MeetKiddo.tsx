@@ -15,14 +15,22 @@ import { WORLD_PLACES } from "@/lib/worlds/places";
 import { SectionIntro } from "./SectionIntro";
 
 /**
- * The thing that makes KIDDO different, shown rather than claimed.
+ * Where the page finally says what KIDDO is — after the parent has already
+ * agreed with the problem and with the way out of it.
  *
- * Three worlds, each as its own row: the door the child sees, what happens
- * inside in one sentence, the three real activities behind the door, and a
- * photograph of the product in the middle of a round. The screenshots are
- * taken from the running app by `scripts/make-brand-assets.mjs`, so the page
- * cannot drift from what a child actually gets — if the board changes, the
- * script is run again and the picture changes with it.
+ * It opens on the one sentence the whole product rests on, split across two
+ * lines because the two halves are addressed to two different people in the
+ * same room: the child is playing, and the parent knows they are learning.
+ * Neither half is a claim the page has to argue for, because the rest of the
+ * section shows it — three worlds, each as its own row: the door the child
+ * taps, what happens inside in one sentence, the three real activities
+ * behind it, and a photograph of the product mid-round.
+ *
+ * The screenshots are taken from the running app by
+ * `scripts/make-brand-assets.mjs`, so the page cannot drift from what a child
+ * actually gets — if a board changes, the script is run again and the picture
+ * changes with it. Nothing in this section is a mock-up and nothing in it is
+ * a feature KIDDO does not have.
  *
  * The world's name, its blurb and the three door titles are read from the
  * catalogue by id rather than from `WORLD_PLACES` and `WORLD_ACTIVITIES`
@@ -38,17 +46,31 @@ const SHOTS: Record<PlayableWorldId, string> = {
   words: "/illustrations/landing/round-words.webp",
 };
 
-export function WorldShowcase({ worlds }: { worlds: readonly PlayableWorldId[] }) {
+export function MeetKiddo({ worlds }: { worlds: readonly PlayableWorldId[] }) {
   const t = useT();
   return (
-    <section aria-labelledby="worlds-heading" className="scroll-mt-24" id="worlds">
+    <section aria-labelledby="meet-heading" className="scroll-mt-24" id="worlds">
       <SectionIntro
-        id="worlds-heading"
-        eyebrow={t("landing.worlds.eyebrow")}
-        title={t("landing.worlds.title")}
+        id="meet-heading"
+        eyebrow={t("landing.meet.eyebrow")}
+        title={t("landing.meet.title")}
       >
-        {t("landing.worlds.body")}
+        {t("landing.meet.body")}
       </SectionIntro>
+
+      {/* The positioning, said once, to both people in the room. */}
+      <p className="font-display mx-auto mt-8 flex max-w-3xl flex-col gap-2 text-center text-2xl leading-snug font-semibold text-balance sm:mt-10 sm:flex-row sm:gap-4 sm:text-[1.75rem]">
+        <span className="bg-honey-soft text-honey-ink rounded-card flex-1 px-5 py-4">
+          {t("landing.meet.child")}
+        </span>
+        <span className="bg-sage-soft text-sage-ink rounded-card flex-1 px-5 py-4">
+          {t("landing.meet.parent")}
+        </span>
+      </p>
+
+      <p className="text-ink-700 mx-auto mt-8 max-w-2xl text-center text-lg leading-relaxed text-pretty sm:mt-10 sm:text-xl">
+        {t("landing.meet.worldsLead")}
+      </p>
 
       <ol className="mt-10 flex list-none flex-col gap-8 sm:mt-12 sm:gap-12">
         {worlds.map((id, index) => (

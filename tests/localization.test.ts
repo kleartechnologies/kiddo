@@ -25,7 +25,7 @@ import { SENTENCES } from "@/lib/content/i18n/phrases";
 import { ACTIVITIES } from "@/lib/content/registry";
 import { createRng } from "@/lib/content/rng";
 import type { Challenge, CountItem } from "@/lib/content/types";
-import { DEFAULT_LOCALE, isLocale, LOCALES, negotiate } from "@/lib/i18n/locale";
+import { DEFAULT_LOCALE, isLocale, LOCALES } from "@/lib/i18n/locale";
 import { ALL_CATALOGUES } from "@/lib/i18n/messages";
 import { resolveLocale } from "@/lib/i18n/storage";
 
@@ -34,45 +34,27 @@ const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf
 /* ------------------------------------------------ which language, exactly -- */
 
 /* 1 ---------------------------------------------------------------------- */
-test("every tag a device can send resolves to one language, and Indonesian is not it", () => {
-  /* The matrix, written out rather than derived, because the interesting
-     entries are the ones a rule would get wrong. `ms` is Bahasa Melayu as
-     Malaysia writes it; `id` is Indonesian, which is close enough that a
-     similarity check would fold it in and far enough that a Malaysian child
-     would hear the difference in the first sentence. KIDDO would rather show
-     an Indonesian family English than show them a language that is nearly
-     theirs. */
-  const matrix: [readonly string[] | undefined, "en" | "ms" | null][] = [
-    [["en"], "en"],
-    [["en-US"], "en"],
-    [["en-GB"], "en"],
-    [["ms"], "ms"],
-    [["ms-MY"], "ms"],
-    [["MS-my"], "ms"],
-    [["id"], null],
-    [["id-ID"], null],
-    [["in"], null], // the pre-1989 code for Indonesian, still sent by old devices
-    [["zxx"], null],
-    [["not a language tag at all"], null],
-    [[""], null],
-    [[], null],
-    [undefined, null],
-  ];
+test("KIDDO decides its own language, and it decides on Bahasa Melayu", () => {
+  /* KIDDO used to negotiate against `navigator.languages`, and the matrix
+     that lived here checked every tag a device could send. It is gone, and
+     the reason is worth keeping: a Malaysian phone is usually set to English
+     even in a household that speaks Malay at the dinner table, so the tags a
+     device sends are a fact about the phone rather than about the family.
+     Guessing from them handed most Malaysian parents an English page.
 
-  for (const [tags, expected] of matrix) {
-    assert.equal(negotiate(tags), expected, `negotiate(${JSON.stringify(tags)})`);
-    assert.equal(
-      resolveLocale(null, null, tags),
-      expected ?? DEFAULT_LOCALE,
-      `resolveLocale(${JSON.stringify(tags)})`,
-    );
-  }
+     So there is no guess left. KIDDO opens in Bahasa Melayu, the switcher in
+     the header is one tap from English, and the only two things that outrank
+     the default are a person saying so. */
+  assert.equal(DEFAULT_LOCALE, "ms");
+  assert.equal(resolveLocale(null, null), "ms");
+  assert.equal(resolveLocale(null, "en"), "en", "an account preference is a person's answer");
+  assert.equal(resolveLocale("ms", "en"), "ms", "a tap on the switcher outranks it");
 
-  /* And the codes themselves stay the standard ones. `bm` is what Malaysians
-     call the language in conversation and is not a language tag; renaming the
-     locale to it would break every stored preference and every `lang`
-     attribute KIDDO writes. */
-  assert.deepEqual([...LOCALES], ["en", "ms"]);
+  /* Indonesian never became a locale, and this is why it was never worth
+     folding into Malay: close enough that a similarity check would, far
+     enough apart that a Malaysian child would hear the difference in the
+     first sentence. */
+  assert.deepEqual([...LOCALES], ["ms", "en"]);
   for (const wrong of ["bm", "BM", "my", "ms-MY", "id", "en-US", "", null, undefined, 7]) {
     assert.equal(isLocale(wrong), false, `${String(wrong)} is not a locale`);
   }

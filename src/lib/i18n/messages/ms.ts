@@ -57,150 +57,189 @@ export const ms: Record<MessageKey, string> = {
   "landing.nav.signIn": "Log masuk",
   "landing.footer.aria": "Kaki laman",
   "landing.footer.blurb":
-    "Sebuah dunia permainan yang kecil dan selamat, penuh pengembaraan pembelajaran untuk kanak-kanak berumur 4 hingga 8 tahun. Satu akaun ibu bapa, tiada iklan, tiada apa-apa dijual kepada anak anda.",
+    "Tempat bermain yang kecil dan selamat untuk anak berumur 4 hingga 8 tahun, supaya screen time jadi masa untuk bermain, belajar dan meneroka. Satu akaun ibu bapa, tiada iklan, tiada apa-apa dijual kepada anak anda.",
 
   /* ---- Landing: metadata --------------------------------------------- */
-  "landing.meta.title": "KIDDO — Belajar sepatutnya terasa seperti satu pengembaraan",
+  "landing.meta.title": "KIDDO — Screen time tak semestinya buang masa",
   "landing.meta.description":
-    "KIDDO mengubah pembelajaran awal menjadi dunia-dunia kecil yang menyeronokkan untuk kanak-kanak berumur 4 hingga 8 tahun: sebuah taman untuk mengira, haiwan untuk dibawa pulang, dan buku cerita yang penuh dengan perkataan. Satu langganan untuk ibu bapa; tiada iklan, tiada apa-apa untuk dibeli di dalamnya.",
+    "KIDDO menjadikan screen time lebih bermakna untuk anak berumur 4 hingga 8 tahun: taman untuk mengira, haiwan untuk dibawa pulang, dan buku cerita penuh perkataan. Satu langganan untuk ibu bapa; tiada iklan, tiada apa-apa untuk dibeli di dalam.",
   "landing.meta.ogDescription":
-    "Dunia-dunia kecil yang menyeronokkan untuk pembelajaran awal. Anak-anak mengira di dalam taman, membantu haiwan pulang ke rumah dan menemui perkataan di dalam buku cerita.",
+    "Anak masih boleh seronok dengan screen time — sambil belajar, mencuba aktiviti dan meneroka sesuatu yang baru.",
   "landing.meta.twitterDescription":
-    "Dunia-dunia kecil yang menyeronokkan untuk pembelajaran awal, untuk kanak-kanak berumur 4 hingga 8 tahun.",
+    "Screen time yang lebih bermakna, untuk anak berumur 4 hingga 8 tahun.",
 
   /* ---- Landing: hero -------------------------------------------------- */
-  "landing.hero.eyebrow": "Pembelajaran awal untuk umur 4 hingga 8 tahun",
-  "landing.hero.title": "Belajar sepatutnya terasa seperti satu pengembaraan.",
+  "landing.hero.eyebrow": "Untuk anak 4 hingga 8 tahun",
+  "landing.hero.title": "Screen Time Tak Semestinya Buang Masa.",
   "landing.hero.body":
-    "KIDDO mengubah pembelajaran awal menjadi dunia-dunia kecil yang menyeronokkan. Anak-anak mengira apa yang tumbuh di dalam taman, membantu haiwan mencari rumah mereka, dan menemui perkataan di dalam buku cerita — satu aktiviti pendek pada satu masa.",
-  "landing.hero.cta": "Mulakan KIDDO",
-  "landing.hero.secondary": "Lihat cara KIDDO berfungsi",
-  "landing.hero.terms":
-    "Satu langganan, {monthly} se{monthlyPer} atau {yearly} se{yearlyPer} ({saving}% lebih murah), membuka setiap dunia. Batal bila-bila masa. Berfungsi dalam pelayar di telefon, tablet dan komputer riba.",
+    "Dengan KIDDO, anak masih boleh seronok dengan screen time — sambil belajar, mencuba aktiviti dan meneroka sesuatu yang baru.",
+  "landing.hero.cta": "Cuba KIDDO",
+  "landing.hero.secondary": "Lihat Cara KIDDO Berfungsi",
+  "landing.hero.trustAria": "Apa yang anda dapat",
+  "landing.hero.trust.1": "Tiada iklan",
+  "landing.hero.trust.2": "Tiada apa-apa dijual kepada anak",
+  "landing.hero.trust.3": "Dari {monthly} sebulan, batal bila-bila masa",
 
-  /* ---- Landing: screen time ------------------------------------------- */
-  "landing.screenTime.eyebrow": "Kenapa KIDDO",
-  "landing.screenTime.title":
-    "Masa skrin tetap akan berlaku. Inilah pilihan lain yang boleh menggantikannya.",
-  "landing.screenTime.body":
-    "Sejam di YouTube atau di suapan media sosial berlalu begitu sahaja tanpa meninggalkan apa-apa, dan sukar benar hendak membezakan video yang mengajar daripada video yang cuma pandai menarik perhatian. KIDDO ialah satu lagi pilihan untuk dihulurkan apabila tablet dikeluarkan.",
-  "landing.screenTime.feed.title": "Suapan yang tiada penghujung",
-  "landing.screenTime.feed.1":
-    "Satu video membawa ke video seterusnya, dipilih supaya anak terus menonton.",
-  "landing.screenTime.feed.2": "Tiada apa-apa yang tinggal apabila tablet diletakkan.",
-  "landing.screenTime.feed.3":
-    "Iklan dan barangan untuk dibeli, ditujukan terus kepada anak anda.",
-  "landing.screenTime.feed.4":
-    "Susah hendak tahu, selepas itu, apa sebenarnya yang mereka buat.",
-  "landing.screenTime.kiddo.title": "Satu petang bersama KIDDO",
-  "landing.screenTime.kiddo.1": "Pusingan pendek yang ada permulaan dan penghujung.",
-  "landing.screenTime.kiddo.2":
-    "Setiap aktiviti yang selesai meninggalkan sesuatu di dalam dunianya.",
-  "landing.screenTime.kiddo.3":
-    "Tiada iklan, tiada apa-apa untuk dibeli, dan tidak pernah ada harga di skrin anak.",
-  "landing.screenTime.kiddo.4":
-    "Satu halaman ibu bapa yang memberitahu dengan tepat apa yang telah diterokai.",
+  /* ---- Landing: the pain points --------------------------------------- */
+  "landing.pain.eyebrow": "Mungkin ini rumah anda juga",
+  "landing.pain.title": "Kalau Anak Dah Terlalu Biasa Dengan Screen…",
+  "landing.pain.body":
+    "Kadang-kadang kita bagi screen sebab nak anak duduk diam sekejap. Tapi bila dah sampai masa nak berhenti, semuanya jadi lebih susah.",
+  "landing.pain.phone.title": "Anak Asyik Minta Phone",
+  "landing.pain.phone.body":
+    "Baru sekejap tak pegang phone, dah mula tanya bila boleh guna lagi.",
+  "landing.pain.phone.alt":
+    "Seorang anak kecil menghulur tangan meminta telefon daripada orang dewasa di ruang tamu.",
+  "landing.pain.videos.title": "Asyik Tengok YouTube",
+  "landing.pain.videos.body":
+    "Satu video jadi dua, dua jadi sepuluh. Tiba-tiba dah lama masa berlalu.",
+  "landing.pain.videos.alt":
+    "Seorang anak duduk rapat dengan tablet, menonton video kartun satu demi satu.",
+  "landing.pain.torn.title": "Parent Pun Rasa Serba Salah",
+  "landing.pain.torn.body":
+    "Nak bagi anak guna teknologi, tapi dalam masa yang sama risau apa yang mereka tengok dan buat.",
+  "landing.pain.torn.alt":
+    "Seorang ibu memerhati anaknya yang sedang menggunakan telefon, dengan wajah teragak-agak.",
+  "landing.pain.stop.title": "Susah Nak Berhenti",
+  "landing.pain.stop.body":
+    "Bila tiba masa tutup screen, mula meragam, menangis atau minta “5 minit lagi”.",
+  "landing.pain.stop.alt":
+    "Seorang anak enggan melepaskan tablet apabila tiba masa untuk berhenti.",
 
-  /* ---- Landing: the three worlds -------------------------------------- */
-  "landing.worlds.eyebrow": "Bukan satu skrin permainan",
-  "landing.worlds.title": "Tiga dunia kecil, setiap satu tempatnya sendiri.",
-  "landing.worlds.body":
-    "Anak-anak bukan sekadar menjawab soalan. Mereka masuk ke dalam sebuah dunia, dan pelajarannya ialah isi dunia itu sendiri.",
+  /* ---- Landing: the shift ---------------------------------------------- */
+  "landing.shift.eyebrow": "Ada cara lain",
+  "landing.shift.title":
+    "Masalahnya Bukan Screen Time. Tapi Apa Yang Anak Buat Dengan Screen Time.",
+  "landing.shift.body":
+    "Teknologi sendiri bukan musuh. Yang penting ialah bagaimana kita gunakan screen time itu.",
+  "landing.shift.listAria": "Daripada apa, kepada apa",
+  "landing.shift.fromLabel": "Daripada",
+  "landing.shift.toLabel": "Kepada",
+  "landing.shift.from.1": "Satu video tarik satu video lagi",
+  "landing.shift.to.1": "Satu pusingan pendek yang ada penghujungnya",
+  "landing.shift.from.2": "Scroll tanpa tahu bila nak berhenti",
+  "landing.shift.to.2": "Siapkan satu aktiviti, kemudian berhenti",
+  "landing.shift.from.3": "Susah nak tahu apa sebenarnya anak buat",
+  "landing.shift.to.3": "Ibu bapa nampak apa yang anak teroka",
+  "landing.shift.transition":
+    "Daripada sekadar tengok dan scroll, jadikan screen time masa untuk anak bermain, belajar dan meneroka.",
+
+  /* ---- Landing: meet KIDDO, and the three worlds ----------------------- */
+  "landing.meet.eyebrow": "Bukan satu lagi aplikasi video",
+  "landing.meet.title": "Kenalkan KIDDO",
+  "landing.meet.body":
+    "KIDDO menjadikan screen time lebih bermakna melalui adventure, aktiviti dan pembelajaran yang direka untuk anak.",
+  "landing.meet.child": "Anak rasa macam bermain.",
+  "landing.meet.parent": "Parent tahu mereka sedang belajar.",
+  "landing.meet.worldsLead":
+    "Tiga dunia kecil, setiap satu dengan tempat dan kawannya sendiri.",
   "landing.worlds.number.counting": "Dunia satu",
   "landing.worlds.number.animals": "Dunia dua",
   "landing.worlds.number.words": "Dunia tiga",
   "landing.worlds.with": "bersama {name}",
   "landing.worlds.activitiesIn": "Aktiviti di {world}",
   "landing.worlds.inside.counting":
-    "Anak-anak menemui nombor melalui epal, bunga dan batu kecil di dalam sebuah taman.",
+    "Anak mengenal nombor melalui epal, bunga dan batu kecil di dalam sebuah taman.",
   "landing.worlds.inside.animals":
-    "Anak-anak bertemu haiwan, belajar di mana setiap satu tinggal, dan menemani mereka pulang merentasi daratan.",
+    "Anak berjumpa haiwan, belajar di mana setiap satu tinggal, dan menghantar mereka pulang.",
   "landing.worlds.inside.words":
-    "Anak-anak membuka buku cerita dan menjumpai huruf, rima dan bunyi yang tumbuh di muka suratnya.",
+    "Anak membuka buku cerita dan menjumpai huruf, rima dan bunyi di atas halamannya.",
   "landing.worlds.shot.counting":
-    "Kira Epal: KIDDO bertanya berapa banyak yang boleh kamu kira, di atas sebuah taman dengan papan tanda nombor berdiri di atas rumput.",
+    "Kira Epal: KIDDO bertanya berapa banyak yang boleh dikira, di atas taman dengan papan nombor berdiri di rumput.",
   "landing.worlds.shot.animals":
-    "Cari Rumah: haiwan di satu sisi daratan, rumah mereka di sisi yang lain, menunggu untuk dihubungkan.",
+    "Cari Rumah: haiwan di sebelah sini, rumah mereka di sebelah sana, menunggu untuk disambungkan.",
   "landing.worlds.shot.words":
-    "Kawan Berima: dua muka surat buku cerita yang terbuka, dengan perkataan di setiap sisi untuk dipadankan dengan reben.",
+    "Kawan Berima: dua halaman buku cerita terbuka dengan perkataan di kiri dan kanan untuk dipadankan.",
 
   /* ---- Landing: how it works ------------------------------------------ */
-  "landing.how.eyebrow": "Cara KIDDO berfungsi",
-  "landing.how.title": "Setiap aktiviti ada tempatnya.",
+  "landing.how.eyebrow": "Cara ia berfungsi",
+  "landing.how.title": "Empat langkah, itu sahaja.",
   "landing.how.body":
-    "Daripada memaksa setiap pelajaran masuk ke dalam skrin yang sama, KIDDO memberikan setiap satu pemandangan dan cara bermainnya sendiri. Beginilah rupa satu kunjungan.",
-  "landing.how.world.title": "Dunia",
-  "landing.how.world.detail":
-    "Pilih tempat untuk pergi: sebuah taman, padang haiwan, sebuah buku cerita.",
-  "landing.how.activity.title": "Aktiviti",
-  "landing.how.activity.detail":
-    "Buka satu pintu. Setiap aktiviti ialah satu pusingan pendek lima soalan.",
-  "landing.how.discovery.title": "Penemuan",
-  "landing.how.discovery.detail":
-    "Mengira, memadan dan menghubung, di dalam pemandangan milik dunia itu sendiri.",
-  "landing.how.reward.title": "Ganjaran",
-  "landing.how.reward.detail":
-    "Dunia itu memberi sesuatu kembali: sekuntum bunga tumbuh, seekor haiwan ditemui, satu muka surat ditulis.",
-  "landing.how.next.title": "Pengembaraan seterusnya",
-  "landing.how.next.detail":
-    "KIDDO menunjukkan pintu yang seterusnya. Tiada apa-apa yang berkunci, dan tiada apa-apa yang diambil semula.",
+    "Anak boleh mula sendiri. Tiada tutorial panjang, dan tiada apa-apa untuk anak log masuk.",
+  "landing.how.step1.title": "Anak pilih adventure",
+  "landing.how.step1.detail":
+    "Buka laman utama dan pilih dunia yang dia nak masuk hari ini.",
+  "landing.how.step2.title": "Anak explore dan siapkan aktiviti",
+  "landing.how.step2.detail":
+    "Setiap aktiviti ialah satu pusingan pendek lima soalan, di dalam dunia itu sendiri.",
+  "landing.how.step3.title": "Anak belajar sambil bermain",
+  "landing.how.step3.detail":
+    "Mengira, memadan dan mengenal perkataan — dan setiap aktiviti yang siap tinggal di dalam dunianya.",
+  "landing.how.step4.title": "Parent nampak perkembangan",
+  "landing.how.step4.detail":
+    "Ruang ibu bapa menyenaraikan apa yang diteroka, apa yang seterusnya dan apa yang dilatih.",
+  "landing.how.doorsAria": "Contoh pintu dunia selepas beberapa kali bermain",
+  "landing.how.doorsCaption":
+    "Contoh selepas beberapa kali bermain: satu dunia sudah habis, satu separuh jalan, satu lagi masih baharu. Pintu berbulatan ialah yang KIDDO cadangkan seterusnya.",
 
-  /* ---- Landing: progression ------------------------------------------- */
-  "landing.progress.eyebrow": "Selepas pusingan",
-  "landing.progress.title": "Penemuan kecil menjadi pengembaraan yang lebih besar.",
-  "landing.progress.body":
-    "KIDDO bukan setimbun kuiz. Setiap dunia menyimpan apa yang telah ditemui anak anda di dalamnya, dan pintu-pintu di skrin utama menunjukkannya — dengan benda milik dunia itu sendiri.",
-  "landing.progress.doorsAria": "Contoh pintu dunia selepas beberapa kunjungan",
-  "landing.progress.caption":
-    "Satu contoh selepas beberapa kunjungan: satu dunia sudah selesai, satu separuh jalan, satu lagi masih baharu. Pintu bergelang ialah pintu yang akan dicadangkan KIDDO seterusnya.",
-  "landing.progress.keepsakes.title": "Kenangan, bukan markah",
-  "landing.progress.keepsakes.detail":
-    "Setiap aktiviti yang selesai menjadi sesuatu yang kekal di dalam dunianya — sekuntum bunga di taman, seekor haiwan yang ditemui, satu muka surat di dalam buku. Tiada mata dan tiada rentetan harian.",
-  "landing.progress.continue.title": "Teruskan pengembaraan",
-  "landing.progress.continue.detail":
-    "Skrin utama mengingati di mana anak anda berhenti dan menawarkan pintu seterusnya, jadi kunjungan berikutnya bersambung dari tempat yang terakhir.",
-  "landing.progress.parents.title": "Satu halaman tenang untuk orang dewasa",
-  "landing.progress.parents.detail":
-    "Ruang ibu bapa menunjukkan perjalanan yang sama dalam bahasa yang mudah: apa yang diterokai, apa yang seterusnya, dan apa yang sedang dilatih.",
-
-  /* ---- Landing: for parents -------------------------------------------- */
-  "landing.parents.eyebrow": "Untuk ibu bapa",
-  "landing.parents.title": "Dibuat untuk anak yang ingin tahu. Direka sambil mengingati ibu bapa.",
-  "landing.parents.body":
-    "Satu halaman tenang, di sebalik pintu yang tidak akan dimasuki anak, menunjukkan perjalanan itu dalam bahasa yang mudah.",
-  "landing.parents.shows.1": "Apa yang diterokai anak anda, yang terbaharu dahulu",
-  "landing.parents.shows.2": "Kemajuan di setiap satu daripada tiga dunia",
-  "landing.parents.shows.3": "Apa yang akan dicadangkan KIDDO seterusnya",
-  "landing.parents.shows.4":
-    "Kemahiran yang dilatih oleh setiap aktiviti, dan yang mana satu sudah dicuba",
-  "landing.parents.shows.5":
-    "Nama pertama untuk sapaan, dan tetapan semula apabila anda mahu bermula segar",
-  "landing.parents.cta": "Lihat ruang ibu bapa",
-  "landing.parents.privacyLink": "Apa yang KIDDO simpan, dan apa yang tidak",
-  "landing.parents.shotAlt":
+  /* ---- Landing: why parents choose KIDDO ------------------------------- */
+  "landing.why.eyebrow": "Kenapa ibu bapa pilih KIDDO",
+  "landing.why.title": "Lebih Tenang Untuk Parent. Lebih Bermakna Untuk Anak.",
+  "landing.why.body":
+    "Screen time tetap ada. Yang berubah ialah apa yang berlaku di dalamnya.",
+  "landing.why.1.title": "Tak perlu lawan screen time setiap hari.",
+  "landing.why.1.detail":
+    "Setiap pusingan ada penghujungnya, jadi lebih senang nak cakap “satu lagi, lepas tu kita stop”.",
+  "landing.why.2.title": "Anak masih dapat pengalaman yang menyeronokkan.",
+  "landing.why.2.detail": "Dunia, kawan dan aktiviti yang dia sendiri nak buka.",
+  "landing.why.3.title": "Screen time boleh jadi masa untuk belajar dan explore.",
+  "landing.why.3.detail":
+    "Nombor, haiwan dan perkataan — dibuat sambil bermain, bukan sambil menghafal.",
+  "landing.why.4.title": "Parent lebih yakin dengan apa yang anak lakukan.",
+  "landing.why.4.detail":
+    "Tiada iklan, tiada video yang main sendiri, dan tiada apa-apa untuk dibeli di dalam.",
+  "landing.why.cta": "Lihat ruang ibu bapa",
+  "landing.why.privacyLink": "Apa yang KIDDO simpan, dan apa yang tidak",
+  "landing.why.shotAlt":
     "Papan pemuka ibu bapa KIDDO: satu sapaan, perjalanan anak dalam tiga nombor, dan satu kad kemajuan untuk setiap dunia.",
-  "landing.parents.shotCaption": "Ruang ibu bapa, separuh jalan dalam satu perjalanan.",
+  "landing.why.shotCaption": "Ruang ibu bapa, separuh jalan dalam satu perjalanan.",
+
+  /* ---- Landing: what parents say --------------------------------------- */
+  "landing.voices.eyebrow": "Kata ibu bapa",
+  "landing.voices.title": "Cerita daripada ibu bapa yang dah cuba.",
+  "landing.voices.body": "Dalam bahasa mereka sendiri, tanpa diubah.",
+  "landing.voices.aria": "Testimoni ibu bapa",
+  "landing.voices.swipe": "Leret untuk baca lagi",
 
   /* ---- Landing: pricing ------------------------------------------------ */
   "landing.pricing.eyebrow": "Harga",
-  "landing.pricing.title": "Satu langganan membuka seluruh KIDDO.",
+  "landing.pricing.title": "Jadikan Screen Time Lebih Bermakna.",
   "landing.pricing.body":
-    "Satu pelan untuk anda, orang dewasa. Anak anda tidak pernah log masuk, tidak pernah melihat harga dan tidak pernah diminta membeli apa-apa.",
+    "Satu langganan untuk anda, orang dewasa. Anak tidak pernah log masuk, tidak pernah nampak harga, dan tidak pernah diminta membeli apa-apa.",
   "landing.pricing.included.1": "Setiap dunia, setiap pintu dan setiap permainan",
   "landing.pricing.included.2":
     "Perjalanan seorang anak, disimpan dan dibawa antara peranti",
   "landing.pricing.included.3":
-    "Ruang ibu bapa, dengan apa yang diterokai dan apa yang seterusnya",
-  "landing.pricing.included.4": "Tiada iklan dan tiada apa-apa untuk dibeli di dalamnya",
-  "landing.pricing.saving": "Jimat {saving}% berbanding bayaran bulanan",
+    "Ruang ibu bapa, dengan apa yang diteroka dan apa yang seterusnya",
+  "landing.pricing.included.4": "Tiada iklan dan tiada apa-apa untuk dibeli di dalam",
+  "landing.pricing.saving": "Jimat {saving}% berbanding bayar bulanan",
   "landing.pricing.footnote":
-    "Batal bila-bila masa dari ruang ibu bapa. Bayaran dikendalikan oleh Stripe — KIDDO tidak pernah melihat atau menyimpan kad anda.",
+    "Batal bila-bila masa dari ruang ibu bapa. Pembayaran dikendalikan oleh Stripe — KIDDO tidak pernah melihat atau menyimpan kad anda.",
+
+  /* ---- Landing: questions parents ask ---------------------------------- */
+  "landing.faq.eyebrow": "Soalan lazim",
+  "landing.faq.title": "Soalan yang ibu bapa selalu tanya.",
+  "landing.faq.q1": "Adakah KIDDO sesuai untuk umur anak saya?",
+  "landing.faq.a1":
+    "KIDDO direka untuk anak berumur 4 hingga 8 tahun. Setiap aktiviti ada tiga tahap — Mudah, Sederhana dan Sukar — jadi anak yang baru mula dan anak yang sudah biasa boleh bermain aktiviti yang sama.",
+  "landing.faq.q2": "Adakah KIDDO menggantikan sekolah atau pembelajaran formal?",
+  "landing.faq.a2":
+    "Tidak. KIDDO bukan sekolah dan bukan sukatan pelajaran. Ia sebuah tempat bermain di mana anak mengira, memadan dan mengenal perkataan sambil meneroka — sesuatu untuk dibuat pada waktu screen time, bukan pengganti kelas.",
+  "landing.faq.q3": "Adakah anak perlu menggunakan tablet?",
+  "landing.faq.a3":
+    "Tidak. KIDDO dibuka terus di dalam pelayar web — telefon, tablet atau komputer riba — tanpa perlu memuat turun apa-apa aplikasi. Skrin yang lebih besar lebih selesa, tetapi telefon pun boleh.",
+  "landing.faq.q4": "Bagaimana KIDDO membantu menjadikan screen time lebih positif?",
+  "landing.faq.a4":
+    "Setiap aktiviti ialah satu pusingan pendek lima soalan yang ada penghujungnya, jadi sentiasa ada masa yang sesuai untuk berhenti. Tiada iklan, tiada video yang main sendiri dan tiada apa-apa untuk dibeli. Apa yang anak siapkan tinggal di dalam dunianya, dan anda boleh lihat apa yang diteroka di ruang ibu bapa.",
+  "landing.faq.q5": "Berapa harga KIDDO?",
+  "landing.faq.a5":
+    "{monthly} sebulan atau {yearly} setahun, dan satu langganan membuka seluruh KIDDO. Boleh dibatalkan bila-bila masa dari ruang ibu bapa.",
 
   /* ---- Landing: closing ------------------------------------------------ */
-  "landing.closing.title": "Sedia bila-bila anda sedia.",
+  "landing.closing.title": "Tak perlu buang screen time. Jadikan ia lebih bermakna.",
   "landing.closing.body":
-    "Pilih satu pelan, buka akaun anda, dan hulurkan tablet itu. Tiga dunia dan sembilan pintu sudah terbuka hari ini, dan lebih banyak lagi dalam perjalanan.",
-  "landing.closing.cta": "Mulakan KIDDO",
+    "Biarkan anak explore, bermain dan belajar — dengan pengalaman yang lebih positif.",
+  "landing.closing.cta": "Mulakan Dengan KIDDO",
 
   /* ---- The worlds, as places a child goes ---------------------------- */
   "world.meadow.name": "Padang",
@@ -387,12 +426,12 @@ export const ms: Record<MessageKey, string> = {
   "plan.yearly.per": "tahun",
   "plan.yearly.note": "Nilai terbaik",
   "plan.yearly.blurb": "{perMonth} sebulan, dibayar sekali setahun",
-  "plan.yearly.cta": "Mulakan Tahunan",
+  "plan.yearly.cta": "Cuba KIDDO Sekarang",
   "plan.monthly.name": "Bulanan",
   "plan.monthly.per": "bulan",
   "plan.monthly.note": "",
   "plan.monthly.blurb": "Akses bulanan yang fleksibel",
-  "plan.monthly.cta": "Mulakan Bulanan",
+  "plan.monthly.cta": "Pilih Pelan Bulanan",
 
   /* ---- What state the subscription is in, in one word ----------------- */
   "billing.status.active": "Aktif",

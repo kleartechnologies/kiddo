@@ -70,8 +70,10 @@ test("with no name, the greeting is the one this screen always had", () => {
   for (const seed of [...SEEDS, ...BAD_SEEDS]) {
     assert.deepEqual(greetingFor(null, seed), FALLBACK_GREETING);
   }
-  assert.equal(FALLBACK_GREETING.hello, "Hi!");
-  assert.equal(FALLBACK_GREETING.invitation, "What do you want to play?");
+  /* In KIDDO's default language, which is Bahasa Melayu — the same two lines
+     this screen had before it could greet anyone by name. */
+  assert.equal(FALLBACK_GREETING.hello, "Hai!");
+  assert.equal(FALLBACK_GREETING.invitation, "Nak main apa?");
 });
 
 test("no seed can put an empty or broken name on a child's screen", () => {
@@ -116,7 +118,7 @@ test("a long name is only ever greeted in a way that fits beside it", () => {
   for (let seed = 0; seed < 200; seed += 1) {
     const { hello } = greetingFor("Bartholomew", seed);
     assert.ok(
-      hello === "Hi, Bartholomew!" || hello === "Hey, Bartholomew!",
+      hello === "Hai, Bartholomew!" || hello === "Hei, Bartholomew!",
       `${hello} is too long to set at the hero's size`,
     );
   }

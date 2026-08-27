@@ -225,7 +225,9 @@ if (parents.cloud) {
   ].filter(Boolean));
   await hop("/parents", "[data-parent-privacy]", "/privacy");
 }
-await hop("/privacy", 'a[aria-label="KIDDO home"]', "/");
+/* Found by attribute rather than by its accessible name: the name is
+   translated, and KIDDO's default language is not English. */
+await hop("/privacy", "[data-landing-home]", "/");
 /* The header's way back into KIDDO is outside the gate in both modes: it is
    the parent's own door, and it never depended on being signed in. */
 await hop("/parents", "[data-open-kiddo]", "/play");

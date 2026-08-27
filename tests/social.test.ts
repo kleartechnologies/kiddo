@@ -56,9 +56,9 @@ test("only recent, real, newest-first events are shown, and only a handful", () 
 
 test("a notice says a family joined and nothing about the family", () => {
   const sentences = [
-    noticeFor({ at: NOW, plan: "yearly" }),
-    noticeFor({ at: NOW, plan: "monthly" }),
-    noticeFor({ at: NOW, plan: null }),
+    noticeFor({ at: NOW, plan: "yearly" }, "en"),
+    noticeFor({ at: NOW, plan: "monthly" }, "en"),
+    noticeFor({ at: NOW, plan: null }, "en"),
   ];
   assert.match(sentences[0], /Yearly plan/);
   for (const sentence of sentences) {

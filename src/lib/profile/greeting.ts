@@ -76,7 +76,7 @@ export function fallbackGreeting(locale: Locale): Greeting {
   };
 }
 
-/** The same greeting in English, for the tests and for anything unlocalized. */
+/** The same greeting in KIDDO's default language, for anything unlocalized. */
 export const FALLBACK_GREETING: Greeting = fallbackGreeting(DEFAULT_LOCALE);
 
 /**

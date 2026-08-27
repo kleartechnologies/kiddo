@@ -20,9 +20,10 @@
  *                      the middle of a round moves nothing but the words:
  *                      same options, same ids, same order, same verdict on
  *                      the tile just pressed, same progress, no restart
- *    8 memory          the preference outlives the tab, and a device asking
- *                      for Malay is answered in Malay — while a device
- *                      asking for Indonesian is not
+ *    8 memory          the preference outlives the tab; a visitor who has
+ *                      chosen nothing is answered in Malay whatever their
+ *                      device asks for; and a parent who chose English keeps
+ *                      English on a phone shouting ms-MY
  *    9 console         nothing logged
  *
  *   node scripts/measure-language.mjs [--shots=<dir>] [http://host:port]
@@ -187,7 +188,30 @@ const saidOn = (hooks) =>
       said[name] = el ? (el.innerText || el.textContent || "").replace(/\\s+/g, " ").trim() : null;
     }
     said.__lang = document.documentElement.lang;
-    said.__body = (document.body.innerText || "").replace(/\\s+/g, " ").trim();
+    /* Everything on the page except what is declared to be in another
+       language. The parents' quotations carry their own lang attribute and
+       are never translated — an English sentence inside lang="en-MY" is a
+       person being quoted, not a string that was missed — so the leak sweep
+       below has to walk past them. Anything without a lang of its own
+       inherits the document's and is fair game. */
+    said.__body = (() => {
+      /* innerText, minus anything declared to be in another language. The
+         parents' quotations carry their own lang attribute and are never
+         translated — an English sentence inside lang="en-MY" is a person
+         being quoted, not a string that was missed — so the leak sweep has
+         to walk past them. Hiding them for the length of one read is the
+         cheapest way to say that to innerText, which already knows how to
+         skip scripts, styles and closed details. */
+      const page = document.documentElement.lang.split("-")[0];
+      const foreign = [...document.querySelectorAll("[lang]")].filter(
+        (el) => el.getAttribute("lang").split("-")[0] !== page,
+      );
+      const was = foreign.map((el) => el.style.display);
+      foreign.forEach((el) => { el.style.display = "none"; });
+      const read = (document.body.innerText || "").replace(/\\s+/g, " ").trim();
+      foreign.forEach((el, i) => { el.style.display = was[i]; });
+      return read;
+    })();
     return said;
   })()`);
 
@@ -355,7 +379,7 @@ section("2 · landing");
 
 section("3 · privacy");
 {
-  const hooks = { title: "main h1", body: "main", back: 'a[aria-label="KIDDO home"]' };
+  const hooks = { title: "main h1", body: "main", back: "[data-landing-home]" };
   const { english, malay } = await bothWays("/privacy", hooks);
   report(`privacy · en "${english.title}" → ms "${malay.title}"`, compare(english, malay, { changes: ["title", "body"], keeps: [] }));
   await shoot("03-privacy-ms");
@@ -599,17 +623,33 @@ section("8 · memory");
     remembered.lang === "ms" ? null : `opened in "${remembered.lang}"`,
   ].filter(Boolean));
 
-  /* And with nothing chosen, the device decides — Malay for a Malaysian
-     phone, and English for an Indonesian one, because `id` is not `ms`. */
+  /* And with nothing chosen, the device does not get a vote.
+     
+     KIDDO used to read `navigator.languages` and it no longer does. A
+     Malaysian phone is usually set to English even in a household that
+     speaks Malay at the dinner table, so the tag is a fact about the handset
+     rather than about the family — and the family is who the landing page is
+     written for. So every unchosen visitor is answered in Malay, whatever
+     their device asks for, and the switcher in the header is one tap away
+     for the parent who would rather read English. */
   const ua = await js("navigator.userAgent");
-  for (const [asked, expected] of [["ms-MY", "ms"], ["ms", "ms"], ["id-ID", "en"], ["en-GB", "en"], ["fr-FR", "en"]]) {
+  for (const asked of ["ms-MY", "ms", "id-ID", "en-GB", "fr-FR"]) {
     await cdp.send("Emulation.setUserAgentOverride", { userAgent: ua, acceptLanguage: asked }, sessionId);
     await go("/", 900);
     await js(`localStorage.removeItem(${JSON.stringify(LOCALE_KEY)})`);
     await go("/", 1200);
     const got = await jsObject(`(() => ({ lang: document.documentElement.lang, languages: navigator.languages.join() }))()`);
-    report(`a device asking for ${asked} (navigator: ${got.languages}) is answered in ${got.lang}`, got.lang === expected ? [] : [`expected ${expected}`]);
+    report(`a device asking for ${asked} (navigator: ${got.languages}) is answered in ${got.lang}`, got.lang === "ms" ? [] : ["expected ms"]);
   }
+
+  /* The one thing that does outrank the default is a parent saying so. An
+     English choice survives a device that is shouting Malay. */
+  await cdp.send("Emulation.setUserAgentOverride", { userAgent: ua, acceptLanguage: "ms-MY" }, sessionId);
+  await go("/", 900);
+  await js(`localStorage.setItem(${JSON.stringify(LOCALE_KEY)}, "en")`);
+  await go("/", 1200);
+  const chosen = await js("document.documentElement.lang");
+  report(`a parent who chose English keeps English on a ms-MY device (${chosen})`, chosen === "en" ? [] : ["the default overrode a choice"]);
   await cdp.send("Emulation.setUserAgentOverride", { userAgent: ua, acceptLanguage: "en-US" }, sessionId);
 }
 

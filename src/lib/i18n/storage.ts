@@ -1,4 +1,4 @@
-import { DEFAULT_LOCALE, isLocale, negotiate, type Locale } from "./locale";
+import { DEFAULT_LOCALE, isLocale, type Locale } from "./locale";
 
 /**
  * Where the language preference lives, and which answer wins.
@@ -60,42 +60,36 @@ export function writeStoredLocale(value: unknown): Locale | null {
   return locale;
 }
 
-/** The languages this device would like, best first. */
-function deviceLanguages(): readonly string[] {
-  if (typeof navigator === "undefined") return [];
-  /* `languages` is the ordered list and `language` is the single best guess;
-     older WebViews have only the second. */
-  return navigator.languages?.length ? navigator.languages : [navigator.language];
-}
-
 /**
  * Which language KIDDO should open in.
  *
  * The priority order, and the whole of it:
  *
  *   1. **what the parent chose**, if they ever chose — for ever, and this is
- *      the rule the other three exist to protect. A household that switched
- *      to Bahasa Melayu once must never be handed back to English by a device
- *      setting, a new phone or a browser update. An explicit choice is not a
- *      hint; it is the answer.
+ *      the rule the other two exist to protect. A household that switched to
+ *      English once must never be handed back to Bahasa Melayu by a new phone
+ *      or a browser update, and a household that stayed in Malay must never be
+ *      switched out of it. An explicit choice is not a hint; it is the answer.
  *   2. **what the account remembers**, for a parent signing in on a second
  *      device who has not chosen anything on *this* one yet.
- *   3. **what the device asks for** — a phone set to Malay opens KIDDO in
- *      Bahasa Melayu the very first time, with nothing to configure. This is
- *      the whole reason step 1 has to be so firm: without it, this step would
- *      keep overruling the parent.
- *   4. **English**, because something has to be.
+ *   3. **Bahasa Melayu**, because that is who KIDDO is written for.
+ *
+ * The device's own language setting is deliberately *not* in that list. It
+ * used to be, one step above the default, and it was wrong for the household
+ * KIDDO is built for: a Malaysian phone is usually set to English whatever
+ * language is spoken in the house, so asking the device meant showing English
+ * to most of the parents this page is written for. A setting that is right
+ * about the phone and wrong about the family is worse than no setting at all
+ * — especially on a first visit, which is the only visit it ever decided.
  *
  * Pure and total on purpose: it takes the two answers rather than fetching
- * them, so the priority order can be tested without a browser, an account or
- * a mocked `navigator`.
+ * them, so the priority order can be tested without a browser or an account.
  */
 export function resolveLocale(
   chosen: Locale | null,
   fromAccount: Locale | null = null,
-  fromDevice: readonly string[] | undefined = undefined,
 ): Locale {
   if (chosen) return chosen;
   if (fromAccount) return fromAccount;
-  return negotiate(fromDevice ?? deviceLanguages()) ?? DEFAULT_LOCALE;
+  return DEFAULT_LOCALE;
 }

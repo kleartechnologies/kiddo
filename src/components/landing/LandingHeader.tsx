@@ -44,6 +44,7 @@ export function LandingHeader({ className }: { className?: string }) {
       <Link
         href={LANDING}
         aria-label={t("landing.nav.home")}
+        data-landing-home
         className="-mx-2 flex min-h-14 items-center rounded-2xl px-2"
       >
         <KiddoWordmark />

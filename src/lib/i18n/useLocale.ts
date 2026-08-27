@@ -16,11 +16,11 @@ import { translator, type Translate } from "./messages";
  * header while the change has to reach a heading, a button and a question at
  * the bottom of the page, none of which know the switcher exists.
  *
- * `getServerSnapshot` returns English, so the prerendered HTML and the
+ * `getServerSnapshot` returns Bahasa Melayu, so the prerendered HTML and the
  * hydrating render agree exactly — there is no hydration mismatch to warn
- * about, and `<html lang="en">` in the static file is *true* for that file.
- * The real locale arrives in the same commit as hydration, before paint, so a
- * Malay household does not watch English fade out.
+ * about, and `<html lang="ms">` in the static file is *true* for that file.
+ * A parent who once chose English gets it in the same commit as hydration,
+ * before paint, so nobody watches one language fade out into the other.
  *
  * ## Why there is no provider and no context
  *
@@ -61,7 +61,7 @@ function getSnapshot(): Locale {
   return snapshot;
 }
 
-/** The server has no device and no storage, so it has the default. */
+/** The server has no storage and nobody to ask, so it has the default. */
 function getServerSnapshot(): Locale {
   return DEFAULT_LOCALE;
 }
@@ -99,7 +99,7 @@ export function useLocale(): Locale {
  *
  * This is the only writer, and what it writes is the first and strongest
  * answer in `resolveLocale`'s priority order: once a grown-up has chosen,
- * neither the device's language nor a later visit may overrule it.
+ * no later visit and no new device may overrule it.
  *
  * The `<html lang>` attribute is updated here rather than in an effect
  * somewhere, so the document's language changes in the same tick as the

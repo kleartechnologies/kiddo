@@ -11,7 +11,7 @@
  *
  * ## Two axes, kept apart
  *
- * `Locale` is the *code* — `en`, `ms` — and it is what every function, store
+ * `Locale` is the *code* — `ms`, `en` — and it is what every function, store
  * and dictionary in the product is keyed on. `LOCALE_LABELS` is what a person
  * is shown, and the two are deliberately not the same string: the switcher
  * says **BM** because that is what a Malaysian reads at a glance, while the
@@ -34,28 +34,36 @@
 /**
  * Every language KIDDO speaks, in the order the switcher offers them.
  *
- * English is first because it is the default (see `DEFAULT_LOCALE`), not
- * because it is more important.
+ * Bahasa Melayu first, because it is the default and because the switcher's
+ * first row is the one a parent's thumb lands on.
  */
-export const LOCALES = ["en", "ms"] as const;
+export const LOCALES = ["ms", "en"] as const;
 
 export type Locale = (typeof LOCALES)[number];
 
 /**
  * What KIDDO speaks when nobody has said otherwise.
  *
- * English, deliberately — see `docs/kiddo-localization.md`. Malaysian parents
- * read English product copy comfortably, the landing page is prerendered as
- * static HTML in one language (so *some* language has to be the one in the
- * file), and a device set to Malay still lands in Bahasa Melayu on its first
- * paint because `negotiate` runs before anything is drawn.
+ * Bahasa Melayu, and this is a decision about who KIDDO is for rather than a
+ * technical default. The people it is written for are Malaysian parents, most
+ * of whom meet it through an advert on a phone — and a Malaysian phone is
+ * usually set to English even in a household that speaks Malay at the dinner
+ * table. So a device's own language setting is exactly the wrong thing to
+ * infer a household's language from, and KIDDO no longer tries: the landing
+ * page opens in Bahasa Melayu for everybody, and the switcher in the header
+ * is one tap from English for the parent who would rather read that.
+ *
+ * The landing page is prerendered as static HTML in this language (see
+ * `next.config.ts`), so this is also the language of the file a CDN hands out
+ * and of `<html lang>` in it — which is what a first paint, a screen reader
+ * and a search engine all read before any JavaScript has run.
  */
-export const DEFAULT_LOCALE: Locale = "en";
+export const DEFAULT_LOCALE: Locale = "ms";
 
 /** The user-facing name of a language, written in that language. */
 export const LOCALE_LABELS: Record<Locale, string> = {
-  en: "English",
   ms: "Bahasa Melayu",
+  en: "English",
 };
 
 /**
@@ -66,8 +74,8 @@ export const LOCALE_LABELS: Record<Locale, string> = {
  * `ms` everywhere it is machine-read.
  */
 export const LOCALE_SHORT: Record<Locale, string> = {
-  en: "EN",
   ms: "BM",
+  en: "EN",
 };
 
 /**
@@ -79,37 +87,10 @@ export const LOCALE_SHORT: Record<Locale, string> = {
  * through one function.
  */
 export const LOCALE_HTML_LANG: Record<Locale, string> = {
-  en: "en",
   ms: "ms",
+  en: "en",
 };
 
 export function isLocale(value: unknown): value is Locale {
   return typeof value === "string" && (LOCALES as readonly string[]).includes(value);
-}
-
-/**
- * The best locale for a device, or null when none of them fit.
- *
- * Takes the browser's whole preference list, in order, and matches on the
- * *language subtag* only: a device set to `ms-MY`, `ms-SG` or plain `ms` all
- * mean Bahasa Melayu, and a switcher that only understood exact codes would
- * have missed every real Malaysian device.
- *
- * Returns null rather than the default so the caller can tell "the device
- * asked for Malay" apart from "the device asked for nothing we have" — the
- * difference between a preference and a fallback, which is exactly what
- * `resolveLocale` needs to get the priority order right.
- */
-export function negotiate(tags: readonly string[] | undefined): Locale | null {
-  for (const tag of tags ?? []) {
-    if (typeof tag !== "string") continue;
-    const [base = ""] = tag.toLowerCase().split("-");
-    /* Indonesian is deliberately *not* matched to `ms`. The two are close
-       enough that a machine would happily fold them together and far enough
-       apart that a Malaysian child would hear the difference in the first
-       sentence. A device set to `id` gets English until KIDDO has real
-       Bahasa Indonesia to give it. */
-    if (isLocale(base)) return base;
-  }
-  return null;
 }

@@ -1,34 +1,52 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Check } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
-import { planText, YEARLY_SAVING_PERCENT } from "@/lib/billing/subscription";
+import { planText } from "@/lib/billing/subscription";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { cn } from "@/lib/cn";
 import { worldNameKey } from "@/lib/i18n/names";
+import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT, useTranslation } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 
 /**
- * The first screen a parent sees.
+ * The first screen a parent sees, usually on a phone, usually one tap after
+ * an advert.
  *
- * One sentence that says what KIDDO believes, one that says what it is, and
- * two buttons. Next to them, the three worlds — drawn by the same
- * `WorldScene` the child's doors are drawn with, so the picture on the
- * landing page is literally the product — and KIDDO standing in front,
- * waving, the way it does on the child's home screen.
+ * It says three things and stops: that screen time need not be wasted time,
+ * what KIDDO turns it into, and where to start. The brief for this page was
+ * blunt about not overcrowding the hero and it is right — a parent standing
+ * in a kitchen gives this maybe five seconds, and a fourth idea here costs
+ * the first three.
+ *
+ * The three lines under the buttons are the objections that would otherwise
+ * be raised silently: no advertising, nothing sold to the child, and the
+ * price in the open before anyone has to hunt for it. The price comes from
+ * `planText`, so it is the same figure Stripe will charge.
+ *
+ * Next to the words are the three worlds, drawn by the same `WorldScene` the
+ * child's own doors are drawn with, with KIDDO waving in front the way it
+ * does on the home screen. The picture on the landing page is literally the
+ * product.
  *
  * Nothing here moves on its own. The fan of cards is a composition, not an
  * animation, and it reads the same under reduced motion because there is
  * nothing to reduce.
  */
+/** The quiet objections, answered before they are asked. */
+const TRUST: MessageKey[] = [
+  "landing.hero.trust.1",
+  "landing.hero.trust.2",
+  "landing.hero.trust.3",
+];
+
 export function LandingHero() {
   const { locale, t } = useTranslation();
   const monthly = planText("monthly", locale);
-  const yearly = planText("yearly", locale);
 
   return (
     <section
@@ -62,15 +80,17 @@ export function LandingHero() {
             {t("landing.hero.secondary")}
           </ButtonLink>
         </div>
-        <p className="text-ink-500 text-sm">
-          {t("landing.hero.terms", {
-            monthly: monthly.price,
-            monthlyPer: monthly.per,
-            yearly: yearly.price,
-            yearlyPer: yearly.per,
-            saving: YEARLY_SAVING_PERCENT,
-          })}
-        </p>
+        <ul
+          className="text-ink-500 mx-auto flex list-none flex-col gap-2 text-sm sm:flex-row sm:flex-wrap sm:justify-center sm:gap-x-5 lg:mx-0 lg:justify-start"
+          aria-label={t("landing.hero.trustAria")}
+        >
+          {TRUST.map((line) => (
+            <li key={line} className="flex items-center justify-center gap-2 sm:justify-start">
+              <Check className="text-sage-ink size-4 shrink-0" strokeWidth={3} aria-hidden />
+              {t(line, { monthly: monthly.price })}
+            </li>
+          ))}
+        </ul>
       </div>
 
       <WorldFan />

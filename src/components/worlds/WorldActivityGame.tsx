@@ -405,7 +405,15 @@ function Intro({
     preview,
     begin: (
       <div className="flex flex-col items-center gap-6 [@media(max-height:54rem)]:gap-4">
-        <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
+        {/* Named for `scripts/make-brand-assets.mjs`, which opens a real round
+            to photograph it. The label is translated, so the script cannot
+            find this button by its words. */}
+        <Button
+          size="lg"
+          icon={<Sparkles className="size-6" />}
+          onClick={onStart}
+          data-round-start
+        >
           {label}
         </Button>
         {picker}

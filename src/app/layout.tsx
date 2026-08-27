@@ -4,6 +4,7 @@ import { Fredoka, Nunito } from "next/font/google";
 import { CloudSession } from "@/components/account/CloudSession";
 import { HtmlLang } from "@/components/i18n/HtmlLang";
 import { MotionProvider } from "@/components/MotionProvider";
+import { DEFAULT_LOCALE, LOCALE_HTML_LANG } from "@/lib/i18n/locale";
 import "./globals.css";
 
 /** Display face: rounded, friendly, still confident enough for a parent. */
@@ -32,11 +33,11 @@ const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL;
 export const metadata: Metadata = {
   metadataBase: SITE_URL ? new URL(SITE_URL) : undefined,
   title: {
-    default: "KIDDO — Play. Learn. Smile.",
+    default: "KIDDO — Main. Belajar. Ketawa.",
     template: "%s · KIDDO",
   },
   description:
-    "A small, safe play world of bite-sized games for children aged 4 to 8.",
+    "Dunia permainan kecil yang selamat untuk anak berumur 4 hingga 8 tahun.",
   applicationName: "KIDDO",
 };
 
@@ -52,8 +53,12 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
+    /* The language of the file itself. Every public page is prerendered in
+       one language and that language is KIDDO's default, Bahasa Melayu; a
+       parent who has chosen English gets both the strings and this attribute
+       corrected in the same commit as hydration (see `components/i18n`). */
     <html
-      lang="en"
+      lang={LOCALE_HTML_LANG[DEFAULT_LOCALE]}
       className={`${fredoka.variable} ${nunito.variable} h-full antialiased`}
     >
       <body className="min-h-full">

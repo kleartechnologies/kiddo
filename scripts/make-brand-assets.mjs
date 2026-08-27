@@ -21,9 +21,17 @@
  *   node scripts/make-brand-assets.mjs [origin]
  */
 import { mkdirSync, writeFileSync } from "node:fs";
+import { readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 import { applyViewport, clickAt, evaluate, openBrowser, settle, visit } from "./cdp.mjs";
+
+/* Read from the product rather than repeated: the language the assets are
+   photographed in is the language the landing page opens in. */
+const DEFAULT_LOCALE = (
+  await readFile(new URL("../src/lib/i18n/locale.ts", import.meta.url), "utf8")
+).match(/DEFAULT_LOCALE: Locale = "(\w+)"/)?.[1];
+if (!DEFAULT_LOCALE) throw new Error("could not read DEFAULT_LOCALE from lib/i18n/locale.ts");
 
 const ORIGIN = process.argv.find((arg) => arg.startsWith("http")) ?? "http://127.0.0.1:4310";
 const ROOT = new URL("..", import.meta.url).pathname;
@@ -104,16 +112,22 @@ const ROUNDS = [
   ["words", "/worlds/words/rhyming-friends"],
 ];
 await applyViewport(cdp, sessionId, { width: 390, height: 560, mobile: true });
+/* The pictures go on a page that opens in KIDDO's default language, so they
+   are photographed in it. Written before the first visit and left in place for
+   the dashboard shot too, because a Malay landing page showing an English
+   screenshot is the drift this whole script exists to prevent. */
+await visit(cdp, sessionId, `${ORIGIN}/`, 400);
+await js(`localStorage.setItem("kiddo.locale.v1", ${JSON.stringify(DEFAULT_LOCALE)})`);
 for (const [world, path] of ROUNDS) {
   await visit(cdp, sessionId, `${ORIGIN}${path}`, 1200);
   await js("document.fonts.ready");
   const go = await js(`(() => {
-    const b = [...document.querySelectorAll("button")].find((b) => /Let's go/.test(b.textContent));
+    const b = document.querySelector("[data-round-start]");
     if (!b) return null;
     const r = b.getBoundingClientRect();
     return { x: r.x + r.width / 2, y: r.y + r.height / 2 };
   })()`);
-  if (!go) throw new Error(`${world}: no "Let's go" button`);
+  if (!go) throw new Error(`${world}: no way into the round`);
   await clickAt(cdp, sessionId, go);
   /* Long enough for the things on the board to have popped in and settled. */
   await settle(cdp, sessionId, 2600);

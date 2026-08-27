@@ -18,6 +18,30 @@ import type { NextConfig } from "next";
  * Customer Portal are full-page redirects to Stripe's own site, which the
  * page's policy does not govern. `form-action 'self'` is therefore safe.
  *
+ * Two of the hosts are there for "Continue with Google" and for nothing
+ * else, and both are worth naming plainly rather than passing over:
+ *
+ *   `script-src https://apis.google.com` — `signInWithPopup` loads
+ *   Google's `gapi.iframes` to talk to the window it opened. That is
+ *   third-party script running inside KIDDO's own origin, which is a real
+ *   widening; it is Google's own, on the same page that is already
+ *   trusting Google with the sign-in itself, and there is no version of
+ *   Firebase popup sign-in that does without it.
+ *
+ *   `frame-src https://kiddocares-b105e.firebaseapp.com` — the hidden
+ *   `/__/auth/iframe` that the popup posts its answer back through. That
+ *   host is the project's `authDomain` (see `src/lib/firebase/config.ts`),
+ *   written out in full rather than wildcarded, so a different Firebase
+ *   project would be refused rather than quietly allowed; `tests/abuse.test.ts`
+ *   holds the two spellings in step.
+ *
+ * A popup and not `signInWithRedirect`, which would need no `frame-src` at
+ * all: KIDDO is served from kiddocares.com while the auth handler lives on
+ * firebaseapp.com, and browsers that partition third-party storage — Safari
+ * and Chrome both — lose the redirect's state on the way back and drop the
+ * parent on the sign-in page having apparently done nothing. The popup
+ * carries its own window and does not depend on that.
+ *
  * `script-src` keeps `'unsafe-inline'`, and that is a real weakening worth
  * stating plainly rather than hiding. Next.js streams a page's data through
  * inline `<script>` tags; the alternative is a per-request nonce, which
@@ -37,7 +61,7 @@ const csp = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+  "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: blob:",
   "font-src 'self' data:",
@@ -45,7 +69,7 @@ const csp = [
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/",
-  "frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com/",
+  "frame-src https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
   "upgrade-insecure-requests",
 ].join("; ");
 

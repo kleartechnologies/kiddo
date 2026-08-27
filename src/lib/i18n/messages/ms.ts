@@ -431,6 +431,9 @@ export const ms: Record<MessageKey, string> = {
   "auth.forgot.title": "Lupa kata laluan?",
   "auth.forgot.blurb":
     "Taip e-mel akaun KIDDO anda dan kami akan hantar pautan untuk pilih kata laluan baharu.",
+  /* "Google" kekal seperti asalnya — nama jenama, bukan perkataan. */
+  "auth.google.continue": "Teruskan dengan Google",
+  "auth.google.or": "atau",
   "auth.field.email": "E-mel anda",
   "auth.field.password": "Kata laluan",
   "auth.field.confirm": "Sahkan kata laluan",
@@ -462,6 +465,10 @@ export const ms: Record<MessageKey, string> = {
   "auth.error.bad-link": "Pautan itu sudah luput. Minta pautan baharu di bawah.",
   "auth.error.recent-login": "Sila log masuk semula dahulu.",
   "auth.error.billing-unavailable": "Langganan belum disediakan pada KIDDO ini.",
+  "auth.error.popup-blocked":
+    "Pelayar anda menghalang tetingkap Google daripada dibuka. Benarkan tetingkap timbul untuk KIDDO, atau guna e-mel dan kata laluan di bawah.",
+  "auth.error.different-sign-in":
+    "E-mel itu sudah log masuk dengan cara lain. Cuba e-mel dan kata laluan anda di bawah.",
   "auth.error.unknown": "Ada sesuatu yang tidak kena. Sila cuba lagi.",
 
   /* ---- /join: the road from choosing a plan to paying for it ---------- */

@@ -432,6 +432,11 @@ export const en = {
   "auth.forgot.title": "Forgot your password?",
   "auth.forgot.blurb":
     "Type the email your KIDDO account is under and we’ll send a link to choose a new one.",
+  /* Google's sign-in branding permits "Sign in with", "Sign up with" and
+     "Continue with". One button does both jobs here, so "Continue with"
+     is the only one of the three that is true in both modes. */
+  "auth.google.continue": "Continue with Google",
+  "auth.google.or": "or",
   "auth.field.email": "Your email",
   "auth.field.password": "Password",
   "auth.field.confirm": "Confirm password",
@@ -463,6 +468,10 @@ export const en = {
   "auth.error.bad-link": "That link has expired. Ask for a new one below.",
   "auth.error.recent-login": "Please sign in again first.",
   "auth.error.billing-unavailable": "Subscriptions aren’t set up on this KIDDO yet.",
+  "auth.error.popup-blocked":
+    "Your browser stopped the Google window from opening. Allow pop-ups for KIDDO, or use your email and a password below.",
+  "auth.error.different-sign-in":
+    "That email already signs in a different way. Try your email and password below.",
   "auth.error.unknown": "Something went wrong. Please try again.",
 
   /* ---- /join: the road from choosing a plan to paying for it ---------- */

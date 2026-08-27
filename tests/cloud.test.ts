@@ -11,6 +11,7 @@ import {
   deleteAccount,
   retrySession,
   signIn,
+  signInWithGoogle,
   signOut,
   signUp,
 } from "@/lib/cloud/session";
@@ -136,6 +137,56 @@ test("auth failures come back as reasons, never exceptions", async () => {
   assert.equal(await signUp("p@example.com", "secret1"), "email-in-use");
   assert.equal(await signIn("nobody@example.com", "secret1"), "no-account");
   assert.equal(await signIn("p@example.com", "wrong!!"), "wrong-password");
+  assert.equal(currentSession().status, "signed-out");
+});
+
+test("Google sign-in makes the account the first time and finds it after", async () => {
+  await boot();
+  assert.equal(await signInWithGoogle(), null);
+  await settle();
+  /* Google has already checked the address, so there is no "check your
+     email" step waiting on the other side of it. */
+  assert.equal(currentSession().status, "needs-child");
+  assert.equal(currentSession().user?.emailVerified, true);
+  const uid = currentSession().user?.uid;
+  await signOut();
+
+  assert.equal(await signInWithGoogle(), null);
+  await settle();
+  /* The same account, not a second one beside it. */
+  assert.equal(currentSession().user?.uid, uid);
+  assert.equal(cloud.accounts.size, 1);
+});
+
+test("a shut Google window is not an error, and a blocked one is", async () => {
+  await boot();
+  cloud.googleAnswer = new CloudError("popup-closed", "closed");
+  /* The parent changed their mind. Saying nothing is the whole response. */
+  assert.equal(await signInWithGoogle(), null);
+  assert.equal(currentSession().status, "signed-out");
+
+  cloud.googleAnswer = new CloudError("popup-blocked", "blocked");
+  assert.equal(await signInWithGoogle(), "popup-blocked");
+  assert.equal(currentSession().status, "signed-out");
+});
+
+test("an address that already has a password cannot gain a second Google account", async () => {
+  await boot();
+  assert.equal(await signUp("p@example.com", "secret1"), null);
+  await signOut();
+  cloud.googleAnswer = "p@example.com";
+  assert.equal(await signInWithGoogle(), "different-sign-in");
+  assert.equal(cloud.accounts.size, 1, "no second account for the same address");
+  assert.equal(currentSession().status, "signed-out");
+});
+
+test("a Google account has no password, so the password form cannot reach it", async () => {
+  await boot();
+  await signInWithGoogle();
+  await signOut();
+  /* Not "no-account" and not a way in: the same sentence a wrong password
+     gets, so the form still cannot sort addresses into accounts. */
+  assert.equal(await signIn("parent@gmail.test", ""), "wrong-password");
   assert.equal(currentSession().status, "signed-out");
 });
 

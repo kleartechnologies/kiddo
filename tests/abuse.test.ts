@@ -348,7 +348,7 @@ test("M — an Origin header cannot decide where Stripe sends a parent back to",
 
 /* ---- N: the headers every response carries ----------------------------- */
 
-test("N — security headers are configured, and the CSP names only what KIDDO uses", () => {
+test("N — security headers are configured, and the CSP names only what KIDDO uses", async () => {
   const config = read("../next.config.ts");
   assert.match(config, /poweredByHeader: false/, "no framework banner");
 
@@ -387,6 +387,39 @@ test("N — security headers are configured, and the CSP names only what KIDDO u
     "https://securetoken.googleapis.com",
     "https://www.google.com/recaptcha/",
   ]);
+
+  /* script-src and frame-src are named just as exactly, because "Continue
+     with Google" widened both and a widening nobody has to come back and
+     re-approve is how a policy turns into a template. */
+  const script = /"script-src ([^"]+)"/.exec(config)?.[1] ?? "";
+  assert.deepEqual(script.split(" ").sort(), [
+    "'self'",
+    "'unsafe-inline'",
+    /* Firebase's popup sign-in loads gapi.iframes to talk to the window it
+       opened. Third-party script in KIDDO's own origin — see next.config.ts. */
+    "https://apis.google.com",
+    "https://www.google.com/recaptcha/",
+    "https://www.gstatic.com/recaptcha/",
+  ]);
+
+  const frame = /"frame-src ([^"]+)"/.exec(config)?.[1] ?? "";
+  assert.deepEqual(frame.split(" ").sort(), [
+    /* The project's own authDomain: the hidden /__/auth/iframe the Google
+       popup answers through. Asserted again below against the project id. */
+    "https://kiddocares-b105e.firebaseapp.com",
+    "https://recaptcha.google.com/",
+    "https://www.google.com/recaptcha/",
+  ]);
+
+  /* And that host is not a loose string: it is this project's `authDomain`,
+     spelled the way `firebaseConfig()` spells it when the environment does
+     not override it. Move Firebase projects and this fails, rather than the
+     popup silently being blocked in a browser nobody is watching. */
+  const { FIREBASE_PROJECT_ID } = await import("@/lib/firebase/config");
+  assert.ok(
+    frame.includes(`https://${FIREBASE_PROJECT_ID}.firebaseapp.com`),
+    `frame-src must name ${FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  );
 
   /* The one weakening is `script-src 'unsafe-inline'`, and it is only
      defensible while KIDDO has no way to inject HTML at all. */

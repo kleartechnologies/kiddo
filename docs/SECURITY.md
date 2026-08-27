@@ -122,6 +122,29 @@ the same thing whether or not the address exists. A test holds that in place.
 The remaining leak is sign-*up*, which the client cannot hide on its own —
 this console setting is the fix, not a code change.
 
+### Firebase — Google sign-in
+
+**Firebase console → Authentication → Sign-in method → Google → Enable →
+set the support email → Save.** Then **Authentication → Settings →
+Authorized domains** must list **every hostname KIDDO is served from** —
+`kiddocares.com` and, while the Netlify subdomain is still reachable,
+`kiddocares.netlify.app`. Until both steps are done, "Continue with Google"
+fails with `auth/operation-not-allowed` or `auth/unauthorized-domain`,
+which reaches the parent as "Something went wrong. Please try again." —
+all the card can honestly say about a server setting.
+
+The list starts as `localhost` plus the two firebase-hosted names, and
+nothing else. `127.0.0.1` is **not** on it: the same machine under its
+numeric spelling is a different domain to Firebase, so drive the local
+check at `http://localhost:4310` or it fails for a reason that has nothing
+to do with the code.
+
+Enabling Google does not weaken Email Enumeration Protection above, and it
+does not create a second account for an address that already has a password:
+Firebase keeps one account per email address, and the card answers
+`auth/account-exists-with-different-credential` with "that email already
+signs in a different way".
+
 ### Firebase — App Check
 
 **Firebase console → App Check → Apps → register the web app with reCAPTCHA
@@ -215,19 +238,43 @@ browser actually contacts. Fonts are self-hosted at build by
 Stripe Checkout is a full-page redirect, not an iframe or a cross-origin form
 post, so none of those break it.
 
-**The one real weakening is `script-src 'unsafe-inline'.`** Next streams data
-to the client through inline `<script>` tags. The alternative is a
+**The first real weakening is `script-src 'unsafe-inline'.`** Next streams
+data to the client through inline `<script>` tags. The alternative is a
 nonce, which in this Next fork requires every page to be dynamically rendered
 — it would end static prerendering of the landing page. KIDDO has no
 injection point for the directive to defend (no `dangerouslySetInnerHTML`, no
-`eval`, no `new Function` anywhere in `src`, and no third-party script at
-all), and a closed `connect-src` means injected script would have nowhere to
-send anything. This is a documented trade, not an oversight; a test asserts
-the rest of the policy stays strict.
+`eval`, no `new Function` anywhere in `src`), and a closed `connect-src`
+means injected script would have nowhere to send anything. This is a
+documented trade, not an oversight; a test asserts the rest of the policy
+stays strict.
+
+**The second is `script-src https://apis.google.com`,** added for "Continue
+with Google". Firebase's `signInWithPopup` loads Google's `gapi.iframes` to
+talk to the window it opens, and posts the answer back through a hidden
+`/__/auth/iframe` on the project's own `authDomain` — which is why
+`frame-src` names `https://kiddocares-b105e.firebaseapp.com` in full rather
+than a wildcard. So the claim above that KIDDO carries *no* third-party
+script no longer holds: it carries one, Google's, on the page that is
+already trusting Google with the sign-in itself. There is no version of
+Firebase popup sign-in without it, and `signInWithRedirect` — which would
+need no `frame-src` — is not usable here: KIDDO is served from
+kiddocares.com while the handler is on firebaseapp.com, and browsers that
+partition third-party storage lose the redirect's state on the way back.
+
+`connect-src` was **not** widened for Google sign-in, and the test that pins
+it to Firebase's own hosts is unchanged. `tests/abuse.test.ts` now pins
+`script-src` and `frame-src` just as exactly, and asserts the `frame-src`
+auth host matches `FIREBASE_PROJECT_ID`, so moving Firebase projects fails a
+test rather than silently blocking the popup.
 
 To re-verify after a change to what KIDDO loads, build with
 `CSP_REPORT_ONLY=true`, drive the real pages, confirm no violations, then
-rebuild without it.
+rebuild without it. For the Google popup specifically there is a script:
+`npm run check:google-csp` against a `next start` of a Firebase-configured
+build presses the button in a real Chrome and reports every
+`securitypolicyviolation`, together with proof that `apis.google.com` and
+the auth iframe were actually requested. It signs nobody in. Last run: no
+violations, both hosts reached.
 
 ---
 

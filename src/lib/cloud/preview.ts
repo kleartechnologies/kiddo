@@ -16,11 +16,18 @@ import { CloudError, type ChildProfile, type CloudBackend, type ParentUser } fro
  */
 
 export const PREVIEW_FLAG_KEY = "kiddo.preview.cloud";
+/** Who the pretend Google popup always comes back as. */
+const PREVIEW_GOOGLE_EMAIL = "parent@example.com";
 const STATE_KEY = "kiddo.preview.state.v1";
 const WEBHOOK_DELAY_MS = 2500;
 
 interface State {
-  accounts: Record<string, { uid: string; password: string; verified: boolean }>;
+  /**
+   * `password: null` is a Google account: made by the pretend popup, and
+   * unreachable through the password form — which is exactly how the real
+   * one behaves.
+   */
+  accounts: Record<string, { uid: string; password: string | null; verified: boolean }>;
   current: string | null;
   children: Record<string, ChildProfile>;
   journeys: Record<string, Journey>;
@@ -140,7 +147,25 @@ export const previewBackend: CloudBackend = {
     const key = email.trim().toLowerCase();
     const account = load().accounts[key];
     if (!account) throw new CloudError("no-account");
-    if (account.password !== password) throw new CloudError("wrong-password");
+    if (account.password === null || account.password !== password) throw new CloudError("wrong-password");
+    become(key);
+    return userOf(load())!;
+  },
+  async signInWithGoogle() {
+    /* There is no Google here and nothing to ask. The pretend popup always
+       comes back as the same person, so the screens behind sign-in can be
+       looked at without an account existing anywhere. */
+    const key = PREVIEW_GOOGLE_EMAIL;
+    mutate((state) => {
+      const existing = state.accounts[key];
+      if (existing) {
+        /* Same address, but it was made with a password: one account per
+           email address, the same refusal the real backend gives. */
+        if (existing.password !== null) throw new CloudError("different-sign-in");
+        return;
+      }
+      state.accounts[key] = { uid: `uid-${Object.keys(state.accounts).length + 1}`, password: null, verified: true };
+    });
     become(key);
     return userOf(load())!;
   },

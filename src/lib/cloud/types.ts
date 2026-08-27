@@ -41,6 +41,20 @@ export type AuthFailure =
   | "recent-login"
   /** The billing server is not set up on this deployment. */
   | "billing-unavailable"
+  /**
+   * The parent shut the Google window, or opened a second one. Not a
+   * failure they need told about — `signInWithGoogle` in the session store
+   * turns it back into "nothing happened".
+   */
+  | "popup-closed"
+  /** The browser blocked the Google window before it could open. */
+  | "popup-blocked"
+  /**
+   * That email already signs in a different way — a password here, or
+   * another provider. Firebase keeps one account per address, so it will
+   * not quietly make a second one.
+   */
+  | "different-sign-in"
   | "unknown";
 
 export class CloudError extends Error {
@@ -57,6 +71,17 @@ export interface CloudBackend {
   onAuth(listener: (user: ParentUser | null) => void): () => void;
   signUp(email: string, password: string): Promise<ParentUser>;
   signIn(email: string, password: string): Promise<ParentUser>;
+  /**
+   * Sign in with Google, in a popup. Creates the account on first use, so
+   * it is both halves of the card's job at once — there is no separate
+   * "sign up with Google".
+   *
+   * A popup rather than a redirect on purpose: KIDDO is served from
+   * kiddocares.com and Firebase's auth handler lives on the project's own
+   * `authDomain`, and browsers that partition third-party storage break a
+   * cross-origin redirect flow. See the CSP note in `next.config.ts`.
+   */
+  signInWithGoogle(): Promise<ParentUser>;
   signOut(): Promise<void>;
 
   /** Creates or refreshes `users/{uid}`; idempotent. */

@@ -61,7 +61,8 @@ export class FakeCloud implements CloudBackend {
   users = new Map<string, ParentUser>();
   children = new Map<string, ChildProfile>();
   journeys = new Map<string, Journey>();
-  accounts = new Map<string, { uid: string; password: string; verified: boolean }>();
+  /** `password: null` is a Google account — no password can reach it. */
+  accounts = new Map<string, { uid: string; password: string | null; verified: boolean }>();
   subscriptions = new Map<string, SubscriptionState>();
   /**
    * Most account tests are about the child and the journey, not billing,
@@ -82,6 +83,8 @@ export class FakeCloud implements CloudBackend {
   resetCodes = new Map<string, string>();
   verifyCodes = new Map<string, string>();
   deleted: string[] = [];
+  /** Who the fake Google popup comes back as, or a failure to throw instead. */
+  googleAnswer: string | CloudError = "parent@gmail.test";
   private authListeners = new Set<(user: ParentUser | null) => void>();
   private journeyListeners = new Map<string, Set<(journey: Journey | null) => void>>();
   private subscriptionListeners = new Map<string, Set<(state: SubscriptionState) => void>>();
@@ -109,9 +112,25 @@ export class FakeCloud implements CloudBackend {
   async signIn(email: string, password: string) {
     const account = this.accounts.get(email);
     if (!account) throw new CloudError("no-account", "none");
-    if (account.password !== password) throw new CloudError("wrong-password", "wrong");
+    if (account.password === null || account.password !== password) throw new CloudError("wrong-password", "wrong");
     if (this.autoSubscribe && !this.subscriptions.has(account.uid)) this.subscriptions.set(account.uid, ACTIVE);
     const user = { uid: account.uid, email, emailVerified: account.verified };
+    this.become(user);
+    return user;
+  }
+  async signInWithGoogle() {
+    if (this.googleAnswer instanceof CloudError) throw this.googleAnswer;
+    const email = this.googleAnswer;
+    const existing = this.accounts.get(email);
+    /* One account per email address, as Firebase does it: an address that
+       already has a password cannot quietly gain a second account. */
+    if (existing && existing.password !== null) throw new CloudError("different-sign-in", "password account");
+    const uid = existing?.uid ?? `uid-${this.accounts.size + 1}`;
+    if (!existing) this.accounts.set(email, { uid, password: null, verified: true });
+    if (this.autoSubscribe && !this.subscriptions.has(uid)) this.subscriptions.set(uid, ACTIVE);
+    /* Google has already checked the address, so the account arrives
+       verified and never sees the "check your email" step. */
+    const user = { uid, email, emailVerified: true };
     this.become(user);
     return user;
   }

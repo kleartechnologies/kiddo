@@ -4,10 +4,12 @@ import {
   confirmPasswordReset as firebaseConfirmPasswordReset,
   createUserWithEmailAndPassword,
   getAuth,
+  GoogleAuthProvider,
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
   signInWithEmailAndPassword,
+  signInWithPopup,
   signOut as firebaseSignOut,
   verifyPasswordResetCode,
   type Auth,
@@ -110,6 +112,20 @@ function reasonOf(error: unknown): AuthFailure {
       return "bad-link";
     case "auth/requires-recent-login":
       return "recent-login";
+    /* The parent shut the Google window, or clicked the button twice and
+       the first window was cancelled. Neither is worth a sentence. */
+    case "auth/popup-closed-by-user":
+    case "auth/cancelled-popup-request":
+    case "auth/user-cancelled":
+      return "popup-closed";
+    case "auth/popup-blocked":
+      return "popup-blocked";
+    /* One account per email address: the address already signs in another
+       way, and Firebase will not silently make a second account for it.
+       (`auth/email-already-in-use` is the password form of the same thing
+       and is answered above, where creating an account asks about it.) */
+    case "auth/account-exists-with-different-credential":
+      return "different-sign-in";
     default:
       return "unknown";
   }
@@ -144,6 +160,28 @@ export const firebaseBackend: CloudBackend = {
     guarded(async () => {
       const { auth } = services();
       const { user } = await signInWithEmailAndPassword(auth, email.trim(), password);
+      return toParent(user);
+    }),
+
+  signInWithGoogle: () =>
+    guarded(async () => {
+      const { auth } = services();
+      /* If this throws `auth/operation-not-allowed`, Google sign-in is
+         switched off for the project: Firebase console → Authentication →
+         Sign-in method. It reaches the parent as "something went wrong",
+         which is all the card can honestly say about a server setting. */
+      const provider = new GoogleAuthProvider();
+      /* KIDDO wants a name and an address to put the account under, and
+         nothing else. `email` and `profile` are what Google grants by
+         default; asking for them explicitly keeps the consent screen
+         honest about the whole of it. */
+      provider.addScope("email");
+      provider.addScope("profile");
+      /* Always offer the chooser. Without this a shared family laptop
+         signs the parent straight back into whichever Google account the
+         browser saw last, with no way to pick the other one. */
+      provider.setCustomParameters({ prompt: "select_account" });
+      const { user } = await signInWithPopup(auth, provider);
       return toParent(user);
     }),
 

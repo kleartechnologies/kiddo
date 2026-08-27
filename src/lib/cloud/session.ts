@@ -291,6 +291,23 @@ export async function signIn(email: string, password: string): Promise<AuthFailu
   }
 }
 
+/**
+ * Sign in with Google. Both halves of the card's job at once: Firebase
+ * makes the account the first time and finds it every time after.
+ *
+ * A shut popup comes back as `null` — nothing happened, so the card says
+ * nothing. Every other reason is a sentence the parent should read.
+ */
+export async function signInWithGoogle(): Promise<AuthFailure | null> {
+  try {
+    await (await start()).signInWithGoogle();
+    return null;
+  } catch (error) {
+    const reason = failure(error);
+    return reason === "popup-closed" ? null : reason;
+  }
+}
+
 /** After `trouble`: look the account up again. */
 export function retrySession(): void {
   if (session.status === "trouble" && session.user) void attach(session.user);

@@ -161,6 +161,13 @@ export const en = {
   "landing.worlds.shot.words":
     "Rhyming Friends: two pages of an open storybook with words on each side to match with a ribbon.",
 
+  /* ---- Landing: the rest of the library -------------------------------- */
+  "landing.more.eyebrow": "Not just one game",
+  "landing.more.title": "Plenty More to Explore",
+  "landing.more.body":
+    "Beyond the three worlds there are {count} more games waiting on your child's home screen, each with its own friend, its own pictures and its own activities.",
+  "landing.more.listAria": "The other games inside KIDDO",
+
   /* ---- Landing: how it works ------------------------------------------ */
   "landing.how.eyebrow": "How it works",
   "landing.how.title": "Four steps, and that is the whole of it.",

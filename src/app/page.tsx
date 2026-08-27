@@ -7,12 +7,14 @@ import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHero } from "@/components/landing/LandingHero";
 import { MeetKiddo } from "@/components/landing/MeetKiddo";
+import { MoreGames } from "@/components/landing/MoreGames";
 import { PainPoints } from "@/components/landing/PainPoints";
 import { Pricing } from "@/components/landing/Pricing";
 import { Testimonials } from "@/components/landing/Testimonials";
 import { TheShift } from "@/components/landing/TheShift";
 import { WhyParents } from "@/components/landing/WhyParents";
 import { Screen } from "@/components/ui/Screen";
+import { GAMES } from "@/data/games";
 import { DEFAULT_LOCALE, LOCALE_HTML_LANG } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/messages";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
@@ -64,11 +66,11 @@ export const metadata: Metadata = {
  * an advert on a phone, and the page walks the evening they already know:
  * screen time need not be wasted time (the hero), here is your house on a
  * Tuesday night (the four photographs), the problem was never the screen (the
- * turning point), this is what we made instead (KIDDO and its three worlds),
- * this is what an hour of it looks like (four steps and the child's real
- * doors), this is what it gives you (the parents' half), here are other
- * parents saying it in their own words, and then — only then — what it costs
- * and the way in.
+ * turning point), this is what we made instead (KIDDO and its three worlds,
+ * and the rest of the shelf beside them), this is what an hour of it looks
+ * like (four steps and the child's real doors), this is what it gives you
+ * (the parents' half), here are other parents saying it in their own words,
+ * and then — only then — what it costs and the way in.
  *
  * The pain points come before the product on purpose. A parent who has not
  * yet agreed there is a problem has no reason to read a feature list, and a
@@ -94,6 +96,7 @@ export default function LandingPage() {
         <PainPoints />
         <TheShift />
         <MeetKiddo worlds={PLAYABLE_WORLDS} />
+        <MoreGames games={GAMES} />
         <HowItWorks />
         <WhyParents />
         <Testimonials />

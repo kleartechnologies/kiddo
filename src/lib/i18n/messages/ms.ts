@@ -151,6 +151,13 @@ export const ms: Record<MessageKey, string> = {
   "landing.worlds.shot.words":
     "Kawan Berima: dua halaman buku cerita terbuka dengan perkataan di kiri dan kanan untuk dipadankan.",
 
+  /* ---- Landing: the rest of the library -------------------------------- */
+  "landing.more.eyebrow": "Bukan satu permainan sahaja",
+  "landing.more.title": "Banyak Lagi Untuk Diterokai",
+  "landing.more.body":
+    "Selain tiga dunia itu, ada {count} permainan lagi menunggu di laman utama anak — setiap satu dengan kawan, gambar dan aktivitinya sendiri.",
+  "landing.more.listAria": "Permainan lain di dalam KIDDO",
+
   /* ---- Landing: how it works ------------------------------------------ */
   "landing.how.eyebrow": "Cara ia berfungsi",
   "landing.how.title": "Empat langkah, itu sahaja.",

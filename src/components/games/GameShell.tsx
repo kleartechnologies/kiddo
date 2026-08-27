@@ -43,8 +43,90 @@ import type { GameWorldId } from "@/lib/worlds/worlds";
  * make a fourth noise because there is no fourth thing it can report.
  */
 
-/** The host's line, and every line the bubble is sized against. One type. */
-const PROMPT_TEXT = "font-display text-xl leading-snug font-semibold sm:text-2xl";
+/**
+ * The host's line, and every line the bubble is sized against. One type.
+ *
+ * The last step down is for a phone on its side, where the whole page is about
+ * 360px tall and the question is the one part of it the child is not looking
+ * at. Read at arm's length it is still the largest text on the screen after
+ * the game's name; what it stops being is the reason the board runs off the
+ * bottom. See `LANDSCAPE` below.
+ */
+const PROMPT_TEXT = cn(
+  "font-display text-xl leading-snug font-semibold sm:text-2xl",
+  "[@media(max-height:33.9375rem)]:text-base",
+);
+
+/**
+ * A phone on its side.
+ *
+ * ## Why height, and why this number
+ *
+ * `33.9375rem` is 543px, and it is the number `FindItBoard` and `MemoryBoard`
+ * already sort their layouts by: below it is a phone turned sideways, above it
+ * is everything taller. Written as a height rather than as
+ * `(orientation: landscape)` because a landscape *tablet* is 768px tall and
+ * wants nothing from this — the problem is never the shape of the screen, it
+ * is that there are only ~360 pixels of it going down.
+ *
+ * ## What it changes, and what it must not
+ *
+ * Only the chrome: the page's own margins, how big KIDDO stands, and how much
+ * room the bubble takes. Every one of those is a fixed cost the board pays
+ * before it draws anything, and on a phone held sideways they added up to more
+ * than half the screen — measured at 844×390, a game had 232px of chrome and
+ * 158px of board, so six of the eight games ran off the bottom and the child
+ * had to scroll a game. Halving the chrome hands that height back to the
+ * board, which is the thing the boards' own caps then spend (`ChoiceStage`,
+ * `MemoryBoard`, `FindItBoard`).
+ *
+ * Nothing here shrinks a control. The back arrow and the sound toggle stay
+ * 56px — they are the two things on the screen a four year old aims at with a
+ * thumb, and they are not where the height was going.
+ *
+ * ## Two cascade rules this relies on
+ *
+ * 1. Tailwind emits arbitrary variants after breakpoint ones, so these beat
+ *    the `sm:` on the same property no matter which order they are written in.
+ * 2. Among *arbitrary* variants the order is not worth depending on, so the
+ *    boards below make their queries mutually exclusive instead. Nothing here
+ *    competes with another `@media` on the same property.
+ */
+const LANDSCAPE = {
+  /* The page's own margins. `env()` rather than a flat number because a
+     notched phone turned sideways puts the notch on the left or the right,
+     and this is the only edge padding a game has. */
+  screen: cn(
+    "[@media(max-height:33.9375rem)]:pt-[max(0.75rem,env(safe-area-inset-top))]",
+    "[@media(max-height:33.9375rem)]:pb-[max(0.75rem,env(safe-area-inset-bottom))]",
+    "[@media(max-height:33.9375rem)]:pl-[max(1.25rem,env(safe-area-inset-left))]",
+    "[@media(max-height:33.9375rem)]:pr-[max(1.25rem,env(safe-area-inset-right))]",
+  ),
+  /* KIDDO at icon scale. The rig keeps its proportions, so this is the same
+     drawing standing further away — never a squashed one. */
+  host: "[@media(max-height:33.9375rem)]:size-14",
+  /* The bubble keeps enough padding for its tail, which is pinned 32px down
+     its left edge and would otherwise hang off a shorter bubble. */
+  bubble: cn(
+    "[@media(max-height:33.9375rem)]:px-4",
+    "[@media(max-height:33.9375rem)]:py-3",
+  ),
+} as const;
+
+/**
+ * The friend who says hello on the way in, on a phone held sideways.
+ *
+ * Lives here rather than in `CharacterFigure` because `lg` is also how KIDDO
+ * stands on the landing page, and the landing page is not short of height —
+ * it scrolls. This is only for the one screen a game opens on, where the
+ * friend, the glimpse of the round and the one button to press all have to
+ * fit between the top of the screen and the fold. At `size-36` the friend
+ * alone was 144px of a 390px screen and the button sat under it.
+ *
+ * `size-20` is the same drawing standing further away — the rig keeps its
+ * proportions — and it is still far larger than anything meant to be tapped.
+ */
+export const INTRO_FRIEND_LANDSCAPE = "[@media(max-height:33.9375rem)]:size-20";
 
 export interface GameShellProps {
   game: Game;
@@ -152,7 +234,7 @@ export function GameShell({
     /* The same world the child chose the game from, one corner along: the
        game's category picks the sky and the hills, and `quiet` takes the
        weather out of it. A playfield is busy enough without a meadow. */
-    <Screen theme={game.category} detail="quiet">
+    <Screen theme={game.category} detail="quiet" className={LANDSCAPE.screen}>
       {/* The bed follows the child in. It is already playing if they came
           from the world; this is here for the child who was handed a link
           straight into a game. */}
@@ -256,9 +338,14 @@ export function GameShell({
           >
             {prompt ? (
               <div className="flex items-start gap-3 sm:gap-4">
-                <CharacterFigure id={speaker} size="md" pose={hostPose} />
+                <CharacterFigure
+                  id={speaker}
+                  size="md"
+                  pose={hostPose}
+                  className={LANDSCAPE.host}
+                />
                 <SpeechBubble
-                  className="max-w-2xl flex-1"
+                  className={cn("max-w-2xl flex-1", LANDSCAPE.bubble)}
                   tail="left"
                   /* Every line that can be said, at its full height — and
                      no clamp on the invisible copies. A clamp here was tried

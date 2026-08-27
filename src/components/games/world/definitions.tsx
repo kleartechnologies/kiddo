@@ -61,6 +61,18 @@ export interface GameWorldDefinition {
   backdrop: ReactNode | null;
   /** Room between the backdrop's edge and the board. Classes, literal. */
   padding: string;
+  /**
+   * How much of a short screen this world's painting costs, for the engines
+   * that size a board by the height left over.
+   *
+   * `open` is a stage or a page: the board with a margin around it. `ground` is
+   * a world that paints a band above the board and a band below it — sky and
+   * near ground — which on a phone held sideways is most of the screen.
+   *
+   * A world cannot say this in CSS, because the engine has to know it before it
+   * picks the class that caps the board. See `LAYOUTS` in `ChoiceStage`.
+   */
+  landscape: "open" | "ground";
   entrance: WorldEntrance;
   composeChoice: (parts: ChoiceParts) => ReactNode;
   composeConnect: (parts: ConnectParts) => ReactNode;
@@ -81,6 +93,7 @@ export const MEADOW_WORLD: GameWorldDefinition = {
   spec: GAME_WORLDS.meadow,
   backdrop: null,
   padding: "",
+  landscape: "open",
   entrance: CROSSFADE,
   composeChoice: ({ prompt, options }) => (
     <div className={STACK}>

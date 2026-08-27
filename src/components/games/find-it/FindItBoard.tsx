@@ -29,6 +29,12 @@ import { FindItChoice } from "./FindItChoice";
  * is capped by the height left over, because a square tile that does not fit
  * downwards pushes the board off the screen.
  *
+ * What is subtracted is the chrome the round wears above the board, and the
+ * sideways phone now wears about `10rem` of it rather than `13rem`: KIDDO
+ * stands at icon scale there and the bubble is a compact one. See `LANDSCAPE`
+ * in `GameShell`. The 3rem is not saved, it is spent — on bigger characters
+ * to point at.
+ *
  * Written out in full rather than composed from a base string: Tailwind only
  * ships classes it can find as literal text, and a template interpolation is
  * not literal text.
@@ -45,7 +51,7 @@ const LAYOUTS: Record<number, Layout> = {
   4: {
     wrap: cn(
       "max-w-[min(26rem,max(16rem,calc(100dvh_-_16rem)))]",
-      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(46rem,max(28rem,calc((100dvh_-_13rem)*4)))]",
+      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(46rem,max(28rem,calc((100dvh_-_10rem)*4)))]",
       "[@media(min-width:48rem)_and_(min-height:34rem)]:max-w-[min(34rem,max(22rem,calc(100dvh_-_17rem)))]",
     ),
     item: cn(
@@ -57,7 +63,7 @@ const LAYOUTS: Record<number, Layout> = {
   5: {
     wrap: cn(
       "max-w-[min(26rem,max(15rem,calc((100dvh_-_16rem)*0.66)))]",
-      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(58rem,max(32rem,calc((100dvh_-_13rem)*5)))]",
+      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(58rem,max(32rem,calc((100dvh_-_10rem)*5)))]",
       "[@media(min-width:48rem)_and_(min-height:34rem)]:max-w-[min(52rem,max(30rem,calc((100dvh_-_17rem)*1.5)))]",
     ),
     item: cn(
@@ -69,7 +75,7 @@ const LAYOUTS: Record<number, Layout> = {
   6: {
     wrap: cn(
       "max-w-[min(26rem,max(15rem,calc((100dvh_-_16rem)*0.66)))]",
-      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(68rem,max(36rem,calc((100dvh_-_13rem)*6)))]",
+      "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(68rem,max(36rem,calc((100dvh_-_10rem)*6)))]",
       "[@media(min-width:48rem)_and_(min-height:34rem)]:max-w-[min(52rem,max(30rem,calc((100dvh_-_17rem)*1.5)))]",
     ),
     item: cn(

@@ -33,6 +33,10 @@ import { PromptDisplay } from "./PromptDisplay";
 interface Layout {
   /** Caps the row by the height left over, so a board never pushes off screen. */
   wrap: string;
+  /** The same cap on a phone held sideways, where the height is the scarce one. */
+  land: string;
+  /** …and on a sideways phone with nothing above the row but the round itself. */
+  landRoomy: string;
   /** How wide one option is. */
   item: string;
 }
@@ -43,8 +47,47 @@ interface Layout {
  * max(floor, what the height allows))`: the tiles get big on a desktop, shrink
  * on a phone held sideways, and never take a scrollbar with them.
  *
- * `18rem` is the chrome a game round wears — header, KIDDO's question, the
- * line on the stage and the padding between them.
+ * `18rem` is the chrome a game round wears on a screen with the height for it —
+ * header, KIDDO's question, the line on the stage and the padding between them.
+ * On a tall screen the width runs out first anyway, so that number only has to
+ * be about right.
+ *
+ * ## A phone on its side is the case the height decides
+ *
+ * There, and only there, the cap is the whole game: 390px of height minus the
+ * chrome leaves barely more than one tile, so a number that is about right puts
+ * the last row under the fold. Two are measured rather than guessed, and which
+ * one applies is decided by what is actually above the row:
+ *
+ *   • `landRoomy` — `13.5rem` — a plain stage asking a spoken question. The
+ *     header, KIDDO at icon scale, and the row. Nothing else.
+ *   • `land` — `17rem` — everything else: a line to read above the options, or
+ *     a world that stands them on its own painted ground. Both cost about
+ *     `3.5rem` more, and a world pays for it by compacting its own padding on a
+ *     short screen — see `LANDSCAPE` in `worlds/counting`.
+ *
+ * They are picked in JavaScript rather than by a third media query, because two
+ * arbitrary variants carrying the same query would be decided by the order
+ * Tailwind emitted them in, which is not a thing to build on. One string or the
+ * other reaches `className`; never both.
+ *
+ * The multipliers say how wide a row of N tiles is for one tile's height. A
+ * wide tile measures about `1.25` across for every `1` down, so three of them
+ * are `3.75`, not the `4.2` the tall-screen caps use — generous is free when
+ * the width is what binds and costs a row off the bottom when the height is.
+ *
+ * The floors are higher there too — about `7rem` a tile — because a tile is
+ * only as narrow as the word written under it. Cap the row below what the
+ * words need and the last tile wraps to a second line, which costs the whole
+ * height of a tile rather than the few pixels the cap was trying to save. On
+ * the shortest screens the floor wins and the page scrolls a little; that is
+ * the better of the two, and it is the same bargain `MemoryBoard` strikes.
+ *
+ * `33.9375rem` and below is that phone; `34rem` and up is everything taller.
+ * The two are mutually exclusive on purpose, the way `FindItBoard` splits them,
+ * so nothing depends on the order Tailwind emits two arbitrary variants in —
+ * which is also why the four-option row says `and (min-height:34rem)` on the
+ * branch that used to be width alone.
  *
  * Written out in full rather than composed: Tailwind only ships classes it can
  * find as literal text, and a template interpolation is not literal text.
@@ -53,40 +96,60 @@ const LAYOUTS: Record<"wide" | "square", Record<number, Layout>> = {
   wide: {
     2: {
       wrap: "max-w-[min(26rem,max(11rem,calc((100dvh_-_18rem)*2.8)))]",
+      land: "[@media(max-height:33.9375rem)]:max-w-[min(26rem,max(15rem,calc((100dvh_-_17rem)*2.5)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)]:max-w-[min(26rem,max(15rem,calc((100dvh_-_13.5rem)*2.5)))]",
       item: "basis-[calc(50%_-_0.375rem)]",
     },
     3: {
       wrap: "max-w-[min(34rem,max(14rem,calc((100dvh_-_18rem)*4.2)))]",
+      land: "[@media(max-height:33.9375rem)]:max-w-[min(34rem,max(22rem,calc((100dvh_-_17rem)*3.75)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)]:max-w-[min(34rem,max(22rem,calc((100dvh_-_13.5rem)*3.75)))]",
       item: "basis-[calc(33.333%_-_0.5rem)]",
     },
     4: {
       wrap: cn(
         "max-w-[min(24rem,max(12rem,calc((100dvh_-_18rem)*1.4)))]",
-        "[@media(min-width:36rem)]:max-w-[min(46rem,max(18rem,calc((100dvh_-_18rem)*5.6)))]",
+        "[@media(min-width:36rem)_and_(min-height:34rem)]:max-w-[min(46rem,max(18rem,calc((100dvh_-_18rem)*5.6)))]",
       ),
+      land: "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(46rem,max(30rem,calc((100dvh_-_17rem)*5)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(46rem,max(30rem,calc((100dvh_-_13.5rem)*5)))]",
       item: cn(
         "basis-[calc(50%_-_0.375rem)]",
-        "[@media(min-width:36rem)]:basis-[calc(25%_-_0.5625rem)]",
+        "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:basis-[calc(25%_-_0.5625rem)]",
+        "[@media(min-width:36rem)_and_(min-height:34rem)]:basis-[calc(25%_-_0.5625rem)]",
       ),
     },
   },
   square: {
     2: {
       wrap: "max-w-[min(22rem,max(10rem,calc((100dvh_-_18rem)*2)))]",
+      land: "[@media(max-height:33.9375rem)]:max-w-[min(22rem,max(15rem,calc((100dvh_-_17rem)*2)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)]:max-w-[min(22rem,max(15rem,calc((100dvh_-_13.5rem)*2)))]",
       item: "basis-[calc(50%_-_0.375rem)]",
     },
     3: {
       wrap: "max-w-[min(30rem,max(13rem,calc((100dvh_-_18rem)*3)))]",
+      land: "[@media(max-height:33.9375rem)]:max-w-[min(30rem,max(22rem,calc((100dvh_-_17rem)*3)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)]:max-w-[min(30rem,max(22rem,calc((100dvh_-_13.5rem)*3)))]",
       item: "basis-[calc(33.333%_-_0.5rem)]",
     },
     4: {
       wrap: cn(
         "max-w-[min(22rem,max(10rem,calc(100dvh_-_18rem)))]",
-        "[@media(min-width:36rem)]:max-w-[min(40rem,max(16rem,calc((100dvh_-_18rem)*4)))]",
+        "[@media(min-width:36rem)_and_(min-height:34rem)]:max-w-[min(40rem,max(16rem,calc((100dvh_-_18rem)*4)))]",
       ),
+      land: "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(40rem,max(30rem,calc((100dvh_-_17rem)*4)))]",
+      landRoomy:
+        "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:max-w-[min(40rem,max(30rem,calc((100dvh_-_13.5rem)*4)))]",
       item: cn(
         "basis-[calc(50%_-_0.375rem)]",
-        "[@media(min-width:36rem)]:basis-[calc(25%_-_0.5625rem)]",
+        "[@media(max-height:33.9375rem)_and_(min-width:36rem)]:basis-[calc(25%_-_0.5625rem)]",
+        "[@media(min-width:36rem)_and_(min-height:34rem)]:basis-[calc(25%_-_0.5625rem)]",
       ),
     },
   },
@@ -146,6 +209,12 @@ export function ChoiceStage({
   const world = useGameWorld();
   const { tiles, prompt: surface } = world.spec;
 
+  /* How much of a sideways phone is left for the row. A world that paints its
+     own ground stands the options on it, and a line to read takes the height
+     above them; a stage or a page with a spoken question has neither, so its
+     tiles get to stay big. The world says which it is. */
+  const roomy = world.landscape === "open" && !challenge.prompt.display;
+
   const prompt = challenge.prompt.display ? (
     <PromptDisplay
       /* Keyed like the options below it, and for the same reason: a new
@@ -179,6 +248,8 @@ export function ChoiceStage({
       className={cn(
         "mx-auto flex w-full list-none flex-wrap items-center justify-center gap-3",
         layout.wrap,
+        /* One of the two, never both: see `LAYOUTS`. */
+        roomy ? layout.landRoomy : layout.land,
       )}
     >
       {options.map((option) => {

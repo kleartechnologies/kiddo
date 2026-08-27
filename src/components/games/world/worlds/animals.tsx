@@ -41,10 +41,53 @@ function LandscapeBackdrop() {
 /** Matches the world's own padding, so the land runs edge to edge. */
 const BLEED = "-mx-3 sm:-mx-5";
 
+/**
+ * What the world wears on a phone held sideways.
+ *
+ * A painted world costs more than a plain stage: sky above the horizon, ground
+ * below it, and the border between. On a screen 390px tall that is most of the
+ * round, so the round goes under the fold — `ChoiceStage` budgets `17rem` of
+ * chrome there and this is the world keeping to it.
+ *
+ * Padding only. The hills, the tree, the bushes and the flowers are drawn from
+ * percentages of the band they stand in, so they follow it down and stay in
+ * proportion — the garden is the same garden, seen from a little closer.
+ *
+ * `33.9375rem` and below is that phone, the same band `GameShell` and
+ * `ChoiceStage` use. Written out in full: Tailwind only ships classes it can
+ * find as literal text.
+ */
+const LANDSCAPE = {
+  /** Sky above the horizon. */
+  sky: "[@media(max-height:33.9375rem)]:pt-3",
+  /** The band the things to look at stand on. */
+  horizon: "[@media(max-height:33.9375rem)]:pt-1",
+  /** The near ground the options are planted in. */
+  ground: cn(
+    "[@media(max-height:33.9375rem)]:pt-4",
+    "[@media(max-height:33.9375rem)]:pb-3",
+  ),
+  /*
+   * The way in, on a phone held sideways.
+   *
+   * Here the glimpse of the round stands on the near ground with the button
+   * below it, and stacked they put the button under the fold — measured at
+   * 844x390, 49px under it. Side by side, the animals stand on the bank and
+   * the button stands next to them: nothing is smaller, and the whole way in
+   * is on the screen.
+   */
+  introRow: cn(
+    "[@media(max-height:33.9375rem)]:flex-row",
+    "[@media(max-height:33.9375rem)]:justify-center",
+    "[@media(max-height:33.9375rem)]:gap-6",
+  ),
+} as const;
+
 export const ANIMALS_WORLD: GameWorldDefinition = {
   spec: GAME_WORLDS.animals,
   backdrop: <LandscapeBackdrop />,
-  padding: "px-3 pt-4 sm:px-5 sm:pt-6",
+  padding: cn("px-3 pt-4 sm:px-5 sm:pt-6", LANDSCAPE.sky),
+  landscape: "ground",
   /* The land slides in from the side the animals are going. */
   entrance: {
     hidden: { opacity: 0, x: 28 },
@@ -58,7 +101,13 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
      the one screen in Animal Adventure with no ground under it. */
   composeChoice: ({ prompt, options }) => (
     <div className="flex flex-1 flex-col justify-end">
-      <div className={cn("relative flex justify-center px-2 pt-6", BLEED)}>
+      <div
+        className={cn(
+          "relative flex justify-center px-2 pt-6",
+          LANDSCAPE.horizon,
+          BLEED,
+        )}
+      >
         <Hills
           hills={["sage", "sprout", "sprout"]}
           className="absolute inset-x-0 bottom-0 h-[70%] max-h-20 w-full"
@@ -68,6 +117,7 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
       <div
         className={cn(
           "bg-sprout-soft rounded-b-hero relative overflow-hidden px-3 pt-5 pb-6 sm:px-5 sm:pt-6 sm:pb-8",
+          LANDSCAPE.ground,
           BLEED,
         )}
       >
@@ -91,7 +141,11 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
     <div className="flex flex-1 flex-col justify-end">
       {/* The question, if there is one, stands in the sky above the hills. */}
       <div
-        className={cn("relative flex flex-col items-center px-2 pt-6", BLEED)}
+        className={cn(
+          "relative flex flex-col items-center px-2 pt-6",
+          LANDSCAPE.horizon,
+          BLEED,
+        )}
       >
         <Hills
           hills={["sage", "sprout", "sprout"]}
@@ -108,6 +162,7 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
       <div
         className={cn(
           "bg-sprout-soft rounded-b-hero relative overflow-hidden px-3 pt-4 pb-6 sm:px-5 sm:pt-6 sm:pb-8",
+          LANDSCAPE.ground,
           BLEED,
         )}
       >
@@ -138,7 +193,11 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
   composeIntro: ({ friend, preview, begin }) => (
     <div className="flex flex-1 flex-col justify-end text-center">
       <div
-        className={cn("relative flex flex-col items-center px-2 pt-6 pb-2", BLEED)}
+        className={cn(
+          "relative flex flex-col items-center px-2 pt-6 pb-2",
+          LANDSCAPE.sky,
+          BLEED,
+        )}
       >
         <Hills
           hills={["sage", "sprout", "sprout"]}
@@ -149,6 +208,7 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
       <div
         className={cn(
           "bg-sprout-soft rounded-b-hero relative overflow-hidden px-3 pt-4 pb-6 sm:px-5 sm:pt-6 sm:pb-8",
+          LANDSCAPE.ground,
           BLEED,
         )}
       >
@@ -164,7 +224,12 @@ export const ANIMALS_WORLD: GameWorldDefinition = {
           accent="sage"
           className="absolute top-1 right-[6%] w-[clamp(1.5rem,6%,2.5rem)] -translate-y-1/2"
         />
-        <div className="relative flex flex-col items-center gap-4">
+        <div
+          className={cn(
+            "relative flex flex-col items-center gap-4",
+            LANDSCAPE.introRow,
+          )}
+        >
           {preview}
           {begin}
         </div>

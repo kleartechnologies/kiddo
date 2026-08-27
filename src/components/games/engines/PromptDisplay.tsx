@@ -67,6 +67,39 @@ import { ContentItemView } from "./ContentItemView";
 const POP_STAGGER = 0.1;
 
 /**
+ * What the line wears on a phone held sideways.
+ *
+ * Every size on this stage was keyed to width — `sm:` and up — which reads a
+ * 844x390 phone as a desktop and asks the question at desktop scale on a
+ * screen with 390px of height. The question then eats the room the options
+ * were supposed to get, and the row runs off the bottom.
+ *
+ * So the same band the rest of a round uses: `33.9375rem` and below is a phone
+ * on its side. `GameShell` stands KIDDO at icon scale there and `ChoiceStage`
+ * budgets `13rem` of chrome for the round; this is the line keeping its side of
+ * that bargain. `ContentItemView` already steps its glyphs down on a short
+ * screen — what is left is the padding, the gaps and the two things drawn here,
+ * the symbols and the blank.
+ *
+ * Nothing is removed and nothing the child taps is in here: a prompt is read,
+ * not pressed. The blank stays at 40px, which is only a hole in the sum.
+ *
+ * An arbitrary variant is emitted after every `sm:` rule, so these win on a
+ * short screen without needing `!`. Written out in full rather than composed:
+ * Tailwind only ships classes it can find as literal text.
+ */
+const LANDSCAPE = {
+  subjectPad: cn(
+    "[@media(max-height:33.9375rem)]:px-4",
+    "[@media(max-height:33.9375rem)]:py-2",
+  ),
+  linePad: cn(
+    "[@media(max-height:33.9375rem)]:px-4",
+    "[@media(max-height:33.9375rem)]:py-2.5",
+  ),
+} as const;
+
+/**
  * What each symbol is called out loud, as a message key.
  *
  * A key rather than a word, because "take away" is "tolak" and a sum read
@@ -96,7 +129,10 @@ function SymbolPart({ symbol }: { symbol: PromptSymbol }) {
   if (symbol === "arrow") {
     return (
       <ArrowRight
-        className="text-ink-500 size-6 sm:size-8"
+        className={cn(
+          "text-ink-500 size-6 sm:size-8",
+          "[@media(max-height:33.9375rem)]:size-6",
+        )}
         strokeWidth={3}
         aria-hidden
       />
@@ -104,7 +140,12 @@ function SymbolPart({ symbol }: { symbol: PromptSymbol }) {
   }
 
   return (
-    <span className="font-display text-ink-500 text-3xl leading-none font-bold sm:text-4xl">
+    <span
+      className={cn(
+        "font-display text-ink-500 text-3xl leading-none font-bold sm:text-4xl",
+        "[@media(max-height:33.9375rem)]:text-2xl",
+      )}
+    >
       {SYMBOL_GLYPHS[symbol]}
     </span>
   );
@@ -177,7 +218,9 @@ export function PromptDisplay({
       className={cn(
         "mx-auto max-w-full",
         surface === "card" &&
-          (subject ? "px-4 py-3 sm:px-8 sm:py-4" : "px-3 py-4 sm:px-6 sm:py-5"),
+          (subject
+            ? cn("px-4 py-3 sm:px-8 sm:py-4", LANDSCAPE.subjectPad)
+            : cn("px-3 py-4 sm:px-6 sm:py-5", LANDSCAPE.linePad)),
         className,
       )}
     >
@@ -196,7 +239,10 @@ export function PromptDisplay({
         <div
           aria-hidden
           data-prompt-anchor
-          className="flex items-center justify-center pb-1.5 sm:pb-2"
+          className={cn(
+            "flex items-center justify-center pb-1.5 sm:pb-2",
+            "[@media(max-height:33.9375rem)]:pb-1",
+          )}
         >
           <ContentItemView item={shownAnchor} scale="hero" />
         </div>
@@ -215,7 +261,11 @@ export function PromptDisplay({
       <div
         aria-hidden
         data-prompt={subject ? "subject" : "line"}
-        className="flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2 sm:gap-x-3"
+        className={cn(
+          "flex flex-wrap items-center justify-center gap-x-1.5 gap-y-2 sm:gap-x-3",
+          "[@media(max-height:33.9375rem)]:gap-x-2",
+          "[@media(max-height:33.9375rem)]:gap-y-1",
+        )}
       >
         {parts.map((part, index) => (
           <span key={index} className="flex items-center justify-center">
@@ -232,7 +282,13 @@ export function PromptDisplay({
             ) : part.kind === "symbol" ? (
               <SymbolPart symbol={part.symbol} />
             ) : (
-              <span className="font-display text-ink-500 border-ink-900/20 flex size-12 items-center justify-center rounded-2xl border-[3px] border-dashed text-3xl leading-none font-bold sm:size-14 sm:text-4xl">
+              <span
+                className={cn(
+                  "font-display text-ink-500 border-ink-900/20 flex size-12 items-center justify-center rounded-2xl border-[3px] border-dashed text-3xl leading-none font-bold sm:size-14 sm:text-4xl",
+                  "[@media(max-height:33.9375rem)]:size-10",
+                  "[@media(max-height:33.9375rem)]:text-2xl",
+                )}
+              >
                 ?
               </span>
             )}

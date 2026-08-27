@@ -10,7 +10,7 @@ import {
   type ReactNode,
 } from "react";
 
-import { GameShell } from "@/components/games/GameShell";
+import { GameShell, INTRO_FRIEND_LANDSCAPE } from "@/components/games/GameShell";
 import { ChoiceStage } from "@/components/games/engines/ChoiceStage";
 import { ConnectStage } from "@/components/games/engines/ConnectStage";
 import { ContentItemView } from "@/components/games/engines/ContentItemView";
@@ -401,7 +401,14 @@ function Intro({
 }) {
   const { composeIntro } = useGameWorld();
   return composeIntro({
-    friend: <CharacterFigure id={friend} size="lg" pose="wave" />,
+    friend: (
+      <CharacterFigure
+        id={friend}
+        size="lg"
+        pose="wave"
+        className={INTRO_FRIEND_LANDSCAPE}
+      />
+    ),
     preview,
     begin: (
       <div className="flex flex-col items-center gap-6 [@media(max-height:54rem)]:gap-4">

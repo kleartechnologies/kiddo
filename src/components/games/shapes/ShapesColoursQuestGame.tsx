@@ -2,7 +2,7 @@
 
 import { Sparkles } from "lucide-react";
 
-import { GameShell } from "@/components/games/GameShell";
+import { GameShell, INTRO_FRIEND_LANDSCAPE } from "@/components/games/GameShell";
 import { ChoiceStage } from "@/components/games/engines/ChoiceStage";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { Button } from "@/components/ui/Button";
@@ -115,7 +115,12 @@ export function ShapesColoursQuestGame({ game }: { game: Game }) {
 function Intro({ label, onStart }: { label: string; onStart: () => void }) {
   return (
     <div className="flex flex-col items-center gap-6 text-center [@media(max-height:54rem)]:gap-4">
-      <CharacterFigure id="pip" size="lg" pose="wave" />
+      <CharacterFigure
+        id="pip"
+        size="lg"
+        pose="wave"
+        className={INTRO_FRIEND_LANDSCAPE}
+      />
       <Button size="lg" icon={<Sparkles className="size-6" />} onClick={onStart}>
         {label}
       </Button>

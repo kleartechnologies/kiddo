@@ -30,6 +30,11 @@ import {
  * It shows each event once and then stops for good. A ticker that never
  * ran out would be a pressure tactic; this is a small, finite piece of good
  * news, and it never covers the page or takes a tap to get rid of.
+ *
+ * Not mounted anywhere at the moment. Even honest news about other buyers
+ * reads as a nudge when it floats over the price, and the landing page would
+ * rather a parent decided on the product. Everything behind it still works,
+ * so putting it back is one line in the page it belongs to.
  */
 
 /** A beat after the page settles, so the first thing read is the page. */

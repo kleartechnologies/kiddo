@@ -3,7 +3,6 @@ import type { Metadata } from "next";
 import { ClosingCall } from "@/components/landing/ClosingCall";
 import { Faq } from "@/components/landing/Faq";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { JoinNotices } from "@/components/landing/JoinNotices";
 import { LandingFooter } from "@/components/landing/LandingFooter";
 import { LandingHeader } from "@/components/landing/LandingHeader";
 import { LandingHero } from "@/components/landing/LandingHero";
@@ -103,7 +102,6 @@ export default function LandingPage() {
         <ClosingCall />
       </main>
       <LandingFooter />
-      <JoinNotices />
     </Screen>
   );
 }

@@ -404,21 +404,29 @@ test("N — security headers are configured, and the CSP names only what KIDDO u
 
   const frame = /"frame-src ([^"]+)"/.exec(config)?.[1] ?? "";
   assert.deepEqual(frame.split(" ").sort(), [
-    /* The project's own authDomain: the hidden /__/auth/iframe the Google
-       popup answers through. Asserted again below against the project id. */
+    /* The hidden /__/auth/iframe the Google popup answers through, at both
+       the addresses Firebase serves it on for this project: the custom
+       Hosting domain `authDomain` points at in production, and the project's
+       own domain a build falls back to. Asserted again below. */
+    "https://auth.kiddocares.com",
     "https://kiddocares-b105e.firebaseapp.com",
     "https://recaptcha.google.com/",
     "https://www.google.com/recaptcha/",
   ]);
 
-  /* And that host is not a loose string: it is this project's `authDomain`,
-     spelled the way `firebaseConfig()` spells it when the environment does
-     not override it. Move Firebase projects and this fails, rather than the
-     popup silently being blocked in a browser nobody is watching. */
+  /* Neither is a loose string. The fallback is spelled the way
+     `firebaseConfig()` spells it when the environment does not override it,
+     so moving Firebase projects fails here rather than silently blocking the
+     popup in a browser nobody is watching; and the custom domain is a
+     subdomain of KIDDO's own site, never some other project's. */
   const { FIREBASE_PROJECT_ID } = await import("@/lib/firebase/config");
   assert.ok(
     frame.includes(`https://${FIREBASE_PROJECT_ID}.firebaseapp.com`),
     `frame-src must name ${FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  );
+  assert.ok(
+    frame.includes("https://auth.kiddocares.com"),
+    "frame-src must name the custom auth domain NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN points at",
   );
 
   /* The one weakening is `script-src 'unsafe-inline'`, and it is only

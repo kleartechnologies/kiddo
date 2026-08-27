@@ -10,9 +10,18 @@
  * in `.env.local` for development:
  *
  *   NEXT_PUBLIC_FIREBASE_API_KEY
- *   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN        e.g. kiddocares-b105e.firebaseapp.com
+ *   NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN        auth.kiddocares.com in production
  *   NEXT_PUBLIC_FIREBASE_PROJECT_ID         defaults to kiddocares-b105e
  *   NEXT_PUBLIC_FIREBASE_APP_ID
+ *
+ * `authDomain` is the host Firebase serves the sign-in handler from, and so
+ * the host Google's account chooser shows the parent. It is a Firebase
+ * Hosting custom domain on this project rather than the default
+ * `<project>.firebaseapp.com`; whatever it is set to must also be listed in
+ * Firebase Authentication's authorized domains, in the Google OAuth client's
+ * authorized redirect URIs as `https://<authDomain>/__/auth/handler`, and in
+ * `frame-src` in `next.config.ts`. Unset, it falls back to the project's own
+ * domain, which always works.
  *
  * Without the API key and app id KIDDO runs in device-only mode: everything
  * plays as before, and the parent area explains that accounts are not set up

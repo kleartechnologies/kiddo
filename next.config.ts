@@ -28,19 +28,30 @@ import type { NextConfig } from "next";
  *   trusting Google with the sign-in itself, and there is no version of
  *   Firebase popup sign-in that does without it.
  *
- *   `frame-src https://kiddocares-b105e.firebaseapp.com` — the hidden
- *   `/__/auth/iframe` that the popup posts its answer back through. That
- *   host is the project's `authDomain` (see `src/lib/firebase/config.ts`),
- *   written out in full rather than wildcarded, so a different Firebase
- *   project would be refused rather than quietly allowed; `tests/abuse.test.ts`
- *   holds the two spellings in step.
+ *   `frame-src` names two hosts, and they are one iframe at two addresses:
+ *   the hidden `/__/auth/iframe` that the popup posts its answer back
+ *   through, which Firebase serves on the project's `authDomain` (see
+ *   `src/lib/firebase/config.ts`). `auth.kiddocares.com` is a Firebase
+ *   Hosting custom domain on this same project, and Hosting serves the
+ *   `/__/auth/*` helpers on every domain attached to a site — naming it is
+ *   what lets `authDomain` move there, which is the whole point: Google's
+ *   account chooser shows the host it is sending the parent back to, and a
+ *   parent halfway through buying KIDDO should not be asked to trust
+ *   `kiddocares-b105e.firebaseapp.com`. The firebaseapp.com host stays
+ *   named beside it so a build whose `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` is
+ *   unset — or one rolled back to it — is not a build whose sign-in popup
+ *   is silently blocked. Both are written out in full rather than
+ *   wildcarded, so a different Firebase project would be refused rather
+ *   than quietly allowed; `tests/abuse.test.ts` holds the spellings in step.
  *
  * A popup and not `signInWithRedirect`, which would need no `frame-src` at
- * all: KIDDO is served from kiddocares.com while the auth handler lives on
- * firebaseapp.com, and browsers that partition third-party storage — Safari
- * and Chrome both — lose the redirect's state on the way back and drop the
- * parent on the sign-in page having apparently done nothing. The popup
- * carries its own window and does not depend on that.
+ * all. That was forced while the handler sat on firebaseapp.com: KIDDO is
+ * served from kiddocares.com, and browsers that partition third-party
+ * storage — Safari and Chrome both — lose a redirect's state on the way
+ * back and drop the parent on the sign-in page having apparently done
+ * nothing. A handler on `auth.kiddocares.com` is same-site with KIDDO and
+ * would not have that problem, but changing how every parent signs in is
+ * not part of moving the domain. The popup stays.
  *
  * `script-src` keeps `'unsafe-inline'`, and that is a real weakening worth
  * stating plainly rather than hiding. Next.js streams a page's data through
@@ -69,7 +80,7 @@ const csp = [
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/",
-  "frame-src https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
+  "frame-src https://auth.kiddocares.com https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
   "upgrade-insecure-requests",
 ].join("; ");
 

@@ -251,20 +251,37 @@ stays strict.
 **The second is `script-src https://apis.google.com`,** added for "Continue
 with Google". Firebase's `signInWithPopup` loads Google's `gapi.iframes` to
 talk to the window it opens, and posts the answer back through a hidden
-`/__/auth/iframe` on the project's own `authDomain` — which is why
-`frame-src` names `https://kiddocares-b105e.firebaseapp.com` in full rather
-than a wildcard. So the claim above that KIDDO carries *no* third-party
-script no longer holds: it carries one, Google's, on the page that is
-already trusting Google with the sign-in itself. There is no version of
-Firebase popup sign-in without it, and `signInWithRedirect` — which would
-need no `frame-src` — is not usable here: KIDDO is served from
-kiddocares.com while the handler is on firebaseapp.com, and browsers that
-partition third-party storage lose the redirect's state on the way back.
+`/__/auth/iframe` on the project's `authDomain` — which is why `frame-src`
+names that host in full rather than a wildcard. So the claim above that
+KIDDO carries *no* third-party script no longer holds: it carries one,
+Google's, on the page that is already trusting Google with the sign-in
+itself. There is no version of Firebase popup sign-in without it.
+
+`frame-src` names **two** auth hosts, and they are one iframe at two
+addresses. `https://auth.kiddocares.com` is a Firebase Hosting custom domain
+on this project; Hosting serves the `/__/auth/*` helpers on every domain
+attached to a site, so `authDomain` can point there. That is the whole
+reason it exists: Google's account chooser shows the host it will send the
+parent back to, and a parent halfway through buying KIDDO should not be
+asked to trust `kiddocares-b105e.firebaseapp.com`. The firebaseapp.com host
+stays named beside it so that a build with no
+`NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, or one rolled back to it, is not a build
+whose sign-in popup is silently blocked.
+
+`signInWithRedirect` — which would need no `frame-src` at all — was not
+usable while the handler sat on firebaseapp.com: KIDDO is served from
+kiddocares.com, and browsers that partition third-party storage lose the
+redirect's state on the way back. A handler on `auth.kiddocares.com` is
+same-site with KIDDO and would not have that problem, but changing how every
+parent signs in is a separate decision from moving the domain, and the popup
+stays.
 
 `connect-src` was **not** widened for Google sign-in, and the test that pins
 it to Firebase's own hosts is unchanged. `tests/abuse.test.ts` now pins
-`script-src` and `frame-src` just as exactly, and asserts the `frame-src`
-auth host matches `FIREBASE_PROJECT_ID`, so moving Firebase projects fails a
+`script-src` and `frame-src` just as exactly, asserts the fallback
+`frame-src` auth host matches `FIREBASE_PROJECT_ID`, and asserts the custom
+one is named too — so moving Firebase projects, or dropping the custom
+domain from the policy while the environment still points at it, fails a
 test rather than silently blocking the popup.
 
 To re-verify after a change to what KIDDO loads, build with

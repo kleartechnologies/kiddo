@@ -41,7 +41,14 @@ export const metadata: Metadata = {
  *   - KIDDO is a paid subscription for parents; Stripe takes the payment
  *     and holds the card, KIDDO keeps only the subscription's state and
  *     Stripe's identifiers, written by the server from Stripe's webhook
- *   - there is no analytics script, no tracking pixel, no advertising
+ *   - a child's screens carry no analytics, no advertising and no
+ *     third-party script at all; the parent-facing pages carry Meta's
+ *     pixel, with its automatic collection switched off, so that page
+ *     visits from an advertisement can be counted
+ *     (`src/components/analytics/MetaPixel.tsx`)
+ *   - the pixel is also told that a checkout was started and that a
+ *     payment went through, with the plan and its price and nothing else
+ *     about the parent (`src/lib/analytics/events.ts`)
  */
 export default function PrivacyPage() {
   return (

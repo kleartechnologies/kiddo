@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Fredoka, Nunito } from "next/font/google";
 
 import { CloudSession } from "@/components/account/CloudSession";
+import { MetaPixel } from "@/components/analytics/MetaPixel";
 import { HtmlLang } from "@/components/i18n/HtmlLang";
 import { MotionProvider } from "@/components/MotionProvider";
 import { DEFAULT_LOCALE, LOCALE_HTML_LANG } from "@/lib/i18n/locale";
@@ -64,6 +65,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       <body className="min-h-full">
         <HtmlLang />
         <CloudSession />
+        {/* Parent-facing pages only; a child's screen loads nothing. */}
+        <MetaPixel />
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

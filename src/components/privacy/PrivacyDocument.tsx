@@ -107,6 +107,7 @@ export function PrivacyDocument() {
         </p>
         <p>{t("privacy.where.rules")}</p>
         <p>{t("privacy.where.billing")}</p>
+        <p>{t("privacy.where.meta")}</p>
         <p>{t("privacy.where.noAccount")}</p>
       </Section>
 

@@ -38,8 +38,10 @@ Route strings live in `src/lib/routes.ts`.
 - [x] Child home preserved, unchanged, at `/play`; every internal link,
       back link, celebration exit and 404 updated
 - [x] `/privacy` written from the code: three `localStorage` keys, one
-      `sessionStorage` seed, no cookies, no third-party requests, fonts
-      self-hosted via `next/font`
+      `sessionStorage` seed, no cookies of KIDDO's own, no third-party
+      requests from a child's screen, fonts self-hosted via `next/font`.
+      The parent-facing pages carry the Meta pixel (see
+      `NEXT_PUBLIC_META_PIXEL_ID` below), and the page says so
 - [x] Parent dashboard footnote links to `/privacy`
 - [x] Web app manifest (`src/app/manifest.ts`): name, short name, description,
       `start_url`/`id` `/play`, standalone, theme `#fff7ec`, background
@@ -117,6 +119,25 @@ email/password auth, Firestore `users` / `children` / `journeys`, rules in
 `firestore.rules` (emulator-tested). Device-only mode remains the fallback
 when `NEXT_PUBLIC_FIREBASE_*` are unset.
 
+- [ ] **Meta pixel.** Set `NEXT_PUBLIC_META_PIXEL_ID` on the production site
+      only (Meta Events Manager → Datasets → the KIDDO dataset id, digits
+      only). Netlify sets a variable for every deploy context by default; a
+      branch or preview deploy that keeps it reports its page views and its
+      test purchases into the live dataset, so scope it to Production.
+      `NEXT_PUBLIC_META_PIXEL_ID=1234567890123456 npm run measure:serve` and
+      `node scripts/check-meta-pixel.mjs` prove the wiring — one page view
+      on `/`, one per parent-page navigation, none on `/play`, one
+      `InitiateCheckout` from `/join`, one `Purchase` after the webhook and
+      still one after two reloads of `/welcome`, no CSP violation. Then,
+      with the real id set, open `/` with the Meta Pixel Helper, confirm the
+      dataset shows activity in Events Manager, and open `/play` and confirm
+      the helper finds nothing at all.
+- [ ] **Conversions in Events Manager.** After the first real payment,
+      check that `InitiateCheckout` and `Purchase` arrive with a value in
+      MYR, and that `Purchase` is deduplicated (Events Manager shows the
+      `eventID`). Only then set a campaign to optimise for `Purchase` — an
+      ad set that optimises for an event it has not received yet spends
+      against nothing.
 - [ ] Set `NEXT_PUBLIC_FIREBASE_API_KEY`, `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`,
       `NEXT_PUBLIC_FIREBASE_PROJECT_ID`, `NEXT_PUBLIC_FIREBASE_APP_ID` on
       Netlify (values from the Firebase console → Web app).

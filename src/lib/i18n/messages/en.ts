@@ -802,7 +802,7 @@ export const en = {
   "privacy.short.4":
     "KIDDO is a subscription paid by the parent. The payment is taken by Stripe, which keeps the card details; KIDDO never sees or stores a card number.",
   "privacy.short.5":
-    "KIDDO has no ads, no analytics and no tracking, and nothing is ever sold or shown to your child.",
+    "Your child’s screens have no ads, no analytics and no tracking of any kind, and nothing is ever sold or shown to your child. The pages written for you — this one, the landing page, the sign-up and the parent area — carry one measurement tag from Meta (Facebook) that counts visits and, when a subscription is bought, which plan and what it cost — so KIDDO knows which advertisements are worth paying for.",
   "privacy.short.6":
     "You can change or erase everything KIDDO keeps, and cancel the subscription, from the parent area at any time.",
 
@@ -842,12 +842,14 @@ export const en = {
     "Access rules enforced by Firestore itself — not only by the app — mean that an account can read and write only its own record, its own child profile, and that child’s journey. Nobody who is not signed in can read anything, and no account can list or look up another account’s child. TODO(launch): state the Firestore region (where Google stores the data) here once the project’s location is confirmed.",
   "privacy.where.billing":
     "Billing records — card, payments, invoices, receipts — are stored by Stripe, in Stripe’s systems, under the same email address you use for your account.",
+  "privacy.where.meta":
+    "The visit counts go to Meta. KIDDO’s parent-facing pages — the landing page, the plan and sign-up pages, this page, and the parent area — load Meta’s pixel, which records that a page was opened and sets a cookie so that a visit which began with one of KIDDO’s advertisements can be recognised as the same visit later. It is told the address of the page, and — at two moments, and only those two — a little more: when you leave KIDDO for Stripe to pay, and when a payment has gone through, it is also told which of the two plans it was and what that plan costs, so that KIDDO can tell which advertisements lead to subscriptions and not only to visits. That is the whole list. KIDDO switches off the pixel’s automatic collection, so it never reads the buttons you press or anything you type, and your email address, your card, your child’s name and your child’s journey are never sent to it. It is not loaded on any screen your child plays on — not the home, not a world, not a game — so your child is never counted at all. If you would rather not be counted either, a tracker blocker or your browser’s “block trackers” setting stops it, and KIDDO works exactly the same without it.",
   "privacy.where.noAccount":
     "Without an account, KIDDO has nowhere else to keep anything: opening KIDDO in a different browser, or on a different device, starts with a fresh, empty journey.",
 
   "privacy.s.why": "Why it is stored",
   "privacy.why.body":
-    "So that a return visit feels like a return: KIDDO remembers where your child was, what they have found, and what to call them. A parent account exists for one reason more — so that the same journey is there on the tablet at home and the phone in the car. The subscription state is kept so KIDDO knows whether to open for your child, and so the parent area can show you your plan and renewal date. Nothing is kept for marketing, for measurement, or for building a profile. Your email address is used to sign you in, to send password-reset and verification emails, and — by Stripe — to send receipts for your subscription.",
+    "So that a return visit feels like a return: KIDDO remembers where your child was, what they have found, and what to call them. A parent account exists for one reason more — so that the same journey is there on the tablet at home and the phone in the car. The subscription state is kept so KIDDO knows whether to open for your child, and so the parent area can show you your plan and renewal date. Nothing about your child is kept for marketing, for measurement or for building a profile. The only measurement KIDDO does at all is a count of visits to its own parent-facing pages, described under “Where it is stored”. Your email address is used to sign you in, to send password-reset and verification emails, and — by Stripe — to send receipts for your subscription.",
 
   "privacy.s.not": "What is not stored or collected",
   "privacy.not.1": "No child account, child email, child password or child login of any kind.",
@@ -856,13 +858,13 @@ export const en = {
   "privacy.not.3": "No record of individual answers, right or wrong, or how long a round took.",
   "privacy.not.4": "No location, contacts, camera or microphone access. KIDDO never asks for them.",
   "privacy.not.5":
-    "No cookies set by KIDDO, and no third-party scripts for analytics, advertising or social plugins.",
+    "No cookies set by KIDDO itself, and no third-party script of any kind on your child’s side of the app — no analytics, no advertising, no social plugins. Meta’s counter, which does set its own cookie, runs on the parent-facing pages only.",
   "privacy.not.6":
     "No card numbers, expiry dates or security codes. These are entered on Stripe’s page and held by Stripe.",
   "privacy.not.7":
     "No prices, payment screens, upgrade prompts or billing messages on any of your child’s screens. All of that lives in the parent area.",
   "privacy.not.8":
-    "Without a parent account, no requests to any service other than the one that serves KIDDO itself. With an account, the other services contacted are Firebase (sign-in and storage) and Stripe (checkout and billing), and only from the parent area or to save the journey.",
+    "From your child’s screens, no requests to any service other than the one that serves KIDDO itself and, with an account, Firebase to save the journey. From the parent-facing pages, the services contacted are Firebase (sign-in and storage), Stripe (checkout and billing) and Meta (the counting described above).",
   "privacy.not.logs":
     "Like any website, the hosting service that delivers KIDDO, and Firebase when an account is used, may keep ordinary access logs (for example, the address and time of a request) for security and reliability. TODO(launch): name the hosting provider and its log retention here before going live.",
 

@@ -30,6 +30,13 @@ export type Plan = "monthly" | "yearly";
  */
 export const CURRENCY_SYMBOL = "RM";
 
+/**
+ * The same currency, as the three letters anything that is not a price on
+ * screen wants: Stripe's own code for the prices in `src/server/stripe.ts`,
+ * and the currency the conversion events carry (`src/lib/analytics`).
+ */
+export const CURRENCY_CODE = "MYR";
+
 export const AMOUNTS: Record<Plan, number> = {
   monthly: 990,
   yearly: 5990,

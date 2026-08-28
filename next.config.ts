@@ -3,12 +3,13 @@ import type { NextConfig } from "next";
 /**
  * What a KIDDO page is allowed to load, and from where.
  *
- * Written from what KIDDO actually uses, not from a template. The whole
- * product is served from its own origin: `next/font/google` downloads
- * Fredoka and Nunito at build time and self-hosts them, the artwork and
- * the audio clips are files in `public/`, and there is no analytics tag,
- * no CDN script and no embed anywhere in `src/`. So `default-src 'self'`
- * is not a wish here — it is a description.
+ * Written from what KIDDO actually uses, not from a template. Nearly the
+ * whole product is served from its own origin: `next/font/google` downloads
+ * Fredoka and Nunito at build time and self-hosts them, the artwork and the
+ * audio clips are files in `public/`, and there is no CDN script and no
+ * embed anywhere in `src/`. So `default-src 'self'` is close to a
+ * description rather than a wish, and the named hosts below are the whole
+ * of the exception.
  *
  * The named hosts are the ones Firebase's own SDK talks to from the
  * browser: Identity Toolkit and Secure Token for sign-in, Firestore for
@@ -44,6 +45,25 @@ import type { NextConfig } from "next";
  *   wildcarded, so a different Firebase project would be refused rather
  *   than quietly allowed; `tests/abuse.test.ts` holds the spellings in step.
  *
+ * `connect.facebook.net` and `www.facebook.com` are the Meta pixel, and
+ * they are the one thing here that is not KIDDO working: they are how a
+ * parent who came from an advertisement is counted. `connect.facebook.net`
+ * serves `fbevents.js` and the pixel's own configuration (another script,
+ * hence `script-src` and not `connect-src`); `www.facebook.com/tr` is where
+ * an event is reported, as an image beacon in older browsers and a
+ * `fetch` in newer ones, which is why it is named in both `img-src` and
+ * `connect-src`. It is the first host in `connect-src` that KIDDO does not
+ * need in order to run — everything else there is Firebase answering for
+ * the parent's own data — so it is worth being exact about what it
+ * receives: page views from the parent's pages, plus a plan and its price
+ * when a checkout starts and when a payment lands, and nothing else. The tag
+ * is not on a child's screen at all — `src/components/analytics/MetaPixel.tsx`
+ * renders nothing outside `/`, `/join`, `/welcome`, `/privacy` and
+ * `/parents`, and `tests/analytics.test.ts` holds that list — but a header
+ * is set per response and cannot say so; the policy is written wide enough
+ * for the pages that do carry it. Unset `NEXT_PUBLIC_META_PIXEL_ID` and
+ * nothing is requested from either host on any page.
+ *
  * A popup and not `signInWithRedirect`, which would need no `frame-src` at
  * all. That was forced while the handler sat on firebaseapp.com: KIDDO is
  * served from kiddocares.com, and browsers that partition third-party
@@ -72,14 +92,14 @@ const csp = [
   "object-src 'none'",
   "frame-ancestors 'none'",
   "form-action 'self'",
-  "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/",
+  "script-src 'self' 'unsafe-inline' https://apis.google.com https://www.google.com/recaptcha/ https://www.gstatic.com/recaptcha/ https://connect.facebook.net",
   "style-src 'self' 'unsafe-inline'",
-  "img-src 'self' data: blob:",
+  "img-src 'self' data: blob: https://www.facebook.com",
   "font-src 'self' data:",
   "media-src 'self'",
   "manifest-src 'self'",
   "worker-src 'self' blob:",
-  "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/",
+  "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/ https://www.facebook.com",
   "frame-src https://auth.kiddocares.com https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
   "upgrade-insecure-requests",
 ].join("; ");

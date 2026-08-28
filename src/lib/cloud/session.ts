@@ -2,6 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 
+import { reportCheckoutStarted } from "@/lib/analytics/events";
 import { hasAccess, type Plan, type SubscriptionState } from "@/lib/billing/subscription";
 import {
   bindJourneyToCloud,
@@ -382,6 +383,10 @@ export async function finishEmailVerification(code: string): Promise<AuthFailure
  */
 export async function startCheckout(plan: Plan, returnTo = "/parents"): Promise<AuthFailure | null> {
   if (!backend || !session.user) return "unknown";
+  /* Before the round trip, not after it: the redirect to Stripe would
+     cancel a beacon still in flight, and what this records is the parent
+     choosing to pay — which they did, whatever Stripe answers next. */
+  reportCheckoutStarted(plan);
   try {
     const url = await backend.startCheckout(plan, returnTo);
     window.location.assign(url);

@@ -794,7 +794,7 @@ export const ms: Record<MessageKey, string> = {
   "privacy.short.4":
     "KIDDO ialah langganan yang dibayar oleh ibu bapa. Bayaran diambil oleh Stripe, yang menyimpan butiran kad; KIDDO tidak pernah melihat atau menyimpan nombor kad.",
   "privacy.short.5":
-    "KIDDO tiada iklan, tiada analitik dan tiada penjejakan, dan tiada apa-apa yang dijual atau ditayangkan kepada anak anda.",
+    "Skrin anak anda tiada iklan, tiada analitik dan tiada penjejakan dalam apa jua bentuk, dan tiada apa-apa yang dijual atau ditayangkan kepada anak anda. Halaman yang ditulis untuk anda — halaman ini, halaman utama, halaman daftar dan ruang ibu bapa — membawa satu tag pengukuran daripada Meta (Facebook) yang mengira lawatan dan, apabila langganan dibeli, pelan yang dipilih serta harganya — supaya KIDDO tahu iklan yang mana berbaloi dibayar.",
   "privacy.short.6":
     "Anda boleh menukar atau memadam segala yang disimpan KIDDO, dan membatalkan langganan, dari ruang ibu bapa pada bila-bila masa.",
 
@@ -834,12 +834,14 @@ export const ms: Record<MessageKey, string> = {
     "Peraturan akses yang dikuatkuasakan oleh Firestore sendiri — bukan hanya oleh aplikasi — bermakna sesebuah akaun hanya boleh membaca dan menulis rekodnya sendiri, profil anaknya sendiri, dan perjalanan anak itu. Sesiapa yang tidak log masuk tidak boleh membaca apa-apa, dan tiada akaun boleh menyenaraikan atau mencari anak akaun lain. TODO(launch): nyatakan wilayah Firestore (tempat Google menyimpan data) di sini setelah lokasi projek disahkan.",
   "privacy.where.billing":
     "Rekod bil — kad, bayaran, invois, resit — disimpan oleh Stripe, dalam sistem Stripe, di bawah alamat e-mel yang sama yang anda gunakan untuk akaun anda.",
+  "privacy.where.meta":
+    "Kiraan lawatan itu pergi kepada Meta. Halaman KIDDO untuk ibu bapa — halaman utama, halaman pelan dan pendaftaran, halaman ini, dan ruang ibu bapa — memuatkan piksel Meta, yang merekodkan bahawa sesebuah halaman telah dibuka dan menetapkan satu kuki supaya lawatan yang bermula daripada iklan KIDDO dapat dikenali sebagai lawatan yang sama kemudian. Ia diberitahu alamat halaman itu, dan — pada dua saat sahaja — sedikit lagi: ketika anda meninggalkan KIDDO menuju Stripe untuk membayar, dan ketika bayaran telah berjaya, ia turut diberitahu pelan yang mana antara dua itu dan berapa harganya, supaya KIDDO tahu iklan yang mana membawa langganan dan bukan sekadar lawatan. Itu sahaja senarainya. KIDDO mematikan pengumpulan automatik piksel tersebut, jadi ia tidak pernah membaca butang yang anda tekan atau apa-apa yang anda taip, dan alamat e-mel anda, kad anda, nama anak anda serta perjalanan anak anda tidak pernah dihantar kepadanya. Ia tidak dimuatkan pada mana-mana skrin tempat anak anda bermain — bukan laman utama, bukan dunia, bukan permainan — jadi anak anda tidak pernah dikira langsung. Jika anda pun lebih suka tidak dikira, penyekat penjejak atau tetapan “sekat penjejak” dalam pelayar anda menghentikannya, dan KIDDO berfungsi sama sahaja tanpanya.",
   "privacy.where.noAccount":
     "Tanpa akaun, KIDDO tiada tempat lain untuk menyimpan apa-apa: membuka KIDDO dalam pelayar lain, atau pada peranti lain, bermula dengan perjalanan yang baharu dan kosong.",
 
   "privacy.s.why": "Mengapa ia disimpan",
   "privacy.why.body":
-    "Supaya kunjungan semula terasa seperti pulang: KIDDO ingat di mana anak anda berada, apa yang telah ditemuinya, dan apa panggilannya. Akaun ibu bapa wujud atas satu sebab tambahan — supaya perjalanan yang sama ada pada tablet di rumah dan telefon di dalam kereta. Keadaan langganan disimpan supaya KIDDO tahu sama ada perlu dibuka untuk anak anda, dan supaya ruang ibu bapa dapat menunjukkan pelan dan tarikh pembaharuan anda. Tiada apa-apa yang disimpan untuk pemasaran, untuk pengukuran, atau untuk membina profil. Alamat e-mel anda digunakan untuk log masuk, untuk menghantar e-mel tetapan semula kata laluan dan pengesahan, dan — oleh Stripe — untuk menghantar resit langganan anda.",
+    "Supaya kunjungan semula terasa seperti pulang: KIDDO ingat di mana anak anda berada, apa yang telah ditemuinya, dan apa panggilannya. Akaun ibu bapa wujud atas satu sebab tambahan — supaya perjalanan yang sama ada pada tablet di rumah dan telefon di dalam kereta. Keadaan langganan disimpan supaya KIDDO tahu sama ada perlu dibuka untuk anak anda, dan supaya ruang ibu bapa dapat menunjukkan pelan dan tarikh pembaharuan anda. Tiada apa-apa tentang anak anda yang disimpan untuk pemasaran, untuk pengukuran atau untuk membina profil. Satu-satunya pengukuran yang KIDDO lakukan ialah kiraan lawatan ke halaman untuk ibu bapanya sendiri, seperti yang diterangkan di bawah “Di mana ia disimpan”. Alamat e-mel anda digunakan untuk log masuk, untuk menghantar e-mel tetapan semula kata laluan dan pengesahan, dan — oleh Stripe — untuk menghantar resit langganan anda.",
 
   "privacy.s.not": "Apa yang tidak disimpan atau dikumpul",
   "privacy.not.1": "Tiada akaun anak, e-mel anak, kata laluan anak atau log masuk anak dalam apa jua bentuk.",
@@ -848,13 +850,13 @@ export const ms: Record<MessageKey, string> = {
   "privacy.not.3": "Tiada rekod jawapan satu per satu, betul atau salah, atau berapa lama satu pusingan mengambil masa.",
   "privacy.not.4": "Tiada akses lokasi, kenalan, kamera atau mikrofon. KIDDO tidak pernah memintanya.",
   "privacy.not.5":
-    "Tiada kuki yang ditetapkan oleh KIDDO, dan tiada skrip pihak ketiga untuk analitik, pengiklanan atau plugin sosial.",
+    "Tiada kuki yang ditetapkan oleh KIDDO sendiri, dan tiada skrip pihak ketiga dalam apa jua bentuk di bahagian anak anda — tiada analitik, tiada pengiklanan, tiada plugin sosial. Pengira Meta, yang memang menetapkan kukinya sendiri, hanya berjalan pada halaman untuk ibu bapa.",
   "privacy.not.6":
     "Tiada nombor kad, tarikh luput atau kod keselamatan. Semua itu dimasukkan pada halaman Stripe dan disimpan oleh Stripe.",
   "privacy.not.7":
     "Tiada harga, skrin bayaran, ajakan menaik taraf atau mesej bil pada mana-mana skrin anak anda. Semua itu berada di ruang ibu bapa.",
   "privacy.not.8":
-    "Tanpa akaun ibu bapa, tiada permintaan kepada mana-mana perkhidmatan selain yang menghidangkan KIDDO itu sendiri. Dengan akaun, perkhidmatan lain yang dihubungi ialah Firebase (log masuk dan storan) dan Stripe (pembayaran dan bil), dan hanya dari ruang ibu bapa atau untuk menyimpan perjalanan.",
+    "Dari skrin anak anda, tiada permintaan kepada mana-mana perkhidmatan selain yang menghidangkan KIDDO itu sendiri dan, dengan akaun, Firebase untuk menyimpan perjalanan. Dari halaman untuk ibu bapa, perkhidmatan yang dihubungi ialah Firebase (log masuk dan storan), Stripe (pembayaran dan bil) dan Meta (kiraan yang disebut di atas).",
   "privacy.not.logs":
     "Seperti mana-mana laman web, perkhidmatan hos yang menghantar KIDDO, dan Firebase apabila sesebuah akaun digunakan, mungkin menyimpan log akses biasa (contohnya, alamat dan masa sesuatu permintaan) untuk keselamatan dan kebolehpercayaan. TODO(launch): namakan penyedia hos dan tempoh simpanan lognya di sini sebelum pelancaran.",
 

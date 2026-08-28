@@ -3,6 +3,7 @@
 import { ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { reportPurchase } from "@/lib/analytics/events";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
@@ -40,7 +41,17 @@ export function WelcomeGate() {
   const checkout = useCheckoutReturn();
   const [now] = useState(() => Date.now());
   const [stale, setStale] = useState(false);
+  const subscription = session.subscription;
   const open = hasAccess(session.subscription, now);
+
+  /* The one place KIDDO tells Meta a subscription was bought, and it says so
+     on the strength of what the webhook wrote rather than on having been
+     sent back here by Stripe. Repeats are the reporter's own business: it
+     remembers the subscription it named, so a reload of this page is a
+     second welcome and not a second sale. */
+  useEffect(() => {
+    if (open && subscription) reportPurchase(subscription);
+  }, [open, subscription]);
 
   useEffect(() => {
     if (open) return;

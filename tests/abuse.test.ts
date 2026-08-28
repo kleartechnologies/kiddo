@@ -376,7 +376,10 @@ test("N — security headers are configured, and the CSP names only what KIDDO u
   }
 
   /* connect-src is the directive that decides where an injected script
-     could send a parent's data. Only Firebase's own hosts are named. */
+     could send a parent's data. Firebase's own hosts, and one more:
+     www.facebook.com, where the Meta pixel reports a page view from the
+     parent's pages. It is the only host here that KIDDO does not need in
+     order to run, which is exactly why it is written down. */
   const connect = /"connect-src ([^"]+)"/.exec(config)?.[1] ?? "";
   assert.deepEqual(connect.split(" ").sort(), [
     "'self'",
@@ -385,7 +388,18 @@ test("N — security headers are configured, and the CSP names only what KIDDO u
     "https://firestore.googleapis.com",
     "https://identitytoolkit.googleapis.com",
     "https://securetoken.googleapis.com",
+    "https://www.facebook.com",
     "https://www.google.com/recaptcha/",
+  ]);
+
+  /* And the pixel's beacon is an image before it is a fetch, so img-src is
+     pinned beside it rather than left as a wildcard nobody reads. */
+  const img = /"img-src ([^"]+)"/.exec(config)?.[1] ?? "";
+  assert.deepEqual(img.split(" ").sort(), [
+    "'self'",
+    "blob:",
+    "data:",
+    "https://www.facebook.com",
   ]);
 
   /* script-src and frame-src are named just as exactly, because "Continue
@@ -398,6 +412,9 @@ test("N — security headers are configured, and the CSP names only what KIDDO u
     /* Firebase's popup sign-in loads gapi.iframes to talk to the window it
        opened. Third-party script in KIDDO's own origin — see next.config.ts. */
     "https://apis.google.com",
+    /* fbevents.js and the pixel's own configuration, which is a second
+       script and not a fetch. Parent pages only — tests/analytics.test.ts. */
+    "https://connect.facebook.net",
     "https://www.google.com/recaptcha/",
     "https://www.gstatic.com/recaptcha/",
   ]);

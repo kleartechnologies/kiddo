@@ -148,6 +148,48 @@ when `NEXT_PUBLIC_FIREBASE_*` are unset.
 - [ ] Smoke-test sign-up → onboarding → play → second device against the
       real project (not possible here: CLI credentials expired).
 
+### Installed-PWA sign-in (29 Aug 2026)
+
+An installed iOS KIDDO could not sign in at all — not with Google, and not
+with an email and a password either. One cause, three symptoms: Firebase's
+`signInWithPopup` takes an iOS-standalone-only branch that never calls
+`window.open`, hands the sign-in to Safari as a new tab, and returns a popup
+object with no window in it; its only failure path polls that missing window
+forever, so the promise never settles, and the card's single `busy` flag then
+locked the email form and the create-an-account form behind it. See
+`src/lib/firebase/signInMethod.ts` for the branch, quoted from the SDK.
+
+The fix is a redirect on exactly that one browser, a same-origin handler to
+make the redirect survive, two `busy` flags instead of one, and a bound on
+how long any sign-in may take. These four steps have to be done together —
+setting `authDomain` without the proxy, or the proxy without the OAuth
+client, breaks sign-in rather than fixing it.
+
+- [ ] Deploy the `netlify.toml` that rewrites `/__/auth/*` to
+      `https://kiddocares-b105e.firebaseapp.com/__/auth/:splat` with
+      `status = 200`.
+- [ ] Confirm `https://kiddocares.com/__/auth/handler` and
+      `https://kiddocares.com/__/auth/iframe` both answer 200 after the
+      deploy. Nothing below matters until they do.
+- [ ] Set `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=kiddocares.com` on Netlify
+      (currently `kiddocares-b105e.firebaseapp.com`) and redeploy.
+- [ ] Firebase console → Authentication → Settings → Authorized domains:
+      `kiddocares.com` must be listed.
+- [ ] Google Cloud console → APIs & Services → Credentials → the Web client
+      Firebase created: add `https://kiddocares.com/__/auth/handler` to
+      Authorized redirect URIs, and `https://kiddocares.com` to Authorized
+      JavaScript origins. Leave the firebaseapp.com entries in place.
+- [ ] On a real iPhone: Safari → kiddocares.com → Share → Add to Home
+      Screen → open from the home screen → Continue with Google → back to
+      KIDDO signed in.
+- [ ] Same iPhone, same installed icon: sign in with an email and a
+      password; create a new account with an email and a password.
+- [ ] Sign out, sign in again, then close KIDDO fully and reopen it from the
+      home screen — still signed in, no second sign-in asked for.
+- [ ] Android Chrome: install from the browser menu and repeat all three
+      sign-in paths. Android keeps the popup, so this is a regression check
+      rather than a new road.
+
 ### Phase 8C — subscription + Stripe + account completion (24 Aug 2026)
 
 Done; see `docs/kiddo-billing.md`. Two plans (RM9.90/month, RM59.90/year),

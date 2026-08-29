@@ -169,6 +169,15 @@ export const previewBackend: CloudBackend = {
     become(key);
     return userOf(load())!;
   },
+  /**
+   * The preview cloud never leaves the page, so there is never an answer
+   * waiting when it comes back. Present because the contract is total, and
+   * because the session store calls this on every cold start — including
+   * this one.
+   */
+  async completeGoogleRedirect() {
+    return null;
+  },
   async signOut() {
     become(null);
   },

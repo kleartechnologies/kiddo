@@ -5,7 +5,14 @@ import { useId, useState, type FormEvent } from "react";
 
 import { Button } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import { sendPasswordReset, signIn, signInWithGoogle, signUp } from "@/lib/cloud/session";
+import {
+  clearGoogleRedirectFailure,
+  sendPasswordReset,
+  signIn,
+  signInWithGoogle,
+  signUp,
+  useGoogleRedirectFailure,
+} from "@/lib/cloud/session";
 import type { AuthFailure } from "@/lib/cloud/types";
 import { around } from "@/lib/i18n/format";
 import type { Locale } from "@/lib/i18n/locale";
@@ -66,6 +73,9 @@ const WORDS: Record<AuthFailure, MessageKey> = {
      is better to name the reason than to leave a hole in it. */
   "popup-closed": "auth.error.unknown",
   "popup-blocked": "auth.error.popup-blocked",
+  /* KIDDO stopped waiting. Says so without guessing why, because it does
+     not know why — that is the whole meaning of the timeout. */
+  "timed-out": "auth.error.timed-out",
   "different-sign-in": "auth.error.different-sign-in",
   unknown: "auth.error.unknown",
 };
@@ -81,9 +91,27 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirm, setConfirm] = useState("");
+  /**
+   * Two flags where there used to be one, and the second one is a bug fix.
+   *
+   * A single `busy` made the card a single point of failure: `google()` set
+   * it, `submit()` refused to run while it was set, and an installed iPhone
+   * had a Google promise that never settled. So a parent tapped the button
+   * at the top of the card — the one that is deliberately first, because it
+   * is the shortest road — and from that moment the email and password
+   * boxes underneath it silently swallowed every press, including on the
+   * create-an-account side. One hung promise, all three paths dead.
+   *
+   * The promise no longer hangs (`cloud/session.ts` bounds it, and on iOS it
+   * is not a popup at all any more), and it no longer *could* take the form
+   * with it if it did. Both halves matter: the second is the one that holds
+   * when some future SDK invents a new way to never answer.
+   */
   const [busy, setBusy] = useState(false);
+  const [googleBusy, setGoogleBusy] = useState(false);
   const [error, setError] = useState<MessageKey | null>(null);
   const { locale, t } = useTranslation();
+  const redirectFailure = useGoogleRedirectFailure();
   const id = useId();
   const creating = mode === "signup";
   const forgot = mode === "forgot";
@@ -93,6 +121,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
     if (busy) return;
     setBusy(true);
     setError(null);
+    clearGoogleRedirectFailure();
     if (forgot) {
       const failure = await sendPasswordReset(email);
       setBusy(false);
@@ -116,19 +145,33 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
   }
 
   async function google() {
-    if (busy) return;
-    setBusy(true);
+    if (googleBusy) return;
+    setGoogleBusy(true);
     setError(null);
+    clearGoogleRedirectFailure();
     const failure = await signInWithGoogle();
-    setBusy(false);
-    /* `null` covers both "signed in" and "shut the window" — nothing to
-       say either way, so the live region is left as it was. */
+    setGoogleBusy(false);
+    /* `null` covers "signed in", "shut the window", and — on an installed
+       iPhone — "the browser is leaving for Google right now". Nothing to
+       say in any of the three, so the live region is left as it was. */
     if (failure) setError(WORDS[failure]);
   }
+
+  /**
+   * A sign-in that left the page cannot report back into the button that
+   * started it, so the reason comes back through the session store on the
+   * next load and is read here, in the same live region as every other
+   * failure. Read rather than copied into state: the store already is the
+   * state, and an effect that mirrors it into a second copy is a render the
+   * card does not need. Anything the parent does next — pressing Google,
+   * submitting the form, changing mode — clears it, so it is not news twice.
+   */
+  const shown = error ?? (redirectFailure ? WORDS[redirectFailure] : null);
 
   function switchTo(next: Mode) {
     setMode(next);
     setError(null);
+    clearGoogleRedirectFailure();
     setSent(null);
     setConfirm("");
   }
@@ -180,11 +223,11 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
             size="md"
             block
             onClick={google}
-            aria-busy={busy}
+            aria-busy={googleBusy}
             icon={<GoogleMark />}
             data-auth-google
           >
-            {t("auth.google.continue")}
+            {t(googleBusy ? "auth.google.leaving" : "auth.google.continue")}
           </Button>
           {/* A rule with a word in it. `aria-hidden` because a screen
               reader reading "or" between a button and a form learns
@@ -268,7 +311,7 @@ export function AuthCard({ initialMode = "signin" }: { initialMode?: Mode }) {
         )}
 
         <p aria-live="polite" role="status" className="text-apricot-ink min-h-5 text-sm font-semibold" data-auth-error>
-          {error ? t(error) : ""}
+          {shown ? t(shown) : ""}
         </p>
 
         <Button

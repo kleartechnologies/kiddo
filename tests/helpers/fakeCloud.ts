@@ -31,11 +31,14 @@ class MemoryStorage {
   }
 }
 export const storage = new MemoryStorage();
+/** Session storage is where the Google-redirect marker lives. */
+export const sessionStore = new MemoryStorage();
 export const navigations: string[] = [];
 (globalThis as unknown as { window: unknown }).window = {
   localStorage: storage,
   addEventListener() {},
   removeEventListener() {},
+  sessionStorage: sessionStore,
   location: {
     origin: "https://kiddo.test",
     href: "https://kiddo.test/parents",
@@ -85,6 +88,19 @@ export class FakeCloud implements CloudBackend {
   deleted: string[] = [];
   /** Who the fake Google popup comes back as, or a failure to throw instead. */
   googleAnswer: string | CloudError = "parent@gmail.test";
+  /**
+   * How this fake browser answers Google: with a window it can hold open,
+   * or by leaving the page. `"redirect"` is an installed iPhone, where
+   * `signInWithGoogle` answers nothing and the account arrives on the next
+   * load through `completeGoogleRedirect` instead.
+   */
+  googleRoad: "popup" | "redirect" = "popup";
+  /** Set by a `"redirect"` sign-in, read by the load that comes back. */
+  redirectWaiting = false;
+  /** What that return leg finds — the answer, or a failure to throw. */
+  redirectAnswer: string | CloudError | null = null;
+  /** Every promise this fake has left unanswered, so tests can hang one. */
+  hangGoogle = false;
   private authListeners = new Set<(user: ParentUser | null) => void>();
   private journeyListeners = new Map<string, Set<(journey: Journey | null) => void>>();
   private subscriptionListeners = new Map<string, Set<(state: SubscriptionState) => void>>();
@@ -118,7 +134,17 @@ export class FakeCloud implements CloudBackend {
     this.become(user);
     return user;
   }
-  async signInWithGoogle() {
+  async signInWithGoogle(): Promise<ParentUser | null> {
+    /* A promise that never settles: the exact shape of the bug an installed
+       iPhone used to hit, so the card can be tested against it. */
+    if (this.hangGoogle) return new Promise<ParentUser | null>(() => {});
+    if (this.googleRoad === "redirect") {
+      /* The browser is leaving. Nothing to return, and nothing thrown:
+         the answer is collected on the way back. */
+      this.redirectWaiting = true;
+      this.redirectAnswer = this.googleAnswer;
+      return null;
+    }
     if (this.googleAnswer instanceof CloudError) throw this.googleAnswer;
     const email = this.googleAnswer;
     const existing = this.accounts.get(email);
@@ -131,6 +157,23 @@ export class FakeCloud implements CloudBackend {
     /* Google has already checked the address, so the account arrives
        verified and never sees the "check your email" step. */
     const user = { uid, email, emailVerified: true };
+    this.become(user);
+    return user;
+  }
+  /** The return leg. `null` on every load that is not one. */
+  async completeGoogleRedirect(): Promise<ParentUser | null> {
+    if (!this.redirectWaiting) return null;
+    this.redirectWaiting = false;
+    const answer = this.redirectAnswer;
+    this.redirectAnswer = null;
+    if (answer === null) return null;
+    if (answer instanceof CloudError) throw answer;
+    const existing = this.accounts.get(answer);
+    if (existing && existing.password !== null) throw new CloudError("different-sign-in", "password account");
+    const uid = existing?.uid ?? `uid-${this.accounts.size + 1}`;
+    if (!existing) this.accounts.set(answer, { uid, password: null, verified: true });
+    if (this.autoSubscribe && !this.subscriptions.has(uid)) this.subscriptions.set(uid, ACTIVE);
+    const user = { uid, email: answer, emailVerified: true };
     this.become(user);
     return user;
   }

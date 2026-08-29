@@ -479,6 +479,7 @@ export const ms: Record<MessageKey, string> = {
     "Taip e-mel akaun KIDDO anda dan kami akan hantar pautan untuk pilih kata laluan baharu.",
   /* "Google" kekal seperti asalnya — nama jenama, bukan perkataan. */
   "auth.google.continue": "Teruskan dengan Google",
+  "auth.google.leaving": "Membawa anda ke Google…",
   "auth.google.or": "atau",
   "auth.field.email": "E-mel anda",
   "auth.field.password": "Kata laluan",
@@ -515,6 +516,8 @@ export const ms: Record<MessageKey, string> = {
     "Pelayar anda menghalang tetingkap Google daripada dibuka. Benarkan tetingkap timbul untuk KIDDO, atau guna e-mel dan kata laluan di bawah.",
   "auth.error.different-sign-in":
     "E-mel itu sudah log masuk dengan cara lain. Cuba e-mel dan kata laluan anda di bawah.",
+  "auth.error.timed-out":
+    "Itu mengambil masa terlalu lama, jadi KIDDO berhenti menunggu. Sila cuba lagi, atau guna e-mel dan kata laluan anda.",
   "auth.error.unknown": "Ada sesuatu yang tidak kena. Sila cuba lagi.",
 
   /* ---- /join: the road from choosing a plan to paying for it ---------- */

@@ -9,6 +9,7 @@ import {
   clearLocalJourney,
 } from "@/lib/journey/useJourney";
 import { CLOUD_CONFIGURED } from "@/lib/firebase/config";
+import { clearRedirectPending, isRedirectPending } from "@/lib/firebase/signInMethod";
 import { normalizeChildName, readChildName } from "@/lib/profile/child";
 import { bindChildNameToCloud, unbindChildName } from "@/lib/profile/useChildName";
 
@@ -147,7 +148,11 @@ export function configureSession(load: (() => Promise<CloudBackend>) | null): vo
     return;
   }
   loader = load;
-  if (hasHint()) void start();
+  /* Two reasons to load Firebase on a cold start, and the second one is new:
+     a parent signing in with Google for the first time has no account hint
+     yet, and their answer is arriving in this very page load. Without this
+     they would come back from Google to an empty sign-in card. */
+  if (hasHint() || isRedirectPending()) void start();
   else set(SIGNED_OUT);
 }
 
@@ -162,6 +167,9 @@ function start(): Promise<CloudBackend> {
       if (user) void attach(user);
       else detach();
     });
+    /* Before anything else asks a question: this page load may be the
+       second half of a sign-in that started on a different site. */
+    void collectRedirect(loaded);
     return loaded;
   });
   starting.catch(() => {
@@ -274,9 +282,108 @@ function failure(error: unknown): AuthFailure {
   return error instanceof CloudError ? error.reason : "unknown";
 }
 
+/**
+ * How long KIDDO will wait for an answer before deciding there isn't one.
+ *
+ * Not a tuning knob — a promise that never settles is what broke sign-in on
+ * every installed iPhone, and the shape of that bug is worth refusing
+ * structurally rather than fixing once. A card awaiting a promise has no way
+ * to tell "still going" from "gone", so the store gives every attempt a last
+ * moment past which it becomes a sentence the parent can read.
+ *
+ * Two numbers, because two very different things are being waited on. A
+ * password is a round trip to Google's servers and back, and Firebase's own
+ * network timeout is thirty seconds, so forty-five leaves it room to fail on
+ * its own terms first — the parent should see "check your connection", not
+ * KIDDO's backstop. The Google window has a *person* inside it, picking an
+ * account and possibly fetching a phone for a code, and three minutes is
+ * long enough that no real sign-in is ever cut short by it.
+ */
+export const AUTH_TIMEOUT_MS = 45_000;
+export const GOOGLE_TIMEOUT_MS = 3 * 60_000;
+
+function bounded<T>(work: Promise<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new CloudError("timed-out", `No answer in ${ms}ms`)), ms);
+    const settle = (finish: () => void) => {
+      clearTimeout(timer);
+      finish();
+    };
+    work.then(
+      (value) => settle(() => resolve(value)),
+      (error) => settle(() => reject(error)),
+    );
+  });
+}
+
+/* ---- The answer a Google redirect leaves behind ------------------------ */
+
+/**
+ * A sign-in that leaves the page cannot reject into the button that started
+ * it — the button, and the React tree around it, are gone. So the reason
+ * comes back on the next page load through a store of its own, and the card
+ * reads it wherever it happens to be mounted.
+ *
+ * Only failures live here. A redirect that worked needs no announcement: the
+ * auth listener fires with the parent and the session moves on by itself.
+ */
+let redirectFailure: AuthFailure | null = null;
+const redirectListeners = new Set<() => void>();
+
+function subscribeRedirect(listener: () => void): () => void {
+  redirectListeners.add(listener);
+  return () => redirectListeners.delete(listener);
+}
+
+function setRedirectFailure(reason: AuthFailure | null): void {
+  redirectFailure = reason;
+  for (const listener of redirectListeners) listener();
+}
+
+/** Why the last trip to Google came back empty-handed, if it did. */
+export function useGoogleRedirectFailure(): AuthFailure | null {
+  return useSyncExternalStore(subscribeRedirect, () => redirectFailure, () => null);
+}
+
+/** The card has shown it; it is not news twice. */
+export function clearGoogleRedirectFailure(): void {
+  if (redirectFailure !== null) setRedirectFailure(null);
+}
+
+/**
+ * Collect whatever a Google redirect left, on every cold start.
+ *
+ * Cheap and silent on the overwhelming majority of page loads, which are not
+ * return legs: Firebase answers `null` and nothing happens. It runs
+ * unconditionally rather than only when the marker is set, because the
+ * marker lives in `sessionStorage` and a browser that refused to write it
+ * would otherwise strand a parent who did sign in successfully.
+ */
+async function collectRedirect(loaded: CloudBackend): Promise<void> {
+  try {
+    await bounded(loaded.completeGoogleRedirect(), AUTH_TIMEOUT_MS);
+    /* Success needs no announcement — `onAuth` has already fired. */
+  } catch (error) {
+    const reason = failure(error);
+    /* A parent who backed out of Google's chooser did not fail at anything,
+       and should not be told they did. */
+    if (reason !== "popup-closed") setRedirectFailure(reason);
+    /* Nothing came back and nothing is coming: if this load was only
+       waiting on the redirect, stop waiting. */
+    if (session.status === "loading" && !hasHint()) set(SIGNED_OUT);
+  } finally {
+    /* Asked and answered, whatever the answer was. The marker exists to make
+       *this* page load wait for a redirect; leaving it set would make every
+       future launch load Firebase for an answer that has already been
+       collected — or, worse, for one that never existed because a parent
+       backed out of Google's chooser. One writer, one clearer. */
+    clearRedirectPending();
+  }
+}
+
 export async function signUp(email: string, password: string): Promise<AuthFailure | null> {
   try {
-    await (await start()).signUp(email, password);
+    await bounded((await start()).signUp(email, password), AUTH_TIMEOUT_MS);
     return null;
   } catch (error) {
     return failure(error);
@@ -285,7 +392,7 @@ export async function signUp(email: string, password: string): Promise<AuthFailu
 
 export async function signIn(email: string, password: string): Promise<AuthFailure | null> {
   try {
-    await (await start()).signIn(email, password);
+    await bounded((await start()).signIn(email, password), AUTH_TIMEOUT_MS);
     return null;
   } catch (error) {
     return failure(error);
@@ -298,10 +405,15 @@ export async function signIn(email: string, password: string): Promise<AuthFailu
  *
  * A shut popup comes back as `null` — nothing happened, so the card says
  * nothing. Every other reason is a sentence the parent should read.
+ *
+ * On an installed iPhone this leaves the page rather than opening a window,
+ * so `null` there means "we are on our way to Google" and the card will be
+ * unmounted a moment later. Both nulls are the same instruction to the
+ * card — say nothing — which is why the difference does not need naming.
  */
 export async function signInWithGoogle(): Promise<AuthFailure | null> {
   try {
-    await (await start()).signInWithGoogle();
+    await bounded((await start()).signInWithGoogle(), GOOGLE_TIMEOUT_MS);
     return null;
   } catch (error) {
     const reason = failure(error);
@@ -463,4 +575,5 @@ export function __resetSessionForTests(): void {
   starting = null;
   generation += 1;
   session = LOADING;
+  redirectFailure = null;
 }

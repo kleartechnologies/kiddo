@@ -258,24 +258,35 @@ KIDDO carries *no* third-party script no longer holds: it carries one,
 Google's, on the page that is already trusting Google with the sign-in
 itself. There is no version of Firebase popup sign-in without it.
 
-`frame-src` names **two** auth hosts, and they are one iframe at two
-addresses. `https://auth.kiddocares.com` is a Firebase Hosting custom domain
-on this project; Hosting serves the `/__/auth/*` helpers on every domain
-attached to a site, so `authDomain` can point there. That is the whole
-reason it exists: Google's account chooser shows the host it will send the
-parent back to, and a parent halfway through buying KIDDO should not be
-asked to trust `kiddocares-b105e.firebaseapp.com`. The firebaseapp.com host
-stays named beside it so that a build with no
+`frame-src` names `'self'` and **one** auth host, and they are one iframe at
+two addresses. In production the helpers answer on KIDDO's own origin:
+`netlify.toml` rewrites `/__/auth/*` to Firebase Hosting with `status = 200`,
+which is a proxy rather than a redirect, so the parent's browser only ever
+sees `kiddocares.com` and `authDomain` can be set to it. That is the whole
+reason the rewrite exists: Google's account chooser shows the host it will
+send the parent back to, and a parent halfway through buying KIDDO should
+not be asked to trust `kiddocares-b105e.firebaseapp.com`. The firebaseapp.com
+host stays named beside `'self'` so that a build with no
 `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN`, or one rolled back to it, is not a build
 whose sign-in popup is silently blocked.
 
-`signInWithRedirect` — which would need no `frame-src` at all — was not
-usable while the handler sat on firebaseapp.com: KIDDO is served from
-kiddocares.com, and browsers that partition third-party storage lose the
-redirect's state on the way back. A handler on `auth.kiddocares.com` is
-same-site with KIDDO and would not have that problem, but changing how every
-parent signs in is a separate decision from moving the domain, and the popup
-stays.
+An earlier version of this file described `auth.kiddocares.com`, a Firebase
+Hosting custom domain, as the way to reach the same end. That domain was
+written down but never created — it does not resolve — and the proxy is
+better than reviving it: it needs no DNS record and no second Hosting site,
+and it leaves KIDDO with exactly one production origin rather than two.
+
+`signInWithRedirect` is now used on exactly one browser, and the proxy is
+what makes it safe. It was unusable while the handler sat on firebaseapp.com:
+KIDDO is served from kiddocares.com, and browsers that partition third-party
+storage lose the redirect's state on the way back. A same-origin handler has
+no such problem. The redirect is not a general replacement for the popup —
+it is reserved for an installed iOS KIDDO, where `signInWithPopup` has no
+working road at all (it hands the window to Safari and its promise never
+settles; see `src/lib/firebase/signInMethod.ts`, which reproduces the SDK's
+own `_isIOSStandalone` test and nothing wider). Every other browser keeps the
+popup, which is why `script-src https://apis.google.com` and the `frame-src`
+hosts are still needed.
 
 **The third is the Meta pixel:** `script-src https://connect.facebook.net`
 for `fbevents.js` and the pixel's own configuration, and

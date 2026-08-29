@@ -489,6 +489,10 @@ export const en = {
      "Continue with". One button does both jobs here, so "Continue with"
      is the only one of the three that is true in both modes. */
   "auth.google.continue": "Continue with Google",
+  /* On a phone that leaves the page for Google, the button says where it is
+     going rather than "one moment" — the page is about to disappear and the
+     parent should not think KIDDO crashed. */
+  "auth.google.leaving": "Taking you to Google…",
   "auth.google.or": "or",
   "auth.field.email": "Your email",
   "auth.field.password": "Password",
@@ -525,6 +529,11 @@ export const en = {
     "Your browser stopped the Google window from opening. Allow pop-ups for KIDDO, or use your email and a password below.",
   "auth.error.different-sign-in":
     "That email already signs in a different way. Try your email and password below.",
+  /* KIDDO gave up waiting. It does not say what went wrong because it does
+     not know — that is what a timeout means — but it does say that trying
+     again is worth doing, and it names the other road on the same card. */
+  "auth.error.timed-out":
+    "That took too long, so KIDDO stopped waiting. Please try again, or use your email and password.",
   "auth.error.unknown": "Something went wrong. Please try again.",
 
   /* ---- /join: the road from choosing a plan to paying for it ---------- */

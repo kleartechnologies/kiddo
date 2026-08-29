@@ -50,6 +50,14 @@ export type AuthFailure =
   /** The browser blocked the Google window before it could open. */
   | "popup-blocked"
   /**
+   * The attempt was still unanswered after `AUTH_TIMEOUT_MS`, so the store
+   * stopped waiting on it. Not a thing any server said — it is KIDDO's own
+   * backstop against a sign-in that hangs instead of failing, which is
+   * exactly what an installed iOS KIDDO used to do to every parent who
+   * pressed the Google button. See `firebase/signInMethod.ts`.
+   */
+  | "timed-out"
+  /**
    * That email already signs in a different way — a password here, or
    * another provider. Firebase keeps one account per address, so it will
    * not quietly make a second one.
@@ -72,16 +80,27 @@ export interface CloudBackend {
   signUp(email: string, password: string): Promise<ParentUser>;
   signIn(email: string, password: string): Promise<ParentUser>;
   /**
-   * Sign in with Google, in a popup. Creates the account on first use, so
-   * it is both halves of the card's job at once — there is no separate
-   * "sign up with Google".
+   * Sign in with Google. Creates the account on first use, so it is both
+   * halves of the card's job at once — there is no separate "sign up with
+   * Google".
    *
-   * A popup rather than a redirect on purpose: KIDDO is served from
-   * kiddocares.com and Firebase's auth handler lives on the project's own
-   * `authDomain`, and browsers that partition third-party storage break a
-   * cross-origin redirect flow. See the CSP note in `next.config.ts`.
+   * A popup in every browser that can hold one open, which is all of them
+   * but one: an installed iOS KIDDO, where Firebase hands the window to
+   * Safari and the promise never settles. There the answer is `null` and
+   * the browser is already on its way to Google — the account arrives on
+   * the next page load, through `completeGoogleRedirect`. See
+   * `firebase/signInMethod.ts` for why that is the only browser named.
    */
-  signInWithGoogle(): Promise<ParentUser>;
+  signInWithGoogle(): Promise<ParentUser | null>;
+
+  /**
+   * Pick up an answer left by a Google redirect, if this page load is the
+   * one coming back from it. `null` means it is not — which is every
+   * ordinary page load, so this must be cheap and must never throw for
+   * "nothing to collect".
+   */
+  completeGoogleRedirect(): Promise<ParentUser | null>;
+
   signOut(): Promise<void>;
 
   /** Creates or refreshes `users/{uid}`; idempotent. */

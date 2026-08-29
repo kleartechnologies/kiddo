@@ -39,3 +39,51 @@
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
     Service-Worker-Allowed = "/"
+
+# Firebase's sign-in helpers, served from KIDDO's own origin.
+#
+# `authDomain` is the host Firebase serves `/__/auth/handler` and
+# `/__/auth/iframe` from, and until now it was
+# `kiddocares-b105e.firebaseapp.com` — a genuine third party to
+# kiddocares.com. A popup survives that: the window has an opener on
+# KIDDO's origin and the answer comes back through it. A *redirect* does
+# not, because the handler has to keep the half-finished sign-in in its own
+# storage across the trip to Google, and every browser that partitions
+# third-party storage — Safari first, Chrome now — takes that storage away.
+# That is the documented reason Firebase tells you to move `authDomain`
+# onto your own domain before using `signInWithRedirect`, and the reason
+# `next.config.ts` used to give for the popup being the only road.
+#
+# An installed iPhone has now taken the popup away too (see
+# `src/lib/firebase/signInMethod.ts`), so the redirect has to work, so this
+# has to move. It moves by proxy rather than by a new hostname: KIDDO
+# answers `/__/auth/*` itself and Netlify fetches the bytes from Firebase
+# Hosting behind the scenes. `status = 200` is a rewrite, not a redirect —
+# the parent's browser never learns that firebaseapp.com was involved, and
+# `authDomain` can be `kiddocares.com`.
+#
+# A proxy rather than the `auth.kiddocares.com` custom domain the CSP
+# comment used to anticipate, for two reasons. It needs no DNS record and
+# no second Firebase Hosting site — `auth.kiddocares.com` was written down
+# but never actually created, and does not resolve. And it introduces no
+# second origin at all, which is worth more than the saved hop: the account
+# chooser shows kiddocares.com, the handler is same-origin with the page
+# that opened it, and there is exactly one production domain to reason
+# about.
+#
+# The three helper pages reference `handler.js`, `iframe.js` and
+# `experiments.js` relatively, so this one rule covers the whole flow;
+# there is nothing else under `/__/` to forward. `force = true` because
+# Next.js owns every other path and would answer 404 here.
+#
+# Two things outside this file have to agree, or sign-in breaks rather than
+# improves:
+#   * NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN must be `kiddocares.com`.
+#   * The Google OAuth client must list
+#     `https://kiddocares.com/__/auth/handler` as an authorized redirect URI.
+# Both are in the checklist in docs/kiddo-launch-readiness.md.
+[[redirects]]
+  from = "/__/auth/*"
+  to = "https://kiddocares-b105e.firebaseapp.com/__/auth/:splat"
+  status = 200
+  force = true

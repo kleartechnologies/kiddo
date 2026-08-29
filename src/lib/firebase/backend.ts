@@ -8,8 +8,10 @@ import {
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
+  getRedirectResult,
   signInWithEmailAndPassword,
   signInWithPopup,
+  signInWithRedirect,
   signOut as firebaseSignOut,
   verifyPasswordResetCode,
   type Auth,
@@ -39,6 +41,7 @@ import { CloudError, type AuthFailure } from "@/lib/cloud/types";
 
 import { appCheckHeader, startAppCheck } from "./appCheck";
 import { firebaseConfig } from "./config";
+import { googleSignInMethod, markRedirectPending, readSignInEnvironment } from "./signInMethod";
 
 /**
  * The real backend: Firebase Authentication for the parent, Firestore for
@@ -143,6 +146,30 @@ async function guarded<T>(work: () => Promise<T>): Promise<T> {
 /** Firebase's own window for "recent login", with a little margin. */
 const RECENT_SIGN_IN_MS = 4 * 60 * 1000;
 
+/**
+ * What KIDDO asks Google for, on both roads.
+ *
+ * If a sign-in throws `auth/operation-not-allowed`, Google sign-in is
+ * switched off for the project: Firebase console → Authentication → Sign-in
+ * method. It reaches the parent as "something went wrong", which is all the
+ * card can honestly say about a server setting.
+ */
+function googleProvider(): GoogleAuthProvider {
+  const provider = new GoogleAuthProvider();
+  /* KIDDO wants a name and an address to put the account under, and nothing
+     else. `email` and `profile` are what Google grants by default; asking
+     for them explicitly keeps the consent screen honest about the whole of
+     it. */
+  provider.addScope("email");
+  provider.addScope("profile");
+  /* Always offer the chooser. Without this a shared family laptop signs the
+     parent straight back into whichever Google account the browser saw
+     last, with no way to pick the other one. */
+  provider.setCustomParameters({ prompt: "select_account" });
+  return provider;
+}
+
+
 export const firebaseBackend: CloudBackend = {
   onAuth(listener) {
     const { auth } = services();
@@ -166,23 +193,32 @@ export const firebaseBackend: CloudBackend = {
   signInWithGoogle: () =>
     guarded(async () => {
       const { auth } = services();
-      /* If this throws `auth/operation-not-allowed`, Google sign-in is
-         switched off for the project: Firebase console → Authentication →
-         Sign-in method. It reaches the parent as "something went wrong",
-         which is all the card can honestly say about a server setting. */
-      const provider = new GoogleAuthProvider();
-      /* KIDDO wants a name and an address to put the account under, and
-         nothing else. `email` and `profile` are what Google grants by
-         default; asking for them explicitly keeps the consent screen
-         honest about the whole of it. */
-      provider.addScope("email");
-      provider.addScope("profile");
-      /* Always offer the chooser. Without this a shared family laptop
-         signs the parent straight back into whichever Google account the
-         browser saw last, with no way to pick the other one. */
-      provider.setCustomParameters({ prompt: "select_account" });
+      const provider = googleProvider();
+      /* One line, and the only difference between an installed iPhone and
+         every other browser in the world. `signInWithPopup` is unchanged
+         where it works; where it cannot work it is not softened or retried,
+         it is not used. See `signInMethod.ts` for the branch inside the SDK
+         that makes this necessary. */
+      if (googleSignInMethod(readSignInEnvironment()) === "redirect") {
+        markRedirectPending();
+        /* Resolves as the browser leaves. There is no user to return: the
+           account arrives on the way back, in `completeGoogleRedirect`. */
+        await signInWithRedirect(auth, provider);
+        return null;
+      }
       const { user } = await signInWithPopup(auth, provider);
       return toParent(user);
+    }),
+
+  completeGoogleRedirect: () =>
+    guarded(async () => {
+      const { auth } = services();
+      /* Firebase answers `null` on every page load that is not the return
+         leg, which is nearly all of them. The `sessionStorage` marker is
+         cleared by the session store rather than here, because the store is
+         the layer that runs on every cold start whatever this answers. */
+      const result = await getRedirectResult(auth);
+      return result ? toParent(result.user) : null;
     }),
 
   signOut: () => guarded(() => firebaseSignOut(services().auth)),

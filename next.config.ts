@@ -32,18 +32,21 @@ import type { NextConfig } from "next";
  *   `frame-src` names two hosts, and they are one iframe at two addresses:
  *   the hidden `/__/auth/iframe` that the popup posts its answer back
  *   through, which Firebase serves on the project's `authDomain` (see
- *   `src/lib/firebase/config.ts`). `auth.kiddocares.com` is a Firebase
- *   Hosting custom domain on this same project, and Hosting serves the
- *   `/__/auth/*` helpers on every domain attached to a site — naming it is
- *   what lets `authDomain` move there, which is the whole point: Google's
- *   account chooser shows the host it is sending the parent back to, and a
- *   parent halfway through buying KIDDO should not be asked to trust
- *   `kiddocares-b105e.firebaseapp.com`. The firebaseapp.com host stays
- *   named beside it so a build whose `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` is
- *   unset — or one rolled back to it — is not a build whose sign-in popup
- *   is silently blocked. Both are written out in full rather than
- *   wildcarded, so a different Firebase project would be refused rather
- *   than quietly allowed; `tests/abuse.test.ts` holds the spellings in step.
+ *   `src/lib/firebase/config.ts`). In production that is now KIDDO's own
+ *   origin — `netlify.toml` proxies `/__/auth/*` to Firebase Hosting, so
+ *   the handler and the iframe answer on kiddocares.com and `'self'` is
+ *   the whole permission. The firebaseapp.com host stays named beside it
+ *   so a build whose `NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN` is unset — or one
+ *   rolled back to it — is not a build whose sign-in is silently blocked.
+ *   It is written out in full rather than wildcarded, so a different
+ *   Firebase project would be refused rather than quietly allowed;
+ *   `tests/abuse.test.ts` holds the spellings in step.
+ *
+ *   The earlier plan named `auth.kiddocares.com` here, a Firebase Hosting
+ *   custom domain. That domain was written down but never created — it
+ *   does not resolve — and the proxy reaches the same end without it: the
+ *   account chooser shows kiddocares.com, and KIDDO keeps exactly one
+ *   production origin instead of gaining a second.
  *
  * `connect.facebook.net` and `www.facebook.com` are the Meta pixel, and
  * they are the one thing here that is not KIDDO working: they are how a
@@ -64,14 +67,17 @@ import type { NextConfig } from "next";
  * for the pages that do carry it. Unset `NEXT_PUBLIC_META_PIXEL_ID` and
  * nothing is requested from either host on any page.
  *
- * A popup and not `signInWithRedirect`, which would need no `frame-src` at
- * all. That was forced while the handler sat on firebaseapp.com: KIDDO is
- * served from kiddocares.com, and browsers that partition third-party
- * storage — Safari and Chrome both — lose a redirect's state on the way
- * back and drop the parent on the sign-in page having apparently done
- * nothing. A handler on `auth.kiddocares.com` is same-site with KIDDO and
- * would not have that problem, but changing how every parent signs in is
- * not part of moving the domain. The popup stays.
+ * A popup nearly everywhere, and a redirect on exactly one browser. The
+ * popup was once the only road, because a redirect through a handler on
+ * firebaseapp.com loses its state in any browser that partitions
+ * third-party storage. Two things changed. An installed iOS KIDDO turned
+ * out to have no working popup at all — Firebase hands the window to
+ * Safari and the promise never answers, see
+ * `src/lib/firebase/signInMethod.ts` — so a redirect had to become
+ * possible there; and the `/__/auth/*` proxy in `netlify.toml` makes the
+ * handler same-origin, which is what makes it safe. Every other browser
+ * keeps the popup unchanged, which is why both `script-src
+ * https://apis.google.com` and the `frame-src` hosts are still needed.
  *
  * `script-src` keeps `'unsafe-inline'`, and that is a real weakening worth
  * stating plainly rather than hiding. Next.js streams a page's data through
@@ -100,7 +106,7 @@ const csp = [
   "manifest-src 'self'",
   "worker-src 'self' blob:",
   "connect-src 'self' https://identitytoolkit.googleapis.com https://securetoken.googleapis.com https://firestore.googleapis.com https://firebaseinstallations.googleapis.com https://content-firebaseappcheck.googleapis.com https://www.google.com/recaptcha/ https://www.facebook.com",
-  "frame-src https://auth.kiddocares.com https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
+  "frame-src 'self' https://kiddocares-b105e.firebaseapp.com https://www.google.com/recaptcha/ https://recaptcha.google.com/",
   "upgrade-insecure-requests",
 ].join("; ");
 

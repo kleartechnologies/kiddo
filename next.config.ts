@@ -172,7 +172,14 @@ const nextConfig: NextConfig = {
          cannot be corrected — the single failure this file could cause that a
          family has no way to clear. The registration asks for the same thing
          with `updateViaCache: "none"`; this says it from the other end, for
-         the caches in between. */
+         the caches in between.
+
+         This block does not reach production: Netlify serves `public/` from
+         its own CDN and never consults it, which is why `netlify.toml`
+         carries the same two headers for the deployed site — the pair have
+         to be changed together. What runs here is `next start`, which is
+         what `npm run measure:serve` drives, and so what every browser check
+         in the repo is reading. */
       {
         source: "/sw.js",
         headers: [

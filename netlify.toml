@@ -19,3 +19,23 @@
   # Netlify's default has moved over time, so the floor is pinned rather
   # than assumed: a lower default would fail the build on the Admin SDK.
   NODE_VERSION = "22"
+
+# Files under `public/` are served by Netlify's CDN rather than by Next, so
+# the `headers()` block in next.config.ts never runs for them — measured on
+# the deploy of f1461c1, where `/sw.js` came back with Netlify's default
+# `public,max-age=0,must-revalidate` and no `Service-Worker-Allowed` at all.
+# The rule is repeated here rather than moved, because the two cover
+# different paths to the same file: this one is production, the one in
+# next.config.ts is `next start`, which is what `npm run measure:serve`
+# drives and what every browser check in the repo reads.
+#
+# Neither header is load-bearing today — the registration passes
+# `updateViaCache: "none"`, and a worker at the root already scopes to `/` —
+# but a service worker is the one file a family cannot clear by reloading,
+# so the guarantee is stated where it is actually served.
+[[headers]]
+  for = "/sw.js"
+
+  [headers.values]
+    Cache-Control = "no-cache, no-store, must-revalidate"
+    Service-Worker-Allowed = "/"

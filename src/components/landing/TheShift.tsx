@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight } from "lucide-react";
+import { Check, X } from "lucide-react";
 
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT } from "@/lib/i18n/useLocale";
@@ -19,18 +19,32 @@ import { useT } from "@/lib/i18n/useLocale";
  * considered rather than loud, and it survives being screenshotted into a
  * Facebook advert, which is where a good deal of this page will end up.
  *
- * The three rows are the argument in miniature: what an endless feed gives a
- * child, and what a short round gives them instead. Both halves are things
- * KIDDO actually does — a round ends, an activity finishes, the parents'
- * space shows what was explored — so nothing here is a promise the product
- * cannot keep.
+ * Two columns, not a feature grid: the feed as a parent already knows it on
+ * the left, KIDDO on the right, each line something either product visibly
+ * does. Nothing on the KIDDO side is a promise the app cannot keep — a round
+ * ends, there are no adverts, nothing is sold to the child — and nothing on
+ * the video side is a claim about children, only about the feed itself. No
+ * doctors, no studies, no percentages: the comparison stands on what a
+ * parent has personally watched happen.
  */
 
-/** Left is the evening as it is; right is the same evening with KIDDO in it. */
-const PAIRS: { id: string; from: MessageKey; to: MessageKey }[] = [
-  { id: "1", from: "landing.shift.from.1", to: "landing.shift.to.1" },
-  { id: "2", from: "landing.shift.from.2", to: "landing.shift.to.2" },
-  { id: "3", from: "landing.shift.from.3", to: "landing.shift.to.3" },
+/** The feed's side of the evening, line by line. */
+const FEED: MessageKey[] = [
+  "landing.shift.yt.1",
+  "landing.shift.yt.2",
+  "landing.shift.yt.3",
+  "landing.shift.yt.4",
+  "landing.shift.yt.5",
+];
+
+/** KIDDO's side of the same evening. */
+const KIDDO: MessageKey[] = [
+  "landing.shift.k.1",
+  "landing.shift.k.2",
+  "landing.shift.k.3",
+  "landing.shift.k.4",
+  "landing.shift.k.5",
+  "landing.shift.k.6",
 ];
 
 export function TheShift() {
@@ -53,31 +67,41 @@ export function TheShift() {
           </p>
         </div>
 
-        <ul
-          className="mx-auto mt-10 flex max-w-3xl list-none flex-col gap-3 sm:mt-14 sm:gap-4"
+        <div
+          className="mx-auto mt-10 grid max-w-4xl grid-cols-1 gap-4 sm:mt-14 sm:grid-cols-2 sm:gap-6"
+          role="group"
           aria-label={t("landing.shift.listAria")}
         >
-          {PAIRS.map((pair) => (
-            <li
-              key={pair.id}
-              className="grid grid-cols-1 items-center gap-2 sm:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] sm:gap-4"
-            >
-              <p className="text-cream-50/55 rounded-card border border-cream-50/15 px-4 py-3 text-base leading-snug sm:px-5 sm:text-lg">
-                <span className="sr-only">{t("landing.shift.fromLabel")}: </span>
-                {t(pair.from)}
-              </p>
-              {/* Points down the page on a phone, across it on a desktop. */}
-              <ArrowRight
-                className="text-cream-50/40 mx-auto size-5 shrink-0 rotate-90 sm:rotate-0"
-                aria-hidden
-              />
-              <p className="bg-cream-50/10 rounded-card text-cream-50 px-4 py-3 text-base leading-snug font-semibold sm:px-5 sm:text-lg">
-                <span className="sr-only">{t("landing.shift.toLabel")}: </span>
-                {t(pair.to)}
-              </p>
-            </li>
-          ))}
-        </ul>
+          {/* The feed, dimmed: present but not the point. */}
+          <div className="rounded-card border border-cream-50/15 p-5 sm:p-6">
+            <h3 className="font-display text-cream-50/70 text-lg font-semibold sm:text-xl">
+              {t("landing.shift.ytLabel")}
+            </h3>
+            <ul className="mt-4 flex list-none flex-col gap-3">
+              {FEED.map((line) => (
+                <li key={line} className="text-cream-50/60 flex items-start gap-3 text-base leading-snug sm:text-lg">
+                  <X className="mt-1 size-4 shrink-0 text-cream-50/40" strokeWidth={3} aria-hidden />
+                  {t(line)}
+                </li>
+              ))}
+            </ul>
+          </div>
+
+          {/* KIDDO, lit: the same surface the rest of the page argues for. */}
+          <div className="bg-cream-50/10 rounded-card border border-cream-50/25 p-5 sm:p-6">
+            <h3 className="font-display text-lg font-semibold sm:text-xl">
+              {t("landing.shift.kiddoLabel")}
+            </h3>
+            <ul className="mt-4 flex list-none flex-col gap-3">
+              {KIDDO.map((line) => (
+                <li key={line} className="flex items-start gap-3 text-base leading-snug font-medium sm:text-lg">
+                  <Check className="text-sage-base mt-1 size-4 shrink-0" strokeWidth={3} aria-hidden />
+                  {t(line)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        </div>
 
         <p className="font-display mx-auto mt-10 max-w-2xl text-center text-xl leading-snug font-semibold text-balance sm:mt-14 sm:text-2xl">
           {t("landing.shift.transition")}

@@ -2,13 +2,13 @@
 
 import { ChevronDown } from "lucide-react";
 
-import { planText } from "@/lib/billing/subscription";
+import { planText, YEARLY_PER_MONTH } from "@/lib/billing/subscription";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useTranslation } from "@/lib/i18n/useLocale";
 import { SectionIntro } from "./SectionIntro";
 
 /**
- * The five questions a parent asks before they will type a card number.
+ * The nine questions a parent asks before they will type a card number.
  *
  * Every answer is checked against the running product rather than written to
  * sound reassuring. KIDDO is for four- to eight-year-olds because that is the
@@ -22,7 +22,7 @@ import { SectionIntro } from "./SectionIntro";
  * Built on `<details>` rather than on state, so the questions work before
  * JavaScript arrives, open with a keyboard, and are findable with the
  * browser's own find-in-page — which is more than a hand-rolled accordion
- * usually manages. Each `summary` carries the heading, so the five questions
+ * usually manages. Each `summary` carries the heading, so the questions
  * appear in a screen reader's heading list the way they appear on the page.
  */
 const QUESTIONS: { id: string; q: MessageKey; a: MessageKey }[] = [
@@ -31,15 +31,20 @@ const QUESTIONS: { id: string; q: MessageKey; a: MessageKey }[] = [
   { id: "device", q: "landing.faq.q3", a: "landing.faq.a3" },
   { id: "positive", q: "landing.faq.q4", a: "landing.faq.a4" },
   { id: "price", q: "landing.faq.q5", a: "landing.faq.a5" },
+  { id: "ads", q: "landing.faq.q6", a: "landing.faq.a6" },
+  { id: "plans", q: "landing.faq.q7", a: "landing.faq.a7" },
+  { id: "cancel", q: "landing.faq.q8", a: "landing.faq.a8" },
+  { id: "cando", q: "landing.faq.q9", a: "landing.faq.a9" },
 ];
 
 export function Faq() {
   const { locale, t } = useTranslation();
-  /* The one answer with numbers in it takes them from the same place the
+  /* The answers with numbers in them take them from the same place the
      pricing cards do, so there is nothing to keep in sync by hand. */
   const prices = {
     monthly: planText("monthly", locale).price,
     yearly: planText("yearly", locale).price,
+    perMonth: YEARLY_PER_MONTH,
   };
 
   return (

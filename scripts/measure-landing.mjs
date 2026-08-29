@@ -119,6 +119,13 @@ const honest = await ev(`(() => {
     percents: [...text.matchAll(/(\\d+)%/g)].map((m) => +m[1]),
     claimed: +(saving.match(/(\\d+)%/) || [])[1],
     cta: document.querySelector("[data-landing-cta]")?.getAttribute("href"),
+    /* The gameplay reel: real footage, and polite about it — it must carry a
+       poster (no blank rectangle before load), stay muted (autoplay rules and
+       common decency) and play inline (iOS would otherwise go fullscreen). */
+    video: (() => {
+      const v = document.querySelector("[data-landing-video]");
+      return v ? { poster: !!v.poster, muted: v.muted, inline: v.playsInline } : null;
+    })(),
   };
 })()`);
 report(
@@ -128,6 +135,10 @@ report(
     honest.doors === 3 ? null : "doors are not the real WorldDoor list",
     honest.cta === "/#pricing" ? null : "CTA does not lead to pricing",
     honest.banned.length ? `suspicious claims: ${honest.banned.join(", ")}` : null,
+    honest.video ? null : "no gameplay video on the page",
+    honest.video && !(honest.video.poster && honest.video.muted && honest.video.inline)
+      ? "gameplay video is missing poster, muted or playsinline"
+      : null,
   ].filter(Boolean),
 );
 /* The persuasion has to be arithmetic: whatever saving the yearly card

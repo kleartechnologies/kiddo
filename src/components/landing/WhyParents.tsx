@@ -5,9 +5,10 @@ import Link from "next/link";
 import { ArrowRight, Check } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
+import { reportCta } from "@/lib/analytics/events";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT } from "@/lib/i18n/useLocale";
-import { PARENTS, PRIVACY } from "@/lib/routes";
+import { PARENTS, PRICING, PRIVACY } from "@/lib/routes";
 import { SectionIntro } from "./SectionIntro";
 
 /**
@@ -48,12 +49,15 @@ export function WhyParents() {
           </SectionIntro>
           <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
             <ButtonLink
-              href={PARENTS}
-              variant="soft"
+              href={PRICING}
               size="md"
               iconRight
               icon={<ArrowRight className="size-5" aria-hidden />}
+              onClick={() => reportCta("why")}
             >
+              {t("landing.hero.cta")}
+            </ButtonLink>
+            <ButtonLink href={PARENTS} variant="soft" size="md">
               {t("landing.why.cta")}
             </ButtonLink>
             <Link
@@ -65,8 +69,17 @@ export function WhyParents() {
           </div>
         </div>
 
-        <figure className="bg-sage-soft border-edge rounded-hero border p-3 shadow-soft sm:p-5">
-          <Image
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-1.5">
+            <h3 className="font-display text-xl leading-snug font-semibold text-pretty sm:text-2xl">
+              {t("landing.why.dashTitle")}
+            </h3>
+            <p className="text-ink-700 text-base leading-relaxed text-pretty">
+              {t("landing.why.dashBody")}
+            </p>
+          </div>
+          <figure className="bg-sage-soft border-edge rounded-hero border p-3 shadow-soft sm:p-5">
+            <Image
             src="/illustrations/landing/parent-dashboard.webp"
             alt={t("landing.why.shotAlt")}
             width={1040}
@@ -74,11 +87,12 @@ export function WhyParents() {
             sizes="(min-width: 1024px) 560px, 100vw"
             loading="lazy"
             className="bg-paper border-edge rounded-card block h-auto w-full border object-cover"
-          />
-          <figcaption className="text-ink-500 px-1 pt-3 text-center text-sm">
-            {t("landing.why.shotCaption")}
-          </figcaption>
-        </figure>
+            />
+            <figcaption className="text-ink-500 px-1 pt-3 text-center text-sm">
+              {t("landing.why.shotCaption")}
+            </figcaption>
+          </figure>
+        </div>
       </div>
 
       <ul className="mt-10 grid list-none grid-cols-1 gap-6 sm:mt-14 sm:grid-cols-2 sm:gap-8">

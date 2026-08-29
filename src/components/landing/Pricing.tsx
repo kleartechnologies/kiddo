@@ -3,9 +3,11 @@
 import { ArrowRight, Check } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
+import { reportCta } from "@/lib/analytics/events";
 import {
   planText,
   PLAN_ORDER,
+  YEARLY_SAVING_AMOUNT,
   YEARLY_SAVING_PERCENT,
   type Plan,
 } from "@/lib/billing/subscription";
@@ -108,7 +110,10 @@ function PlanCard({ plan }: { plan: Plan }) {
         <p className="text-ink-700 text-base leading-snug">{detail.blurb}</p>
         {best && (
           <p className="text-sage-ink text-base font-semibold" data-pricing-saving>
-            {t("landing.pricing.saving", { saving: YEARLY_SAVING_PERCENT })}
+            {t("landing.pricing.saving", {
+              amount: YEARLY_SAVING_AMOUNT,
+              saving: YEARLY_SAVING_PERCENT,
+            })}
           </p>
         )}
       </div>
@@ -121,6 +126,7 @@ function PlanCard({ plan }: { plan: Plan }) {
         icon={<ArrowRight className="size-5" aria-hidden />}
         className="mt-auto self-start"
         data-pricing-cta={plan}
+        onClick={() => reportCta("pricing", plan)}
       >
         {detail.cta}
       </ButtonLink>

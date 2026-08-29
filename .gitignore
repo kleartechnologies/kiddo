@@ -60,3 +60,6 @@ next-env.d.ts
 
 # The Netlify CLI's Deno cache for the edge-function bootstrap
 deno.lock
+
+# Raw gameplay recordings (100+ MB source footage; the cut reel lives in public/videos)
+/assets/

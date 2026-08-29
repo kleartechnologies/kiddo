@@ -82,6 +82,29 @@ export function reportCheckoutStarted(plan: Plan): void {
 }
 
 /**
+ * A call-to-action on the landing page was pressed.
+ *
+ * A custom event rather than one of Meta's standard ones, because none of
+ * theirs mean "scrolled the pricing into view": `Lead` and `AddToCart` would
+ * lie to a campaign optimising on them. What the funnel needs from this is
+ * the step between a page view and `InitiateCheckout` — which button carried
+ * the parent towards the plans, and from which section. `source` names the
+ * button ("hero", "showcase", "why", "closing", "sticky", "pricing"); a press that
+ * already chose a plan carries the plan's price the way the conversions do.
+ *
+ * Same gates as `send`: no pixel, no parent page, no beacon.
+ */
+export function reportCta(source: string, plan?: Plan): void {
+  if (META_PIXEL_ID === null || typeof window === "undefined") return;
+  if (!isParentPage(window.location.pathname)) return;
+  if (!window.fbq) return;
+  const data: Record<string, string | number> = plan
+    ? { ...details(plan), source }
+    : { source };
+  window.fbq("trackSingleCustom", META_PIXEL_ID, "CTAClick", data);
+}
+
+/**
  * The payment landed: `state` is what the webhook wrote and what `hasAccess`
  * has just said yes to.
  *

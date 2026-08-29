@@ -4,6 +4,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { planText } from "@/lib/billing/subscription";
+import { reportCta } from "@/lib/analytics/events";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { cn } from "@/lib/cn";
@@ -23,10 +24,12 @@ import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
  * in a kitchen gives this maybe five seconds, and a fourth idea here costs
  * the first three.
  *
- * The three lines under the buttons are the objections that would otherwise
- * be raised silently: no advertising, nothing sold to the child, and the
- * price in the open before anyone has to hunt for it. The price comes from
- * `planText`, so it is the same figure Stripe will charge.
+ * The price stands in the open right under the pitch — a parent one tap off
+ * a cold advert decides against hidden pricing faster than against any
+ * price — and the three lines under the buttons answer the objections that
+ * would otherwise be raised silently: no advertising, nothing sold to the
+ * child, cancel whenever. Both figures come from `planText`, so they are
+ * the same figures Stripe will charge.
  *
  * Next to the words are the three worlds, drawn by the same `WorldScene` the
  * child's own doors are drawn with, with KIDDO waving in front the way it
@@ -47,6 +50,7 @@ const TRUST: MessageKey[] = [
 export function LandingHero() {
   const { locale, t } = useTranslation();
   const monthly = planText("monthly", locale);
+  const yearly = planText("yearly", locale);
 
   return (
     <section
@@ -66,6 +70,9 @@ export function LandingHero() {
         <p className="text-ink-700 mx-auto max-w-xl text-lg leading-relaxed text-pretty sm:text-xl lg:mx-0">
           {t("landing.hero.body")}
         </p>
+        <p className="font-display text-ink-900 text-lg font-semibold sm:text-xl">
+          {t("landing.hero.price", { monthly: monthly.price, yearly: yearly.price })}
+        </p>
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
           <ButtonLink
             href={PRICING}
@@ -73,10 +80,11 @@ export function LandingHero() {
             iconRight
             icon={<ArrowRight className="size-6" aria-hidden />}
             data-landing-cta
+            onClick={() => reportCta("hero")}
           >
             {t("landing.hero.cta")}
           </ButtonLink>
-          <ButtonLink href="#how-it-works" variant="soft" size="md">
+          <ButtonLink href="#gameplay" variant="soft" size="md">
             {t("landing.hero.secondary")}
           </ButtonLink>
         </div>
@@ -87,7 +95,7 @@ export function LandingHero() {
           {TRUST.map((line) => (
             <li key={line} className="flex items-center justify-center gap-2 sm:justify-start">
               <Check className="text-sage-ink size-4 shrink-0" strokeWidth={3} aria-hidden />
-              {t(line, { monthly: monthly.price })}
+              {t(line)}
             </li>
           ))}
         </ul>

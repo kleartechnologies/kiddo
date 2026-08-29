@@ -62,6 +62,9 @@ export const YEARLY_SAVING_PERCENT = Math.round(
   (1 - AMOUNTS.yearly / (AMOUNTS.monthly * MONTHS.yearly)) * 100,
 );
 
+/** The same saving in ringgit: twelve monthly payments less one yearly one. */
+export const YEARLY_SAVING_AMOUNT = money(AMOUNTS.monthly * MONTHS.yearly - AMOUNTS.yearly);
+
 export interface PlanDetail {
   /** What the plan is called on screen. */
   name: string;

@@ -60,25 +60,53 @@ export const ms: Record<MessageKey, string> = {
     "Tempat bermain yang kecil dan selamat untuk anak berumur 4 hingga 8 tahun, supaya screen time jadi masa untuk bermain, belajar dan meneroka. Satu akaun ibu bapa, tiada iklan, tiada apa-apa dijual kepada anak anda.",
 
   /* ---- Landing: metadata --------------------------------------------- */
-  "landing.meta.title": "KIDDO — Screen time tak semestinya buang masa",
+  "landing.meta.title": "KIDDO — Tukar screen time anak kepada masa bermain & belajar",
   "landing.meta.description":
-    "KIDDO menjadikan screen time lebih bermakna untuk anak berumur 4 hingga 8 tahun: taman untuk mengira, haiwan untuk dibawa pulang, dan buku cerita penuh perkataan. Satu langganan untuk ibu bapa; tiada iklan, tiada apa-apa untuk dibeli di dalam.",
+    "KIDDO ialah dunia permainan interaktif untuk anak berumur 4 hingga 8 tahun — tempat anak bermain, meneroka dan belajar dengan lebih bermakna. Satu langganan untuk ibu bapa; tiada iklan, tiada pembelian dalam aplikasi.",
   "landing.meta.ogDescription":
-    "Anak masih boleh seronok dengan screen time — sambil belajar, mencuba aktiviti dan meneroka sesuatu yang baru.",
+    "Dunia permainan interaktif untuk anak 4 hingga 8 tahun — bermain, meneroka dan belajar dengan lebih bermakna.",
   "landing.meta.twitterDescription":
     "Screen time yang lebih bermakna, untuk anak berumur 4 hingga 8 tahun.",
 
   /* ---- Landing: hero -------------------------------------------------- */
   "landing.hero.eyebrow": "Untuk anak 4 hingga 8 tahun",
-  "landing.hero.title": "Screen Time Tak Semestinya Buang Masa.",
+  "landing.hero.title": "Tukar Screen Time Anak Kepada Masa Bermain & Belajar.",
   "landing.hero.body":
-    "Dengan KIDDO, anak masih boleh seronok dengan screen time — sambil belajar, mencuba aktiviti dan meneroka sesuatu yang baru.",
-  "landing.hero.cta": "Cuba KIDDO",
+    "KIDDO ialah dunia permainan interaktif untuk anak 4 hingga 8 tahun — tempat anak boleh bermain, meneroka dan belajar dengan lebih bermakna.",
+  "landing.hero.price": "{monthly}/bulan atau {yearly}/tahun",
+  "landing.hero.cta": "Mulakan KIDDO Untuk Anak",
   "landing.hero.secondary": "Lihat Cara KIDDO Berfungsi",
   "landing.hero.trustAria": "Apa yang anda dapat",
   "landing.hero.trust.1": "Tiada iklan",
-  "landing.hero.trust.2": "Tiada apa-apa dijual kepada anak",
-  "landing.hero.trust.3": "Dari {monthly} sebulan, batal bila-bila masa",
+  "landing.hero.trust.2": "Tiada pembelian dalam aplikasi",
+  "landing.hero.trust.3": "Boleh batal bila-bila masa",
+
+  /* ---- Landing: the real product, on film ------------------------------ */
+  "landing.showcase.eyebrow": "Rakaman sebenar dari dalam KIDDO",
+  "landing.showcase.title": "Lihat Apa Yang Anak Boleh Buat Dalam KIDDO",
+  "landing.showcase.body":
+    "Bukan mockup, bukan lakonan — ini KIDDO yang sebenar, dimainkan di telefon. Kira, padan, kenal huruf dan perkataan, jumpa haiwan, dan banyak lagi.",
+  "landing.showcase.videoAria":
+    "Montaj pendek aktiviti sebenar di dalam KIDDO: memilih dunia, memadan kad, mengeja, membantu haiwan, mengira dan mengenal bentuk",
+  "landing.showcase.play": "Mainkan video",
+  "landing.showcase.pause": "Jedakan video",
+  "landing.showcase.canDo": "Dalam KIDDO, Anak Boleh…",
+  "landing.showcase.bermain.title": "Bermain",
+  "landing.showcase.bermain.body": "Permainan interaktif yang menyeronokkan.",
+  "landing.showcase.bermain.alt":
+    "Padan Ingatan: kad KIDDO dan FOXY dipadankan, setiap satu dengan tanda betul hijau.",
+  "landing.showcase.belajar.title": "Belajar",
+  "landing.showcase.belajar.body": "Aktiviti yang direka khas untuk kanak-kanak.",
+  "landing.showcase.belajar.alt":
+    "Jelajah Bahasa Inggeris: mengeja NEST dan memilih huruf yang hilang.",
+  "landing.showcase.meneroka.title": "Meneroka",
+  "landing.showcase.meneroka.body": "Terokai dunia dan temui perkara baharu.",
+  "landing.showcase.meneroka.alt":
+    "Jelajah Dunia: FOXY mengajak anak mengenali dunia dengan butang “Jom cari tahu!”.",
+  "landing.showcase.menemui.title": "Menemui",
+  "landing.showcase.menemui.body": "Kenali nombor, perkataan, bentuk, warna dan abjad.",
+  "landing.showcase.menemui.alt":
+    "Jelajah Nombor: mengira oren di padang dan memilih jawapan yang betul.",
 
   /* ---- Landing: the pain points --------------------------------------- */
   "landing.pain.eyebrow": "Mungkin ini rumah anda juga",
@@ -107,28 +135,32 @@ export const ms: Record<MessageKey, string> = {
     "Seorang anak enggan melepaskan tablet apabila tiba masa untuk berhenti.",
 
   /* ---- Landing: the shift ---------------------------------------------- */
-  "landing.shift.eyebrow": "Ada cara lain",
-  "landing.shift.title":
-    "Masalahnya Bukan Screen Time. Tapi Apa Yang Anak Buat Dengan Screen Time.",
+  "landing.shift.eyebrow": "Bezanya di sini",
+  "landing.shift.title": "YouTube Tak Pernah Habis. KIDDO Ada Tujuan.",
   "landing.shift.body":
-    "Teknologi sendiri bukan musuh. Yang penting ialah bagaimana kita gunakan screen time itu.",
-  "landing.shift.listAria": "Daripada apa, kepada apa",
-  "landing.shift.fromLabel": "Daripada",
-  "landing.shift.toLabel": "Kepada",
-  "landing.shift.from.1": "Satu video tarik satu video lagi",
-  "landing.shift.to.1": "Satu pusingan pendek yang ada penghujungnya",
-  "landing.shift.from.2": "Scroll tanpa tahu bila nak berhenti",
-  "landing.shift.to.2": "Siapkan satu aktiviti, kemudian berhenti",
-  "landing.shift.from.3": "Susah nak tahu apa sebenarnya anak buat",
-  "landing.shift.to.3": "Ibu bapa nampak apa yang anak teroka",
+    "Anak mula dengan satu video. Kemudian satu lagi. Dan satu lagi. KIDDO direka sebaliknya: setiap aktiviti ada tujuan dan penghujung.",
+  "landing.shift.listAria": "Perbandingan antara menonton video dan KIDDO",
+  "landing.shift.ytLabel": "YouTube & video",
+  "landing.shift.kiddoLabel": "KIDDO",
+  "landing.shift.yt.1": "Video berterusan, tiada penghujung",
+  "landing.shift.yt.2": "Anak hanya menonton",
+  "landing.shift.yt.3": "Video seterusnya sukar dikawal",
+  "landing.shift.yt.4": "Cadangan video terus menarik perhatian",
+  "landing.shift.yt.5": "Screen time mudah berpanjangan",
+  "landing.shift.k.1": "Aktiviti interaktif",
+  "landing.shift.k.2": "Anak bermain sambil belajar",
+  "landing.shift.k.3": "Dunia yang direka untuk penerokaan",
+  "landing.shift.k.4": "Tiada iklan",
+  "landing.shift.k.5": "Tiada pembelian dalam aplikasi",
+  "landing.shift.k.6": "Setiap aktiviti ada tujuan dan penghujung",
   "landing.shift.transition":
-    "Daripada sekadar tengok dan scroll, jadikan screen time masa untuk anak bermain, belajar dan meneroka.",
+    "Bukan buang screen time. Tukar apa yang berlaku dalam screen time.",
 
   /* ---- Landing: meet KIDDO, and the three worlds ----------------------- */
   "landing.meet.eyebrow": "Bukan satu lagi aplikasi video",
-  "landing.meet.title": "Kenalkan KIDDO",
+  "landing.meet.title": "Dunia Kecil Yang Anak Boleh Teroka",
   "landing.meet.body":
-    "KIDDO menjadikan screen time lebih bermakna melalui adventure, aktiviti dan pembelajaran yang direka untuk anak.",
+    "KIDDO bukan sekadar app dengan permainan. Ia dunia kecil yang anak masuk sendiri — dengan tempat, kawan dan aktiviti untuk diterokai.",
   "landing.meet.child": "Anak rasa macam bermain.",
   "landing.meet.parent": "Parent tahu mereka sedang belajar.",
   "landing.meet.worldsLead":
@@ -180,10 +212,13 @@ export const ms: Record<MessageKey, string> = {
     "Contoh selepas beberapa kali bermain: satu dunia sudah habis, satu separuh jalan, satu lagi masih baharu. Pintu berbulatan ialah yang KIDDO cadangkan seterusnya.",
 
   /* ---- Landing: why parents choose KIDDO ------------------------------- */
-  "landing.why.eyebrow": "Kenapa ibu bapa pilih KIDDO",
-  "landing.why.title": "Lebih Tenang Untuk Parent. Lebih Bermakna Untuk Anak.",
+  "landing.why.eyebrow": "Untuk ibu bapa",
+  "landing.why.title": "Untuk Anak Seronok. Untuk Ibu Ayah Lebih Tenang.",
   "landing.why.body":
     "Screen time tetap ada. Yang berubah ialah apa yang berlaku di dalamnya.",
+  "landing.why.dashTitle": "Ibu Ayah Pun Tahu Apa Yang Anak Buat.",
+  "landing.why.dashBody":
+    "Pantau aktiviti dan perkembangan pembelajaran anak — tanpa perlu meneka apa yang berlaku sepanjang screen time.",
   "landing.why.1.title": "Tak perlu lawan screen time setiap hari.",
   "landing.why.1.detail":
     "Setiap pusingan ada penghujungnya, jadi lebih senang nak cakap “satu lagi, lepas tu kita stop”.",
@@ -203,7 +238,7 @@ export const ms: Record<MessageKey, string> = {
 
   /* ---- Landing: what parents say --------------------------------------- */
   "landing.voices.eyebrow": "Kata ibu bapa",
-  "landing.voices.title": "Cerita daripada ibu bapa yang dah cuba.",
+  "landing.voices.title": "Kenapa Ibu Ayah Pilih KIDDO?",
   "landing.voices.body": "Dalam bahasa mereka sendiri, tanpa diubah.",
   "landing.voices.aria": "Testimoni ibu bapa",
   "landing.voices.swipe": "Leret untuk baca lagi",
@@ -219,7 +254,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.pricing.included.3":
     "Ruang ibu bapa, dengan apa yang diteroka dan apa yang seterusnya",
   "landing.pricing.included.4": "Tiada iklan dan tiada apa-apa untuk dibeli di dalam",
-  "landing.pricing.saving": "Jimat {saving}% berbanding bayar bulanan",
+  "landing.pricing.saving": "Jimat {amount} setahun — {saving}% berbanding bayar bulanan",
   "landing.pricing.footnote":
     "Batal bila-bila masa dari ruang ibu bapa. Pembayaran dikendalikan oleh Stripe — KIDDO tidak pernah melihat atau menyimpan kad anda.",
 
@@ -241,12 +276,29 @@ export const ms: Record<MessageKey, string> = {
   "landing.faq.q5": "Berapa harga KIDDO?",
   "landing.faq.a5":
     "{monthly} sebulan atau {yearly} setahun, dan satu langganan membuka seluruh KIDDO. Boleh dibatalkan bila-bila masa dari ruang ibu bapa.",
+  "landing.faq.q6": "Adakah KIDDO ada iklan atau pembelian dalam aplikasi?",
+  "landing.faq.a6":
+    "Tiada iklan, dan tiada pembelian dalam aplikasi. Satu langganan membuka seluruh KIDDO — anak tidak pernah nampak harga, iklan atau butang beli.",
+  "landing.faq.q7": "Apakah perbezaan pelan bulanan dan tahunan?",
+  "landing.faq.a7":
+    "Kedua-duanya membuka KIDDO sepenuhnya — tiada beza dari segi kandungan. Bezanya hanya cara bayar: {monthly} setiap bulan, atau {yearly} sekali setahun, iaitu sama seperti {perMonth} sebulan.",
+  "landing.faq.q8": "Bagaimana cara membatalkan langganan?",
+  "landing.faq.a8":
+    "Bila-bila masa dari ruang ibu bapa, dalam beberapa klik — tiada panggilan dan tiada borang. Pembayaran dikendalikan oleh Stripe.",
+  "landing.faq.q9": "Apa yang anak boleh buat dalam KIDDO?",
+  "landing.faq.a9":
+    "Bermain permainan interaktif: mengira, memadan, mengenal huruf, perkataan, bentuk dan warna, berjumpa haiwan dan meneroka dunia kecil KIDDO. Setiap aktiviti ialah pusingan pendek yang ada penghujungnya.",
 
   /* ---- Landing: closing ------------------------------------------------ */
-  "landing.closing.title": "Tak perlu buang screen time. Jadikan ia lebih bermakna.",
+  "landing.closing.title": "Jadikan Screen Time Anak Lebih Bermakna.",
   "landing.closing.body":
-    "Biarkan anak explore, bermain dan belajar — dengan pengalaman yang lebih positif.",
-  "landing.closing.cta": "Mulakan Dengan KIDDO",
+    "Berikan anak ruang untuk bermain, meneroka dan belajar — semuanya dalam satu dunia.",
+  "landing.closing.cta": "Mulakan KIDDO Untuk Anak",
+
+  /* ---- Landing: the sticky bar on a phone ------------------------------ */
+  "landing.sticky.aria": "Mula melanggan KIDDO",
+  "landing.sticky.price": "{monthly}/bulan · {yearly}/tahun",
+  "landing.sticky.cta": "Mulakan KIDDO",
 
   /* ---- The worlds, as places a child goes ---------------------------- */
   "world.meadow.name": "Padang",
@@ -431,9 +483,9 @@ export const ms: Record<MessageKey, string> = {
   /* ---- The two plans -------------------------------------------------- */
   "plan.yearly.name": "Tahunan",
   "plan.yearly.per": "tahun",
-  "plan.yearly.note": "Nilai terbaik",
+  "plan.yearly.note": "Paling berbaloi",
   "plan.yearly.blurb": "{perMonth} sebulan, dibayar sekali setahun",
-  "plan.yearly.cta": "Cuba KIDDO Sekarang",
+  "plan.yearly.cta": "Mulakan KIDDO",
   "plan.monthly.name": "Bulanan",
   "plan.monthly.per": "bulan",
   "plan.monthly.note": "",

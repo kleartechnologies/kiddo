@@ -4,12 +4,18 @@ import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ButtonLink } from "@/components/ui/Button";
-import { useT } from "@/lib/i18n/useLocale";
+import { reportCta } from "@/lib/analytics/events";
+import { planText } from "@/lib/billing/subscription";
+import { useTranslation } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
-/** The last thing on the page says the first thing again, with KIDDO next to it. */
+/** The last thing on the page says the first thing again, with KIDDO next to
+    it — and the price beside the button, so the final decision is made with
+    the figures in view rather than remembered from four screens up. */
 export function ClosingCall() {
-  const t = useT();
+  const { locale, t } = useTranslation();
+  const monthly = planText("monthly", locale);
+  const yearly = planText("yearly", locale);
   return (
     <section
       aria-labelledby="closing-heading"
@@ -23,12 +29,16 @@ export function ClosingCall() {
         <p className="text-ink-700 max-w-xl text-lg leading-relaxed text-pretty">
           {t("landing.closing.body")}
         </p>
+        <p className="font-display text-ink-900 text-lg font-semibold">
+          {t("landing.hero.price", { monthly: monthly.price, yearly: yearly.price })}
+        </p>
         <ButtonLink
           href={PRICING}
           data-landing-closing-cta
           size="lg"
           iconRight
           icon={<ArrowRight className="size-6" aria-hidden />}
+          onClick={() => reportCta("closing")}
         >
           {t("landing.closing.cta")}
         </ButtonLink>

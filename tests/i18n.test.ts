@@ -144,6 +144,9 @@ test("nothing is left in English but the things that are the same in both", () =
     "worlds.doorCard.tier",
     "worlds.keepsake.sr",
     "worlds.tier.sr",
+    /* A proper noun: the KIDDO column of the landing page's comparison is
+       headed by the product's name, which no language translates. */
+    "landing.shift.kiddoLabel",
   ].sort());
 });
 

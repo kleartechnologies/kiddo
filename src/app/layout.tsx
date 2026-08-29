@@ -5,6 +5,7 @@ import { CloudSession } from "@/components/account/CloudSession";
 import { MetaPixel } from "@/components/analytics/MetaPixel";
 import { HtmlLang } from "@/components/i18n/HtmlLang";
 import { MotionProvider } from "@/components/MotionProvider";
+import { PwaRuntime } from "@/components/pwa/PwaRuntime";
 import { DEFAULT_LOCALE, LOCALE_HTML_LANG } from "@/lib/i18n/locale";
 import "./globals.css";
 
@@ -40,6 +41,26 @@ export const metadata: Metadata = {
   description:
     "Dunia permainan kecil yang selamat untuk anak berumur 4 hingga 8 tahun.",
   applicationName: "KIDDO",
+
+  /* What an iPhone needs before a home-screen icon opens KIDDO as an app
+     rather than as a Safari tab. `title` is the word printed under the icon
+     — the short name, not the tagline, because a home screen gives it about
+     eleven characters. The status bar stays `default`: KIDDO's paper is
+     cream and the clock above it has to stay legible, which a translucent
+     bar over a light page does not guarantee. */
+  appleWebApp: {
+    capable: true,
+    title: "KIDDO",
+    statusBarStyle: "default",
+  },
+  other: {
+    /* Next emits only the modern `mobile-web-app-capable` for the block
+       above (see `next/dist/lib/metadata/metadata.js`), which Safari has
+       understood since 17. Every iPhone still on 16 or earlier reads the
+       Apple-prefixed name and nothing else, and would open the icon in a
+       browser tab without this line. Both are correct to send. */
+    "apple-mobile-web-app-capable": "yes",
+  },
 };
 
 export const viewport: Viewport = {
@@ -67,6 +88,8 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
         <CloudSession />
         {/* Parent-facing pages only; a child's screen loads nothing. */}
         <MetaPixel />
+        {/* Registers the service worker and catches the install event. */}
+        <PwaRuntime />
         <MotionProvider>{children}</MotionProvider>
       </body>
     </html>

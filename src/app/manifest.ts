@@ -13,8 +13,13 @@ import { KIDDO_HOME } from "@/lib/routes";
  *
  * Display is `standalone`: no browser chrome, but the system status bar
  * stays, which is what a parent expects from an app and what keeps the
- * clock visible. There is no service worker on purpose: KIDDO is
- * installable, not offline. See `docs/kiddo-launch-readiness.md`.
+ * clock visible.
+ *
+ * There is a service worker (`public/sw.js`) and it caches nothing. Chromium
+ * will not offer to install a site without one, and an installed KIDDO has no
+ * reload button to answer a dropped connection with — those two facts are the
+ * whole of its job. KIDDO is installable, not offline: every screen still
+ * needs the network, and the worker's only page of its own says so.
  *
  * The name and description are in KIDDO's default language, because a manifest
  * is one static file with one language and that language is the product's.

@@ -201,6 +201,25 @@
   }
 }
 
+/* ==========================================================================
+   Installed KIDDO.
+
+   Only ever true when the app was opened from a home-screen icon, so none of
+   this can reach a browser tab. There is one rule, and it undoes one browser
+   behaviour: the rubber-band bounce at the top and bottom of a page. In a
+   tab that bounce is how a page is pulled to refresh and it is worth having;
+   in an installed app there is no address bar to reveal and no refresh to
+   trigger, so all it does is drag the whole screen down under a four year
+   old's thumb in the middle of a game and let go of it with a snap. Left and
+   right are untouched — a game that scrolls sideways still scrolls.
+   ========================================================================== */
+@media (display-mode: standalone) {
+  html,
+  body {
+    overscroll-behavior-y: none;
+  }
+}
+
 /* Respect the OS setting. Framer Motion is additionally configured with
    reducedMotion="user", this covers plain CSS transitions. */
 @media (prefers-reduced-motion: reduce) {

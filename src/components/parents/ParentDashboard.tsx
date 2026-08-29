@@ -6,6 +6,8 @@ import { useSyncExternalStore, type ReactNode } from "react";
 
 import { ChildNameField } from "@/components/parents/ChildNameField";
 import { ResetProgress } from "@/components/parents/ResetProgress";
+import { InstallKiddo } from "@/components/pwa/InstallKiddo";
+import { InstallNudge } from "@/components/pwa/InstallNudge";
 import { ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
 import { WorldScene } from "@/components/worlds/WorldScene";
@@ -84,6 +86,11 @@ export function ParentDashboard({ children }: { children?: ReactNode }) {
           </a>
         </div>
       </section>
+
+      {/* The one unprompted mention of installing, on one visit only. It is
+          in the page's flow rather than floating over it, so there is no
+          scroll position at which it covers a control. */}
+      <InstallNudge />
 
       {/* ---- Overview --------------------------------------------------- */}
       <Card as="section" aria-labelledby="overview-heading" padding="lg" radius="hero">
@@ -255,6 +262,7 @@ export function ParentDashboard({ children }: { children?: ReactNode }) {
         <div id="child-name" className="scroll-mt-6">
           <ChildNameField />
         </div>
+        <InstallKiddo />
         <Card className="flex flex-col gap-3">
           <div>
             <h3 className="font-display text-lg font-semibold sm:text-xl">

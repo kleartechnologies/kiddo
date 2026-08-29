@@ -163,7 +163,27 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["127.0.0.1"],
 
   async headers() {
-    return [{ source: "/:path*", headers: securityHeaders }];
+    return [
+      { source: "/:path*", headers: securityHeaders },
+      /* The service worker script itself is the one file that must never be
+         answered from a cache. A worker is only replaced when the browser
+         fetches a byte-different script, so a `/sw.js` sitting in a CDN or in
+         the browser's own HTTP cache is a version of KIDDO's worker that
+         cannot be corrected — the single failure this file could cause that a
+         family has no way to clear. The registration asks for the same thing
+         with `updateViaCache: "none"`; this says it from the other end, for
+         the caches in between. */
+      {
+        source: "/sw.js",
+        headers: [
+          { key: "Cache-Control", value: "no-cache, no-store, must-revalidate" },
+          /* A worker registered for `/` may control every page, so the file
+             is served with the narrowest scope it will ever need declared
+             explicitly rather than inferred from its path. */
+          { key: "Service-Worker-Allowed", value: "/" },
+        ],
+      },
+    ];
   },
 };
 

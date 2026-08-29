@@ -777,6 +777,33 @@ export const ms: Record<MessageKey, string> = {
   "parents.reset.body":
     "Semua aktiviti dan kenangan yang ditemui akan dibersihkan. Setiap dunia akan bermula semula. Ini tidak boleh dibatalkan.",
 
+  /* ---- Meletakkan KIDDO pada skrin utama ------------------------------ */
+  "install.title": "Letak KIDDO pada skrin utama",
+  "install.body":
+    "Tambah KIDDO ke skrin utama peranti ini dan anak anda sampai ke permainannya dengan satu ketikan — tanpa perlu menaip alamat dan tanpa tersesat dalam pelayar.",
+  "install.cta": "Pasang KIDDO",
+  "install.menu":
+    "Anda masih boleh menambah KIDDO dari menu pelayar anda sendiri — cari “Install app” atau “Add to Home screen”.",
+  "install.done.title": "KIDDO sudah dipasang",
+  "install.done.body":
+    "Ikon KIDDO sudah ada pada skrin utama peranti ini. Ketik ikon itu dan KIDDO terus terbuka, masih log masuk.",
+  "install.browser.title": "Buka KIDDO dalam pelayar",
+  "install.browser.body":
+    "Anda sedang membaca KIDDO di dalam aplikasi lain, dan aplikasi itu tidak boleh menambah apa-apa ke skrin utama. Buka menu di penjuru, pilih “Buka dalam pelayar”, dan pilihan itu akan menunggu di sini.",
+  "install.nudge.title": "Pasang KIDDO di telefon",
+  "install.nudge.body":
+    "Untuk akses lebih mudah: satu ketikan terus ke permainan, tanpa mencari halaman ini semula.",
+  "install.nudge.later": "Nanti dulu",
+  "install.guide.title": "Tambah KIDDO ke skrin utama",
+  "install.guide.step1":
+    "Tekan butang Share pada bar Safari — petak dengan anak panah menghala ke atas.",
+  "install.guide.step2": "Skrol ke bawah senarai itu dan pilih “Add to Home Screen”.",
+  "install.guide.step3":
+    "Tekan “Add”. Ikon KIDDO akan muncul bersama aplikasi anda yang lain.",
+  "install.guide.other":
+    "Dalam pelayar selain Safari langkahnya sama, cuma butang Share berada di tempat lain. Membuka KIDDO dalam Safari ialah cara yang paling pasti.",
+  "install.guide.close": "Sudah faham",
+
   /* ---- The privacy page ------------------------------------------------ */
   "privacy.eyebrow": "Privasi",
   "privacy.title": "Apa yang KIDDO simpan, dan apa yang tidak.",
@@ -800,7 +827,7 @@ export const ms: Record<MessageKey, string> = {
 
   "privacy.s.stores": "Apa yang KIDDO simpan",
   "privacy.stores.intro":
-    "Pada peranti, KIDDO menyimpan tiga perkara kecil menggunakan storan setempat pelayar anda. Setiap satu disenaraikan dengan nama tepat yang digunakan, supaya anda boleh menyemaknya sendiri.",
+    "Pada peranti, KIDDO menyimpan empat perkara kecil menggunakan storan setempat pelayar anda. Setiap satu disenaraikan dengan nama tepat yang digunakan, supaya anda boleh menyemaknya sendiri.",
   "privacy.stored.name.title": "Nama pertama",
   "privacy.stored.name.body":
     "Ditaip oleh orang dewasa di ruang ibu bapa supaya KIDDO boleh berkata “Hai, Adam!”. Hanya perkataan pertama disimpan; nama keluarga yang ditaip ke dalam kotak itu dibuang sebelum disimpan. Membiarkannya kosong pun tidak mengapa — KIDDO cuma berkata “Hai!”.",
@@ -809,8 +836,11 @@ export const ms: Record<MessageKey, string> = {
     "Senarai aktiviti yang telah disiapkan anak anda, dan dunia mana yang terakhir dimasukinya. Inilah yang melukis kenangan pada pintu, menggerakkan “Sambung pengembaraan”, dan mengisi papan pemuka ibu bapa. Ia tidak mengandungi jawapan, masa, atau markah — hanya pintu mana yang telah dibuka.",
   "privacy.stored.audio.title": "Tetapan bunyi",
   "privacy.stored.audio.body": "Sama ada bunyi dihidupkan, dan sekuat mana muzik dan kesan bunyinya.",
+  "privacy.stored.install.title": "Peringatan pemasangan",
+  "privacy.stored.install.body":
+    "Satu “ya” sahaja, ditulis apabila orang dewasa menolak tawaran untuk meletak KIDDO pada skrin utama, supaya KIDDO tidak bertanya lagi pada peranti ini. Ia tidak memberitahu sama ada KIDDO benar-benar dipasang.",
   "privacy.stores.session":
-    "Satu nilai keempat, nombor rawak untuk tab semasa, menentukan sapaan KIDDO yang mana ditunjukkan. Ia berada dalam storan sesi dan hilang apabila tab ditutup. Apabila seorang ibu bapa telah log masuk pada peranti ini, satu nilai kelima bernama {key} menyimpan satu “ya” supaya KIDDO tahu untuk memulihkan log masuk itu; ia tidak mengandungi maklumat peribadi. Log masuk itu sendiri disimpan oleh Firebase Authentication dalam storan pelayar yang sama, seperti mana-mana laman yang anda log masuk.",
+    "Satu nilai kelima, nombor rawak untuk tab semasa, menentukan sapaan KIDDO yang mana ditunjukkan. Ia berada dalam storan sesi dan hilang apabila tab ditutup. Apabila seorang ibu bapa telah log masuk pada peranti ini, satu nilai keenam bernama {key} menyimpan satu “ya” supaya KIDDO tahu untuk memulihkan log masuk itu; ia tidak mengandungi maklumat peribadi. Log masuk itu sendiri disimpan oleh Firebase Authentication dalam storan pelayar yang sama, seperti mana-mana laman yang anda log masuk.",
   "privacy.stores.cloudIntro": "Dengan akaun ibu bapa, KIDDO turut menyimpan dalam awan, di bawah akaun anda:",
   "privacy.cloud.1":
     "Alamat e-mel dan kata laluan anda, disimpan oleh Firebase Authentication. KIDDO tidak pernah melihat kata laluan itu; ia disimpan sebagai cincangan (hash) oleh perkhidmatan log masuk.",

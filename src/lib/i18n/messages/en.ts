@@ -785,6 +785,32 @@ export const en = {
   "parents.reset.body":
     "All discovered activities and keepsakes will be cleared. Every world will start fresh. This cannot be undone.",
 
+  /* ---- Putting KIDDO on the home screen ------------------------------- */
+  "install.title": "Put KIDDO on the home screen",
+  "install.body":
+    "Add KIDDO to this device’s home screen and your child reaches their games with one tap — no address to type and no browser to get lost in.",
+  "install.cta": "Install KIDDO",
+  "install.menu":
+    "You can still add KIDDO from your browser’s own menu — look for “Install app” or “Add to Home screen”.",
+  "install.done.title": "KIDDO is installed",
+  "install.done.body":
+    "The KIDDO icon is on this device’s home screen. Tap it and KIDDO opens straight away, still signed in.",
+  "install.browser.title": "Open KIDDO in your browser",
+  "install.browser.body":
+    "You are reading KIDDO inside another app, and that app cannot add anything to a home screen. Open the menu in the corner, choose “Open in browser”, and the option will be waiting here.",
+  "install.nudge.title": "Install KIDDO on your phone",
+  "install.nudge.body":
+    "For easier access: one tap straight to the games, instead of finding this page again.",
+  "install.nudge.later": "Not now",
+  "install.guide.title": "Add KIDDO to the Home Screen",
+  "install.guide.step1":
+    "Tap the Share button on the Safari bar — the square with an arrow pointing up.",
+  "install.guide.step2": "Scroll down the list and choose “Add to Home Screen”.",
+  "install.guide.step3": "Tap “Add”. The KIDDO icon appears alongside your other apps.",
+  "install.guide.other":
+    "In a browser other than Safari the steps are the same, but the Share button sits somewhere else. Opening KIDDO in Safari is the surest way.",
+  "install.guide.close": "Got it",
+
   /* ---- The privacy page ------------------------------------------------ */
   "privacy.eyebrow": "Privacy",
   "privacy.title": "What KIDDO stores, and what it doesn’t.",
@@ -808,7 +834,7 @@ export const en = {
 
   "privacy.s.stores": "What KIDDO stores",
   "privacy.stores.intro":
-    "On the device, KIDDO keeps three small things using your browser’s local storage. Each is listed with the exact name it is stored under, so you can check for yourself.",
+    "On the device, KIDDO keeps four small things using your browser’s local storage. Each is listed with the exact name it is stored under, so you can check for yourself.",
   "privacy.stored.name.title": "A first name",
   "privacy.stored.name.body":
     "Typed by a grown-up in the parent area so KIDDO can say “Hi, Noah!”. Only the first word is kept; a surname typed into the box is thrown away before saving. Leaving the box empty is fine — KIDDO simply says “Hi!”.",
@@ -817,8 +843,11 @@ export const en = {
     "The list of activities your child has finished, and which world they were last in. This is what draws the keepsakes on the doors, powers “Continue your adventure”, and fills the parent dashboard. It contains no answers, no timings, and no scores — only which doors have been opened.",
   "privacy.stored.audio.title": "The sound setting",
   "privacy.stored.audio.body": "Whether sound is on, and how loud the music and the effects are.",
+  "privacy.stored.install.title": "The install reminder",
+  "privacy.stored.install.body":
+    "A single “yes”, written when a grown-up waves away the offer to put KIDDO on the home screen, so that KIDDO does not ask again on this device. It says nothing about whether KIDDO was installed.",
   "privacy.stores.session":
-    "A fourth value, a random number for the current tab, decides which of KIDDO’s greetings is shown. It lives in session storage and disappears when the tab is closed. When a parent has signed in on this device, a fifth value named {key} holds a single “yes” so KIDDO knows to restore the sign-in; it contains no personal information. The sign-in itself is kept by Firebase Authentication in the same browser storage, as any signed-in website does.",
+    "A fifth value, a random number for the current tab, decides which of KIDDO’s greetings is shown. It lives in session storage and disappears when the tab is closed. When a parent has signed in on this device, a sixth value named {key} holds a single “yes” so KIDDO knows to restore the sign-in; it contains no personal information. The sign-in itself is kept by Firebase Authentication in the same browser storage, as any signed-in website does.",
   "privacy.stores.cloudIntro": "With a parent account, KIDDO also keeps in the cloud, under your account:",
   "privacy.cloud.1":
     "Your email address and password, held by Firebase Authentication. KIDDO never sees the password; it is stored as a hash by the sign-in service.",

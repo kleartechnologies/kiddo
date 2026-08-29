@@ -11,6 +11,7 @@ import { around, formatDay } from "@/lib/i18n/format";
 import { useTranslation } from "@/lib/i18n/useLocale";
 import { JOURNEY_KEY } from "@/lib/journey/useJourney";
 import { CHILD_NAME_KEY } from "@/lib/profile/child";
+import { INSTALL_DISMISSED_KEY } from "@/lib/pwa/install";
 import { KIDDO_HOME, PARENTS } from "@/lib/routes";
 
 /**
@@ -81,6 +82,9 @@ export function PrivacyDocument() {
           </Stored>
           <Stored name={t("privacy.stored.audio.title")} id={AUDIO_SETTINGS_KEY}>
             {t("privacy.stored.audio.body")}
+          </Stored>
+          <Stored name={t("privacy.stored.install.title")} id={INSTALL_DISMISSED_KEY}>
+            {t("privacy.stored.install.body")}
           </Stored>
         </dl>
         <p className="mt-4">

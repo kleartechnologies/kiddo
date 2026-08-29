@@ -198,9 +198,13 @@ claims or hints that they exist.
 - **Production analytics** — none; no first- or third-party events.
 - **Customer support system** — no contact form, help centre or email yet
   (see the TODO above).
-- **Service worker / offline** — the manifest makes KIDDO installable, but
-  it needs a network connection. No offline infrastructure existed, so none
-  was added.
+- **Offline play** — KIDDO is installable and there is a service worker
+  (`public/sw.js`), but it caches nothing: it exists so Chromium will offer
+  the install, and so a home-screen launch with no signal gets KIDDO's own
+  "sambungan terputus" page instead of the browser's error. Every screen
+  still needs the network. A cache would have to answer for a subscription
+  and a journey that both live in Firestore, and a stale one would lock a
+  paying parent out of the thing they just paid for.
 - **Multiple child profiles** — one child per parent account (the model
   allows more; the UI does not).
 

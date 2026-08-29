@@ -47,7 +47,14 @@ export function Screen({
       <div
         className={cn(
           "relative mx-auto flex w-full flex-1 flex-col",
-          "px-5 sm:px-8",
+          /* Left and right are the same 20/32px they have always been until
+             a notch or a rounded corner claims more — which only happens
+             once a page opts into the full viewport, and which is the whole
+             difference between an installed KIDDO in landscape on an iPhone
+             and one with its first letter under the camera housing. On every
+             other screen the insets are zero and these read as px-5 sm:px-8. */
+          "pl-[max(1.25rem,env(safe-area-inset-left))] pr-[max(1.25rem,env(safe-area-inset-right))]",
+          "sm:pl-[max(2rem,env(safe-area-inset-left))] sm:pr-[max(2rem,env(safe-area-inset-right))]",
           "pt-[max(1.25rem,env(safe-area-inset-top))]",
           "pb-[max(1.75rem,env(safe-area-inset-bottom))]",
           WIDTHS[width],

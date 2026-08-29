@@ -6,6 +6,7 @@ import Link from "next/link";
 import { reportCta } from "@/lib/analytics/events";
 import { planText } from "@/lib/billing/subscription";
 import { cn } from "@/lib/cn";
+import { followHashLink } from "@/lib/hashLink";
 import { useTranslation } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
@@ -98,7 +99,10 @@ export function StickyCta() {
             href={PRICING}
             aria-label={t("landing.sticky.aria")}
             tabIndex={show ? undefined : -1}
-            onClick={() => reportCta("sticky")}
+            onClick={(event) => {
+              reportCta("sticky");
+              followHashLink(event, "pricing");
+            }}
             className="bg-honey-base text-honey-ink font-display flex min-h-12 shrink-0 items-center justify-center rounded-full px-5 text-base font-semibold shadow-[0_4px_0_0_var(--color-honey-deep)]"
           >
             {t("landing.sticky.cta")}

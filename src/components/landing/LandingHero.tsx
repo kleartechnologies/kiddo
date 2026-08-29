@@ -11,6 +11,7 @@ import { cn } from "@/lib/cn";
 import { worldNameKey } from "@/lib/i18n/names";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT, useTranslation } from "@/lib/i18n/useLocale";
+import { followHashLink } from "@/lib/hashLink";
 import { PRICING } from "@/lib/routes";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
 
@@ -80,11 +81,19 @@ export function LandingHero() {
             iconRight
             icon={<ArrowRight className="size-6" aria-hidden />}
             data-landing-cta
-            onClick={() => reportCta("hero")}
+            onClick={(event) => {
+              reportCta("hero");
+              followHashLink(event, "pricing");
+            }}
           >
             {t("landing.hero.cta")}
           </ButtonLink>
-          <ButtonLink href="#gameplay" variant="soft" size="md">
+          <ButtonLink
+            href="#gameplay"
+            variant="soft"
+            size="md"
+            onClick={(event) => followHashLink(event, "gameplay")}
+          >
             {t("landing.hero.secondary")}
           </ButtonLink>
         </div>

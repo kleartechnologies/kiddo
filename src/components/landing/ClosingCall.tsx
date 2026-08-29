@@ -6,6 +6,7 @@ import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
 import { ButtonLink } from "@/components/ui/Button";
 import { reportCta } from "@/lib/analytics/events";
 import { planText } from "@/lib/billing/subscription";
+import { followHashLink } from "@/lib/hashLink";
 import { useTranslation } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
@@ -38,7 +39,10 @@ export function ClosingCall() {
           size="lg"
           iconRight
           icon={<ArrowRight className="size-6" aria-hidden />}
-          onClick={() => reportCta("closing")}
+          onClick={(event) => {
+            reportCta("closing");
+            followHashLink(event, "pricing");
+          }}
         >
           {t("landing.closing.cta")}
         </ButtonLink>

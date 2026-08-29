@@ -6,6 +6,7 @@ import { ArrowRight, Pause, Play } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import { reportCta } from "@/lib/analytics/events";
+import { followHashLink } from "@/lib/hashLink";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
@@ -121,7 +122,10 @@ export function GameplayShowcase() {
           size="lg"
           iconRight
           icon={<ArrowRight className="size-6" aria-hidden />}
-          onClick={() => reportCta("showcase")}
+          onClick={(event) => {
+            reportCta("showcase");
+            followHashLink(event, "pricing");
+          }}
         >
           {t("landing.hero.cta")}
         </ButtonLink>

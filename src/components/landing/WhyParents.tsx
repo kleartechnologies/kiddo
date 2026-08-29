@@ -6,6 +6,7 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import { reportCta } from "@/lib/analytics/events";
+import { followHashLink } from "@/lib/hashLink";
 import type { MessageKey } from "@/lib/i18n/messages/en";
 import { useT } from "@/lib/i18n/useLocale";
 import { PARENTS, PRICING, PRIVACY } from "@/lib/routes";
@@ -53,7 +54,10 @@ export function WhyParents() {
               size="md"
               iconRight
               icon={<ArrowRight className="size-5" aria-hidden />}
-              onClick={() => reportCta("why")}
+              onClick={(event) => {
+                reportCta("why");
+                followHashLink(event, "pricing");
+              }}
             >
               {t("landing.hero.cta")}
             </ButtonLink>

@@ -61,11 +61,11 @@ export const ms: Record<MessageKey, string> = {
   "landing.footer.copyright": "© ZWEET ENTERPRISE 2026. Hak Cipta Terpelihara.",
 
   /* ---- Landing: metadata --------------------------------------------- */
-  "landing.meta.title": "KIDDO — Tukar screen time anak kepada masa bermain & belajar",
+  "landing.meta.title": "KIDDO | Tukar screen time anak kepada masa bermain & belajar",
   "landing.meta.description":
-    "KIDDO ialah dunia permainan interaktif untuk anak berumur 4 hingga 8 tahun — tempat anak bermain, meneroka dan belajar dengan lebih bermakna. Satu bayaran sahaja oleh ibu bapa; tiada iklan, tiada pembelian dalam aplikasi.",
+    "KIDDO ialah dunia permainan interaktif untuk anak berumur 4 hingga 8 tahun, tempat anak bermain, meneroka dan belajar dengan lebih bermakna. Satu bayaran sahaja oleh ibu bapa; tiada iklan, tiada pembelian dalam aplikasi.",
   "landing.meta.ogDescription":
-    "Dunia permainan interaktif untuk anak 4 hingga 8 tahun — bermain, meneroka dan belajar dengan lebih bermakna.",
+    "Dunia permainan interaktif untuk anak 4 hingga 8 tahun. Bermain, meneroka dan belajar dengan lebih bermakna.",
   "landing.meta.twitterDescription":
     "Screen time yang lebih bermakna, untuk anak berumur 4 hingga 8 tahun.",
 
@@ -73,7 +73,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.hero.eyebrow": "Untuk anak 4 hingga 8 tahun",
   "landing.hero.title": "Tukar Screen Time Anak Kepada Masa Bermain & Belajar.",
   "landing.hero.body":
-    "KIDDO ialah dunia permainan interaktif untuk anak 4 hingga 8 tahun — tempat anak boleh bermain, meneroka dan belajar dengan lebih bermakna.",
+    "KIDDO ialah dunia permainan interaktif untuk anak 4 hingga 8 tahun, tempat anak boleh bermain, meneroka dan belajar dengan lebih bermakna.",
   "landing.hero.price": "{price} sekali. Akses seumur hidup.",
   "landing.hero.cta": "Mulakan KIDDO Untuk Anak",
   "landing.hero.secondary": "Lihat Cara KIDDO Berfungsi",
@@ -86,7 +86,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.showcase.eyebrow": "Rakaman sebenar dari dalam KIDDO",
   "landing.showcase.title": "Lihat Apa Yang Anak Boleh Buat Dalam KIDDO",
   "landing.showcase.body":
-    "Bukan mockup, bukan lakonan — ini KIDDO yang sebenar, dimainkan di telefon. Kira, padan, kenal huruf dan perkataan, jumpa haiwan, dan banyak lagi.",
+    "Bukan mockup, bukan lakonan. Ini KIDDO yang sebenar, dimainkan di telefon. Kira, padan, kenal huruf dan perkataan, jumpa haiwan, dan banyak lagi.",
   "landing.showcase.videoAria":
     "Montaj pendek aktiviti sebenar di dalam KIDDO: memilih dunia, memadan kad, mengeja, membantu haiwan, mengira dan mengenal bentuk",
   "landing.showcase.play": "Mainkan video",
@@ -161,7 +161,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.meet.eyebrow": "Bukan satu lagi aplikasi video",
   "landing.meet.title": "Dunia Kecil Yang Anak Boleh Teroka",
   "landing.meet.body":
-    "KIDDO bukan sekadar app dengan permainan. Ia dunia kecil yang anak masuk sendiri — dengan tempat, kawan dan aktiviti untuk diterokai.",
+    "KIDDO bukan app permainan biasa. Ia dunia kecil yang anak masuk sendiri, dengan tempat, kawan dan aktiviti untuk diterokai.",
   "landing.meet.child": "Anak rasa macam bermain.",
   "landing.meet.parent": "Parent tahu mereka sedang belajar.",
   "landing.meet.worldsLead":
@@ -188,7 +188,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.more.eyebrow": "Bukan satu permainan sahaja",
   "landing.more.title": "Banyak Lagi Untuk Diterokai",
   "landing.more.body":
-    "Selain tiga dunia itu, ada {count} permainan lagi menunggu di laman utama anak — setiap satu dengan kawan, gambar dan aktivitinya sendiri.",
+    "Selain tiga dunia itu, ada {count} permainan lagi menunggu di laman utama anak, setiap satu dengan kawan, gambar dan aktivitinya sendiri.",
   "landing.more.listAria": "Permainan lain di dalam KIDDO",
 
   /* ---- Landing: how it works ------------------------------------------ */
@@ -204,7 +204,7 @@ export const ms: Record<MessageKey, string> = {
     "Setiap aktiviti ialah satu pusingan pendek lima soalan, di dalam dunia itu sendiri.",
   "landing.how.step3.title": "Anak belajar sambil bermain",
   "landing.how.step3.detail":
-    "Mengira, memadan dan mengenal perkataan — dan setiap aktiviti yang siap tinggal di dalam dunianya.",
+    "Mengira, memadan dan mengenal perkataan. Setiap aktiviti yang siap tinggal di dalam dunianya.",
   "landing.how.step4.title": "Parent nampak perkembangan",
   "landing.how.step4.detail":
     "Ruang ibu bapa menyenaraikan apa yang diteroka, apa yang seterusnya dan apa yang dilatih.",
@@ -219,7 +219,7 @@ export const ms: Record<MessageKey, string> = {
     "Screen time tetap ada. Yang berubah ialah apa yang berlaku di dalamnya.",
   "landing.why.dashTitle": "Ibu Ayah Pun Tahu Apa Yang Anak Buat.",
   "landing.why.dashBody":
-    "Pantau aktiviti dan perkembangan pembelajaran anak — tanpa perlu meneka apa yang berlaku sepanjang screen time.",
+    "Pantau aktiviti dan perkembangan pembelajaran anak, tanpa perlu meneka apa yang berlaku sepanjang screen time.",
   "landing.why.1.title": "Tak perlu lawan screen time setiap hari.",
   "landing.why.1.detail":
     "Setiap pusingan ada penghujungnya, jadi lebih senang nak cakap “satu lagi, lepas tu kita stop”.",
@@ -227,7 +227,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.why.2.detail": "Dunia, kawan dan aktiviti yang dia sendiri nak buka.",
   "landing.why.3.title": "Screen time boleh jadi masa untuk belajar dan explore.",
   "landing.why.3.detail":
-    "Nombor, haiwan dan perkataan — dibuat sambil bermain, bukan sambil menghafal.",
+    "Nombor, haiwan dan perkataan, semuanya dibuat sambil bermain, bukan sambil menghafal.",
   "landing.why.4.title": "Parent lebih yakin dengan apa yang anak lakukan.",
   "landing.why.4.detail":
     "Tiada iklan, tiada video yang main sendiri, dan tiada apa-apa untuk dibeli di dalam.",
@@ -251,34 +251,34 @@ export const ms: Record<MessageKey, string> = {
     "Satu bayaran sahaja, oleh anda, orang dewasa. Anak tidak pernah log masuk, tidak pernah nampak harga, dan tidak pernah diminta membeli apa-apa.",
   "landing.pricing.included.1": "Akses penuh kepada setiap dunia, pintu dan permainan KIDDO",
   "landing.pricing.included.2":
-    "Tiada bayaran bulanan dan tiada bayaran tahunan — bayar sekali sahaja",
+    "Tiada bayaran bulanan dan tiada bayaran tahunan, bayar sekali sahaja",
   "landing.pricing.included.3": "Kemas kini kandungan secara berterusan",
   "landing.pricing.included.4": "Boleh guna di telefon, tablet dan komputer riba",
   "landing.pricing.included.5": "Tiada iklan dan tiada pembelian dalam aplikasi",
   "landing.pricing.footnote":
-    "Bayar sekali sahaja. Tiada pembaharuan, jadi tiada apa-apa untuk dibatalkan. Pembayaran dikendalikan oleh Billplz — KIDDO tidak pernah melihat atau menyimpan kad anda.",
+    "Bayar sekali sahaja. Tiada pembaharuan, jadi tiada apa-apa untuk dibatalkan. Pembayaran dikendalikan oleh Billplz. KIDDO tidak pernah melihat atau menyimpan kad anda.",
 
   /* ---- Landing: questions parents ask ---------------------------------- */
   "landing.faq.eyebrow": "Soalan lazim",
   "landing.faq.title": "Soalan yang ibu bapa selalu tanya.",
   "landing.faq.q1": "Adakah KIDDO sesuai untuk umur anak saya?",
   "landing.faq.a1":
-    "KIDDO direka untuk anak berumur 4 hingga 8 tahun. Setiap aktiviti ada tiga tahap — Mudah, Sederhana dan Sukar — jadi anak yang baru mula dan anak yang sudah biasa boleh bermain aktiviti yang sama.",
+    "KIDDO direka untuk anak berumur 4 hingga 8 tahun. Setiap aktiviti ada tiga tahap: Mudah, Sederhana dan Sukar. Jadi anak yang baru mula dan anak yang sudah biasa boleh bermain aktiviti yang sama.",
   "landing.faq.q2": "Adakah KIDDO menggantikan sekolah atau pembelajaran formal?",
   "landing.faq.a2":
-    "Tidak. KIDDO bukan sekolah dan bukan sukatan pelajaran. Ia sebuah tempat bermain di mana anak mengira, memadan dan mengenal perkataan sambil meneroka — sesuatu untuk dibuat pada waktu screen time, bukan pengganti kelas.",
+    "Tidak. KIDDO bukan sekolah dan bukan sukatan pelajaran. Ia sebuah tempat bermain di mana anak mengira, memadan dan mengenal perkataan sambil meneroka. Ia sesuatu untuk dibuat pada waktu screen time, bukan pengganti kelas.",
   "landing.faq.q3": "Adakah anak perlu menggunakan tablet?",
   "landing.faq.a3":
-    "Tidak. KIDDO dibuka terus di dalam pelayar web — telefon, tablet atau komputer riba — tanpa perlu memuat turun apa-apa aplikasi. Skrin yang lebih besar lebih selesa, tetapi telefon pun boleh.",
+    "Tidak. KIDDO dibuka terus di dalam pelayar web, sama ada di telefon, tablet atau komputer riba, tanpa perlu memuat turun apa-apa aplikasi. Skrin yang lebih besar lebih selesa, tetapi telefon pun boleh.",
   "landing.faq.q4": "Bagaimana KIDDO membantu menjadikan screen time lebih positif?",
   "landing.faq.a4":
     "Setiap aktiviti ialah satu pusingan pendek lima soalan yang ada penghujungnya, jadi sentiasa ada masa yang sesuai untuk berhenti. Tiada iklan, tiada video yang main sendiri dan tiada apa-apa untuk dibeli. Apa yang anak siapkan tinggal di dalam dunianya, dan anda boleh lihat apa yang diteroka di ruang ibu bapa.",
   "landing.faq.q5": "Berapa harga KIDDO?",
   "landing.faq.a5":
-    "{price}, dibayar sekali sahaja. Itu membuka seluruh KIDDO untuk selamanya — tiada bayaran bulanan, tiada bayaran tahunan dan tiada pembaharuan.",
+    "{price}, dibayar sekali sahaja. Itu membuka seluruh KIDDO untuk selamanya. Tiada bayaran bulanan, tiada bayaran tahunan dan tiada pembaharuan.",
   "landing.faq.q6": "Adakah KIDDO ada iklan atau pembelian dalam aplikasi?",
   "landing.faq.a6":
-    "Tiada iklan, dan tiada pembelian dalam aplikasi. Satu bayaran membuka seluruh KIDDO — anak tidak pernah nampak harga, iklan atau butang beli.",
+    "Tiada iklan, dan tiada pembelian dalam aplikasi. Satu bayaran membuka seluruh KIDDO. Anak tidak pernah nampak harga, iklan atau butang beli.",
   "landing.faq.q7": "Betulkah ini bayaran sekali sahaja?",
   "landing.faq.a7":
     "Betul. {price} sekali, dan KIDDO jadi milik anda. Tiada caj bulanan, tiada caj tahunan, tiada tarikh pembaharuan dan tiada kad yang disimpan untuk dicaj lagi.",
@@ -292,11 +292,11 @@ export const ms: Record<MessageKey, string> = {
   /* ---- Landing: closing ------------------------------------------------ */
   "landing.closing.title": "Jadikan Screen Time Anak Lebih Bermakna.",
   "landing.closing.body":
-    "Berikan anak ruang untuk bermain, meneroka dan belajar — semuanya dalam satu dunia.",
+    "Berikan anak ruang untuk bermain, meneroka dan belajar, semuanya dalam satu dunia.",
   "landing.closing.cta": "Mulakan KIDDO Untuk Anak",
 
   /* ---- Landing: the sticky bar on a phone ------------------------------ */
-  "landing.sticky.aria": "Dapatkan KIDDO — akses seumur hidup",
+  "landing.sticky.aria": "Dapatkan KIDDO, akses seumur hidup",
   "landing.sticky.price": "{price} · sekali bayar",
   "landing.sticky.cta": "Dapatkan KIDDO",
 
@@ -485,7 +485,7 @@ export const ms: Record<MessageKey, string> = {
   "offer.per": "sekali bayar",
   "offer.note": "Harga Pelancaran",
   "offer.was": "Harga asal {price}.",
-  "offer.blurb": "Bayar sekali sahaja. Akses KIDDO seumur hidup — tiada pembaharuan, tiada apa-apa untuk dibatalkan.",
+  "offer.blurb": "Bayar sekali sahaja. Akses KIDDO seumur hidup: tiada pembaharuan, tiada apa-apa untuk dibatalkan.",
   "offer.cta": "Dapatkan KIDDO — {price}",
   "offer.ctaShort": "Dapatkan Akses — {price}",
   "offer.ctaNow": "Dapatkan KIDDO Sekarang",

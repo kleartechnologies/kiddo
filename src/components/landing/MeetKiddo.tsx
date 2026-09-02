@@ -146,7 +146,7 @@ function WorldRow({ id, flipped }: { id: PlayableWorldId; flipped: boolean }) {
                 </span>
                 <span>
                   <span className="text-ink-900 font-semibold">{t(doorKey(activity, "title"))}</span>
-                  <span className="text-ink-500"> — {t(doorKey(activity, "blurb"))}</span>
+                  <span className="text-ink-500">: {t(doorKey(activity, "blurb"))}</span>
                 </span>
               </li>
             ))}

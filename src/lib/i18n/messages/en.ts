@@ -71,11 +71,11 @@ export const en = {
   "landing.footer.copyright": "© ZWEET ENTERPRISE 2026. All rights reserved.",
 
   /* ---- Landing: metadata --------------------------------------------- */
-  "landing.meta.title": "KIDDO — Turn your child’s screen time into play and learning",
+  "landing.meta.title": "KIDDO | Turn your child’s screen time into play and learning",
   "landing.meta.description":
-    "KIDDO is an interactive play world for children aged 4 to 8 — a place to play, explore and learn in a way that means something. One payment by the parent; no adverts, no in-app purchases.",
+    "KIDDO is an interactive play world for children aged 4 to 8, a place to play, explore and learn in a way that means something. One payment by the parent; no adverts, no in-app purchases.",
   "landing.meta.ogDescription":
-    "An interactive play world for children aged 4 to 8 — play, explore and learn in a way that means something.",
+    "An interactive play world for children aged 4 to 8. Play, explore and learn in a way that means something.",
   "landing.meta.twitterDescription":
     "Screen time that is worth something, for children aged 4 to 8.",
 
@@ -83,7 +83,7 @@ export const en = {
   "landing.hero.eyebrow": "For children aged 4 to 8",
   "landing.hero.title": "Turn Your Child’s Screen Time Into Play and Learning.",
   "landing.hero.body":
-    "KIDDO is an interactive play world for children aged 4 to 8 — a place for your child to play, explore and learn in a way that means something.",
+    "KIDDO is an interactive play world for children aged 4 to 8, a place for your child to play, explore and learn in a way that means something.",
   "landing.hero.price": "{price} once. Lifetime access.",
   "landing.hero.cta": "Start KIDDO for Your Child",
   "landing.hero.secondary": "See how KIDDO works",
@@ -96,7 +96,7 @@ export const en = {
   "landing.showcase.eyebrow": "Real footage from inside KIDDO",
   "landing.showcase.title": "See What Your Child Can Do in KIDDO",
   "landing.showcase.body":
-    "No mock-ups, no acting — this is the real KIDDO, played on a phone. Counting, matching, letters and words, animals, and plenty more.",
+    "No mock-ups, no acting. This is the real KIDDO, played on a phone. Counting, matching, letters and words, animals, and plenty more.",
   "landing.showcase.videoAria":
     "A short montage of real activities inside KIDDO: choosing a world, matching cards, spelling, helping animals, counting and finding shapes",
   "landing.showcase.play": "Play the video",
@@ -171,7 +171,7 @@ export const en = {
   "landing.meet.eyebrow": "Not another video app",
   "landing.meet.title": "A Little World Your Child Can Explore",
   "landing.meet.body":
-    "KIDDO is not just an app with games in it. It is a little world a child steps into on their own — with places, friends and activities to explore.",
+    "KIDDO is not just an app with games in it. It is a little world a child steps into on their own, with places, friends and activities to explore.",
   "landing.meet.child": "To your child, it feels like playing.",
   "landing.meet.parent": "You know they are learning.",
   "landing.meet.worldsLead":
@@ -214,7 +214,7 @@ export const en = {
     "Every activity is a short round of five questions, set inside that world.",
   "landing.how.step3.title": "They learn while they play",
   "landing.how.step3.detail":
-    "Counting, matching and words — and every finished activity stays in its world.",
+    "Counting, matching and words. Every finished activity stays in its world.",
   "landing.how.step4.title": "You can see how they are getting on",
   "landing.how.step4.detail":
     "The parent area lists what was explored, what comes next and what it was practising.",
@@ -229,7 +229,7 @@ export const en = {
     "The screen time still happens. What changes is what happens inside it.",
   "landing.why.dashTitle": "You Know What Your Child Has Been Doing.",
   "landing.why.dashBody":
-    "Follow your child’s activities and learning progress — without having to guess what happened during screen time.",
+    "Follow your child’s activities and learning progress, without having to guess what happened during screen time.",
   "landing.why.1.title": "No fight over screen time every day.",
   "landing.why.1.detail":
     "Every round has an ending, which makes “one more, then we stop” an easier thing to say.",
@@ -237,7 +237,7 @@ export const en = {
   "landing.why.2.detail": "Worlds, friends and activities they open themselves.",
   "landing.why.3.title": "Screen time becomes time to learn and explore.",
   "landing.why.3.detail":
-    "Numbers, animals and words — played rather than drilled.",
+    "Numbers, animals and words, played rather than drilled.",
   "landing.why.4.title": "You feel better about what they are doing.",
   "landing.why.4.detail":
     "No adverts, no videos that play by themselves, and nothing to buy inside.",
@@ -261,34 +261,34 @@ export const en = {
     "One payment, by you, the grown-up. Your child never signs in, never sees a price and is never asked to buy anything.",
   "landing.pricing.included.1": "Full access to every KIDDO world, door and game",
   "landing.pricing.included.2":
-    "Nothing to pay each month or each year — one payment",
+    "Nothing to pay each month or each year, just one payment",
   "landing.pricing.included.3": "New content, added continuously",
   "landing.pricing.included.4": "Works on a phone, a tablet and a laptop",
   "landing.pricing.included.5": "No adverts and no in-app purchases",
   "landing.pricing.footnote":
-    "Paid once. Nothing renews, so there is nothing to cancel. Payments are handled by Billplz — KIDDO never sees or stores your card.",
+    "Paid once. Nothing renews, so there is nothing to cancel. Payments are handled by Billplz. KIDDO never sees or stores your card.",
 
   /* ---- Landing: questions parents ask ---------------------------------- */
   "landing.faq.eyebrow": "Common questions",
   "landing.faq.title": "The things parents ask first.",
   "landing.faq.q1": "Is KIDDO right for my child’s age?",
   "landing.faq.a1":
-    "KIDDO is made for children aged 4 to 8. Every activity comes in three sizes — Easy, Medium and Hard — so a child who is just starting and a child who has done it before can play the same activity.",
+    "KIDDO is made for children aged 4 to 8. Every activity comes in three sizes: Easy, Medium and Hard. So a child who is just starting and a child who has done it before can play the same activity.",
   "landing.faq.q2": "Does KIDDO replace school or formal learning?",
   "landing.faq.a2":
-    "No. KIDDO is not a school and not a syllabus. It is a play world where children count, match and find words while exploring — something to do during screen time, not a substitute for lessons.",
+    "No. KIDDO is not a school and not a syllabus. It is a play world where children count, match and find words while exploring. It is something to do during screen time, not a substitute for lessons.",
   "landing.faq.q3": "Does my child need a tablet?",
   "landing.faq.a3":
-    "No. KIDDO opens straight in the browser — phone, tablet or laptop — with no app to download. A bigger screen is more comfortable, but a phone works.",
+    "No. KIDDO opens straight in the browser, on a phone, tablet or laptop, with no app to download. A bigger screen is more comfortable, but a phone works.",
   "landing.faq.q4": "How does KIDDO make screen time more positive?",
   "landing.faq.a4":
     "Every activity is a short round of five questions with an ending, so there is always a good moment to stop. There are no adverts, no videos that play by themselves and nothing to buy. What a child finishes stays in its world, and you can see what was explored in the parent area.",
   "landing.faq.q5": "What does KIDDO cost?",
   "landing.faq.a5":
-    "{price}, paid once. That opens all of KIDDO for good — there is nothing monthly, nothing yearly and nothing to renew.",
+    "{price}, paid once. That opens all of KIDDO for good. There is nothing monthly, nothing yearly and nothing to renew.",
   "landing.faq.q6": "Does KIDDO have adverts or in-app purchases?",
   "landing.faq.a6":
-    "No adverts, and no in-app purchases. One payment opens all of KIDDO — your child never sees a price, an advert or a buy button.",
+    "No adverts, and no in-app purchases. One payment opens all of KIDDO. Your child never sees a price, an advert or a buy button.",
   "landing.faq.q7": "Is it really only one payment?",
   "landing.faq.a7":
     "Yes. {price} once, and KIDDO is yours. There is no monthly charge, no yearly charge, no renewal date and no card kept on file to be charged again.",
@@ -302,11 +302,11 @@ export const en = {
   /* ---- Landing: closing ------------------------------------------------ */
   "landing.closing.title": "Make Your Child’s Screen Time Worth Something.",
   "landing.closing.body":
-    "Give your child room to play, explore and learn — all inside one world.",
+    "Give your child room to play, explore and learn, all inside one world.",
   "landing.closing.cta": "Start KIDDO for Your Child",
 
   /* ---- Landing: the sticky bar on a phone ------------------------------ */
-  "landing.sticky.aria": "Get KIDDO — lifetime access",
+  "landing.sticky.aria": "Get KIDDO, lifetime access",
   "landing.sticky.price": "{price} · one payment",
   "landing.sticky.cta": "Get KIDDO",
 
@@ -493,7 +493,7 @@ export const en = {
   "offer.per": "one payment",
   "offer.note": "Launch price",
   "offer.was": "Normally {price}.",
-  "offer.blurb": "Pay once. Lifetime access to KIDDO — no renewal, nothing to cancel.",
+  "offer.blurb": "Pay once. Lifetime access to KIDDO: no renewal, nothing to cancel.",
   "offer.cta": "Get KIDDO — {price}",
   "offer.ctaShort": "Get Access — {price}",
   "offer.ctaNow": "Get KIDDO Now",

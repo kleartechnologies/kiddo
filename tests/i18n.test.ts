@@ -94,17 +94,15 @@ test("both catalogues say the same set of things", () => {
 
 /* 2 ---------------------------------------------------------------------- */
 test("every message is a sentence, in every language", () => {
-  /* An empty line renders as a blank button rather than as an error, which is
-     the failure nobody reports. One message is empty on purpose — the monthly
-     plan has no badge where the yearly one says "Best value" — and it is
-     empty in both languages, which is the shape a deliberate blank has. */
+  /* An empty line renders as a blank button rather than as an error, which
+     is the failure nobody reports. There used to be one deliberate blank —
+     the monthly plan had no badge where the yearly one said "Best value" —
+     and when the two plans became one price it went with them. So the list
+     is empty now, and any new blank is a mistake rather than a decision. */
   const blanks = KEYS.filter((key) =>
     LOCALES.some((locale) => ALL_CATALOGUES[locale][key].trim() === ""),
   );
-  assert.deepEqual(blanks, ["plan.monthly.note"]);
-  for (const locale of LOCALES) {
-    assert.equal(ALL_CATALOGUES[locale]["plan.monthly.note"], "");
-  }
+  assert.deepEqual(blanks, []);
 });
 
 /* 3 ---------------------------------------------------------------------- */
@@ -128,16 +126,15 @@ test("nothing is left in English but the things that are the same in both", () =
      checked from: a Malay line identical to its English one is either a
      translation nobody wrote or a string that is not language at all. Nine
      are the second kind and every one of them is punctuation around holes —
-     "{name} · {price}/{per}" reads the same in Kuala Lumpur either way — so
-     they are listed rather than guessed at, and a tenth has to be argued for
+     "{name} · {price}" reads the same in Kuala Lumpur either way — so they
+     are listed rather than guessed at, and a tenth has to be argued for
      here before it can pass. */
   const shared = KEYS.filter((key) => en[key] === ms[key]);
   assert.deepEqual(shared.sort(), [
-    /* An empty badge (see above). */
-    "plan.monthly.note",
     /* Assembly, not prose: a hole, a separator, a hole. */
-    "billing.planLine",
-    "join.plan.option",
+    "billing.offerLine",
+    "join.offer.heading",
+    "join.offer.blurb",
     "parents.next.line",
     "worlds.door.sr",
     "worlds.doorCard.sr",

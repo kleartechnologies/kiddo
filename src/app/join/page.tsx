@@ -5,7 +5,6 @@ import { LanguageSwitcher } from "@/components/i18n/LanguageSwitcher";
 import { T } from "@/components/i18n/T";
 import { WordmarkLink } from "@/components/kiddo/WordmarkLink";
 import { Screen } from "@/components/ui/Screen";
-import { isPlan, type Plan } from "@/lib/billing/subscription";
 import { DEFAULT_LOCALE } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/messages";
 
@@ -16,18 +15,14 @@ export const metadata: Metadata = {
 };
 
 /**
- * `/join?plan=yearly` — where the pricing section leads.
+ * `/join` — where the pricing section leads.
  *
- * The plan is read here, on the server, so the page renders already
- * knowing what was chosen; an absent or nonsense value falls back to the
- * annual plan, which is the one the pricing section recommends. Nothing
- * about money is decided from this parameter — it only picks which Stripe
- * price the server is later asked for.
+ * There is no parameter to read: KIDDO is one thing at one price, so there
+ * is nothing for a query string to carry and nothing about money that a
+ * browser could suggest. The amount lives on the server, which puts it on
+ * the bill.
  */
-export default async function JoinPage(props: PageProps<"/join">) {
-  const { plan } = await props.searchParams;
-  const chosen: Plan = isPlan(plan) ? plan : "yearly";
-
+export default function JoinPage() {
   return (
     <Screen width="narrow" detail="quiet">
       <header className="flex items-center justify-between gap-3">
@@ -41,7 +36,7 @@ export default async function JoinPage(props: PageProps<"/join">) {
       </header>
 
       <main className="flex flex-1 flex-col gap-6 py-6 select-text sm:py-8">
-        <JoinGate plan={chosen} />
+        <JoinGate />
       </main>
     </Screen>
   );

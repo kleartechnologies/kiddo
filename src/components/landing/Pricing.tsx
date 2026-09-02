@@ -4,32 +4,25 @@ import { ArrowRight, Check } from "lucide-react";
 
 import { ButtonLink } from "@/components/ui/Button";
 import { reportCta } from "@/lib/analytics/events";
-import {
-  planText,
-  PLAN_ORDER,
-  YEARLY_SAVING_AMOUNT,
-  YEARLY_SAVING_PERCENT,
-  type Plan,
-} from "@/lib/billing/subscription";
-import { cn } from "@/lib/cn";
+import { LIFETIME_PRICE, ORIGINAL_PRICE } from "@/lib/billing/access";
 import type { MessageKey } from "@/lib/i18n/messages/en";
-import { useT, useTranslation } from "@/lib/i18n/useLocale";
-import { joinWithPlan } from "@/lib/routes";
+import { useT } from "@/lib/i18n/useLocale";
+import { JOIN } from "@/lib/routes";
 import { SectionIntro } from "./SectionIntro";
 
 /**
- * Pricing: the two plans, and the choice a parent makes before anything
- * else happens.
+ * Pricing: one price, once, and nothing to choose between.
  *
- * Every figure on this section is derived from `AMOUNTS` in
- * `lib/billing/subscription` — the prices, the per-month equivalent and the
- * saving on the annual plan — so there is one number to change and no way
- * for a marketing string to drift away from what Stripe charges.
+ * The figure comes from `LIFETIME_AMOUNT` in `lib/billing/access` — the same
+ * integer the server puts on the Billplz bill — so there is one number to
+ * change and no way for a marketing string to drift away from what a parent
+ * is actually charged.
  *
- * Yearly is first, marked "Best value", and carries the saving. That is the
- * whole of the persuasion: no countdown, no crossed-out price, no "most
- * popular" claim KIDDO cannot prove. Choosing a plan leads to `/join`,
- * which asks for an account and then hands over to Stripe.
+ * There is no second card, because there is no second plan: no monthly, no
+ * yearly, no renewal, nothing to cancel. That is the whole of the
+ * persuasion — no countdown, no crossed-out price, no "most popular" claim
+ * KIDDO cannot prove. Pressing the button leads to `/join`, which asks for
+ * an account and then hands over to Billplz.
  */
 const INCLUDED: MessageKey[] = [
   "landing.pricing.included.1",
@@ -50,10 +43,8 @@ export function Pricing() {
         {t("landing.pricing.body")}
       </SectionIntro>
 
-      <div className="mx-auto mt-10 grid max-w-4xl grid-cols-1 items-start gap-4 sm:mt-12 md:grid-cols-2 md:gap-6">
-        {PLAN_ORDER.map((key) => (
-          <PlanCard key={key} plan={key} />
-        ))}
+      <div className="mx-auto mt-10 max-w-md sm:mt-12">
+        <OfferCard />
       </div>
 
       <ul className="mx-auto mt-8 flex max-w-2xl list-none flex-col gap-2 sm:mt-10">
@@ -74,61 +65,50 @@ export function Pricing() {
   );
 }
 
-function PlanCard({ plan }: { plan: Plan }) {
-  const { locale, t } = useTranslation();
-  const detail = planText(plan, locale);
-  const best = plan === "yearly";
+function OfferCard() {
+  const t = useT();
 
   return (
     <div
-      className={cn(
-        "bg-paper flex h-full flex-col gap-5 rounded-hero border p-6 sm:p-8",
-        best ? "border-ink-900 border-2 shadow-lift" : "border-edge shadow-soft",
-      )}
-      data-pricing-plan={plan}
+      className="bg-paper rounded-hero border-ink-900 shadow-lift flex h-full flex-col gap-5 border-2 p-6 sm:p-8"
+      data-pricing-offer="lifetime"
     >
       <div className="flex flex-wrap items-center gap-2">
-        <h3 className="font-display text-xl font-semibold sm:text-2xl">{detail.name}</h3>
-        {detail.note && (
-          <span
-            className="bg-honey-soft text-honey-ink rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase"
-            data-pricing-note
-          >
-            ⭐ {detail.note}
-          </span>
-        )}
+        <h3 className="font-display text-xl font-semibold sm:text-2xl">{t("offer.name")}</h3>
+        <span
+          className="bg-honey-soft text-honey-ink rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide uppercase"
+          data-pricing-note
+        >
+          ⭐ {t("offer.note")}
+        </span>
       </div>
 
       <p className="flex flex-wrap items-baseline gap-x-2">
+        {/* The old price is decoration to a screen reader; the sr-only
+            sentence says the same thing in words. */}
+        <s className="text-ink-500 text-xl line-through sm:text-2xl" data-pricing-was aria-hidden>
+          {ORIGINAL_PRICE}
+        </s>
+        <span className="sr-only">{t("offer.was", { price: ORIGINAL_PRICE })}</span>
         <span className="font-display text-ink-900 text-4xl font-bold sm:text-5xl" data-pricing-price>
-          {detail.price}
+          {LIFETIME_PRICE}
         </span>
-        <span className="text-ink-700 text-lg">/ {detail.per}</span>
+        <span className="text-ink-700 text-lg">/ {t("offer.per")}</span>
       </p>
 
-      <div className="space-y-1">
-        <p className="text-ink-700 text-base leading-snug">{detail.blurb}</p>
-        {best && (
-          <p className="text-sage-ink text-base font-semibold" data-pricing-saving>
-            {t("landing.pricing.saving", {
-              amount: YEARLY_SAVING_AMOUNT,
-              saving: YEARLY_SAVING_PERCENT,
-            })}
-          </p>
-        )}
-      </div>
+      <p className="text-ink-700 text-base leading-snug">{t("offer.blurb")}</p>
 
       <ButtonLink
-        href={joinWithPlan(plan)}
+        href={JOIN}
         size="md"
-        variant={best ? "primary" : "soft"}
+        variant="primary"
         iconRight
         icon={<ArrowRight className="size-5" aria-hidden />}
         className="mt-auto self-start"
-        data-pricing-cta={plan}
-        onClick={() => reportCta("pricing", plan)}
+        data-pricing-cta="lifetime"
+        onClick={() => reportCta("pricing", true)}
       >
-        {detail.cta}
+        {t("offer.cta", { price: LIFETIME_PRICE })}
       </ButtonLink>
     </div>
   );

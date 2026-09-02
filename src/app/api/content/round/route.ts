@@ -1,7 +1,7 @@
-import { hasAccess } from "@/lib/billing/subscription";
+import { hasAccess } from "@/lib/billing/access";
 import { requireAppCheck } from "@/server/appCheck";
-import { subscriptionOf } from "@/server/billing";
 import { dealRound } from "@/server/content";
+import { entitlementOf } from "@/server/entitlement";
 import { adminConfigured } from "@/server/firebaseAdmin";
 import { json, problem, readJson, requireCaller, tooMany } from "@/server/http";
 import { consume, LIMITS } from "@/server/rateLimit";
@@ -12,17 +12,19 @@ export const dynamic = "force-dynamic";
 /**
  * POST /api/content/round  { round, tier?, seed?, locale? } → { challenges }
  *
- * Ten questions, for a signed-in parent whose subscription is live. This is
- * the boundary KIDDO's paid content is meant to sit behind: the questions are
+ * Ten questions, for a signed-in parent who has bought KIDDO. This is the
+ * boundary KIDDO's paid content is meant to sit behind: the questions are
  * the product, and a product that ships in a public JavaScript chunk is not
  * being sold, it is being given away.
  *
  * Four checks, in the order that costs least:
  *  1. a Firebase ID token, verified — 401 without one;
- *  2. an active subscription in `users/{uid}`, which only the Stripe webhook
- *     can write — 402 without one, and never a hint of the content;
- *  3. a per-account budget, because a subscriber is not entitled to the whole
- *     corpus, only to playing — 429 past it;
+ *  2. lifetime access in `users/{uid}`, which only the Billplz callback can
+ *     write (or, for a parent from before the change, a subscription the
+ *     Stripe webhook wrote) — 402 without either, and never a hint of the
+ *     content;
+ *  3. a per-account budget, because owning KIDDO is not entitlement to the
+ *     whole corpus, only to playing — 429 past it;
  *  4. a round KIDDO actually has — 404 otherwise.
  *
  * `no-store`, always: this answer is one account's, and a CDN must never
@@ -40,8 +42,8 @@ export async function POST(request: Request) {
   const caller = await requireCaller(request);
   if (caller instanceof Response) return caller;
 
-  const state = await subscriptionOf(caller.uid);
-  if (!hasAccess(state, Date.now())) return problem(402, "subscription-required");
+  const entitlement = await entitlementOf(caller.uid);
+  if (!hasAccess(entitlement, Date.now())) return problem(402, "purchase-required");
 
   const budget = await consume(LIMITS.content, caller.uid);
   if (!budget.allowed) return tooMany(budget.retryAfterS);

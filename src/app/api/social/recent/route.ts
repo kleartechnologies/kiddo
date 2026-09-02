@@ -1,5 +1,5 @@
 import { MAX_JOIN_NOTICES, recentJoins, type JoinEvent } from "@/lib/social/joins";
-import { recentJoinEvents } from "@/server/billing";
+import { recentJoinEvents } from "@/server/entitlement";
 import { adminConfigured } from "@/server/firebaseAdmin";
 import { cachedJson, tooMany } from "@/server/http";
 import { clientIp, consume, LIMITS } from "@/server/rateLimit";

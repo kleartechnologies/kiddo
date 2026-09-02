@@ -9,7 +9,7 @@ import { AccountRow } from "./AccountRow";
 import { AuthCard } from "./AuthCard";
 import { BillingRow } from "./BillingRow";
 import { ChildOnboarding } from "./ChildOnboarding";
-import { SubscriptionGate } from "./SubscriptionGate";
+import { AccessGate } from "./AccessGate";
 
 /**
  * Which parent area to show.
@@ -18,8 +18,8 @@ import { SubscriptionGate } from "./SubscriptionGate";
  *    exactly as before accounts existed.
  *  - `signed-out`: sign in / create account. Progress already on this
  *    device is kept and carried into the account afterwards.
- *  - `needs-subscription`, or any signed-in state whose subscription no
- *    longer opens KIDDO: the subscription gate, before the child.
+ *  - `needs-purchase`, or any signed-in state whose entitlement does not
+ *    open KIDDO: the access gate, before the child.
  *  - `needs-child`: the one onboarding question.
  *  - `trouble`: the account could not be read; try again or sign out.
  *  - `ready`: the same dashboard, now reading the cloud journey, with the
@@ -33,10 +33,10 @@ export function ParentGate() {
   /* The gate comes first for everyone signed in: a parent whose payment
      failed sees it from the dashboard too, with their child and journey
      still safe behind it. */
-  if (session.user && session.subscription && !sessionHasAccess(session) && session.status !== "trouble" && session.status !== "signed-in") {
+  if (session.user && session.entitlement && !sessionHasAccess(session) && session.status !== "trouble" && session.status !== "signed-in") {
     return (
-      <main className="flex flex-1 flex-col gap-6 py-6 select-text sm:gap-8 sm:py-8" data-parent-gate="needs-subscription">
-        <SubscriptionGate />
+      <main className="flex flex-1 flex-col gap-6 py-6 select-text sm:gap-8 sm:py-8" data-parent-gate="needs-purchase">
+        <AccessGate />
       </main>
     );
   }

@@ -3,14 +3,14 @@
 import { ArrowRight, Check } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
-import { planText } from "@/lib/billing/subscription";
+import { LIFETIME_PRICE } from "@/lib/billing/access";
 import { reportCta } from "@/lib/analytics/events";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
 import { cn } from "@/lib/cn";
 import { worldNameKey } from "@/lib/i18n/names";
 import type { MessageKey } from "@/lib/i18n/messages/en";
-import { useT, useTranslation } from "@/lib/i18n/useLocale";
+import { useT } from "@/lib/i18n/useLocale";
 import { followHashLink } from "@/lib/hashLink";
 import { PRICING } from "@/lib/routes";
 import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
@@ -29,8 +29,8 @@ import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
  * a cold advert decides against hidden pricing faster than against any
  * price — and the three lines under the buttons answer the objections that
  * would otherwise be raised silently: no advertising, nothing sold to the
- * child, cancel whenever. Both figures come from `planText`, so they are
- * the same figures Stripe will charge.
+ * child, one payment and no renewal. The figure comes from
+ * `LIFETIME_AMOUNT`, so it is the figure the bill will carry.
  *
  * Next to the words are the three worlds, drawn by the same `WorldScene` the
  * child's own doors are drawn with, with KIDDO waving in front the way it
@@ -49,9 +49,7 @@ const TRUST: MessageKey[] = [
 ];
 
 export function LandingHero() {
-  const { locale, t } = useTranslation();
-  const monthly = planText("monthly", locale);
-  const yearly = planText("yearly", locale);
+  const t = useT();
 
   return (
     <section
@@ -72,7 +70,7 @@ export function LandingHero() {
           {t("landing.hero.body")}
         </p>
         <p className="font-display text-ink-900 text-lg font-semibold sm:text-xl">
-          {t("landing.hero.price", { monthly: monthly.price, yearly: yearly.price })}
+          {t("landing.hero.price", { price: LIFETIME_PRICE })}
         </p>
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
           <ButtonLink

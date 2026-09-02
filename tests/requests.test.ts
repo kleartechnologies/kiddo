@@ -68,7 +68,7 @@ test("a body larger than the limit is refused, announced or not", async () => {
 });
 
 test("malformed JSON is an error, not an empty object", async () => {
-  for (const bad of ["{", "{\"plan\":}", "not json at all", "[1,2,3]", "null", '"monthly"', "7"]) {
+  for (const bad of ["{", "{\"billId\":}", "not json at all", "[1,2,3]", "null", '"bill_1"', "7"]) {
     const answer = await readJson(post(bad));
     assert.ok(answer instanceof Response, `${bad} should be refused`);
     assert.equal(answer.status, 400);
@@ -77,18 +77,19 @@ test("malformed JSON is an error, not an empty object", async () => {
 });
 
 test("an ordinary body still reads the way the routes expect", async () => {
-  const answer = await readJson(post(JSON.stringify({ plan: "monthly", returnTo: "/parents" })));
+  const answer = await readJson(post(JSON.stringify({ billId: "bill_1", returnTo: "/parents" })));
   assert.ok(!(answer instanceof Response));
-  assert.deepEqual(answer, { plan: "monthly", returnTo: "/parents" });
+  assert.deepEqual(answer, { billId: "bill_1", returnTo: "/parents" });
 
   /* `/api/account/delete` sends `{}`; an absent body means the same. */
   assert.deepEqual(await readJson(post("{}")), {});
   assert.deepEqual(await readJson(post(null)), {});
 });
 
-test("every route but the webhook reads its body through readJson", () => {
+test("every JSON route reads its body through readJson; the two that are not JSON say so", () => {
   const routes = [
-    "../src/app/api/billing/checkout/route.ts",
+    "../src/app/api/billing/billplz/create/route.ts",
+    "../src/app/api/billing/billplz/confirm/route.ts",
     "../src/app/api/billing/portal/route.ts",
   ];
   for (const path of routes) {
@@ -103,6 +104,15 @@ test("every route but the webhook reads its body through readJson", () => {
   assert.match(webhook, /constructEvent\(raw, signature, webhookSecret\(\)\)/);
   assert.doesNotMatch(webhook, /readJson/, "parsing the webhook body would break verification");
   assert.match(webhook, /MAX_WEBHOOK_BYTES/, "an unsigned stranger can still open this connection");
+
+  /* The Billplz callback is the other exception, for the same reason in a
+     different shape: its body is form-encoded and its signature is over
+     those fields, so it reads and caps the text itself. */
+  const callback = readFileSync(new URL("../src/app/api/billing/billplz/callback/route.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(callback, /readJson/);
+  assert.match(callback, /application\\\/x-www-form-urlencoded/, "and refuses anything else");
+  assert.match(callback, /MAX_CALLBACK_BYTES/);
+  assert.match(callback, /text = await request\.text\(\);/);
 });
 
 test("the rate limiter fails closed when it cannot count", async () => {
@@ -152,7 +162,9 @@ test("the caller's IP comes from the header a caller cannot set", () => {
 });
 
 test("the budgets are sized for a family, not for a load test", () => {
-  assert.ok(LIMITS.checkout.limit <= 10, "each one creates a real Stripe session");
+  assert.ok(LIMITS.checkout.limit <= 10, "each one creates a real Billplz bill");
+  assert.ok(LIMITS.confirm.limit <= 60, "a parent may ask about their own bill a few times");
+  assert.ok(LIMITS.callback.limit <= 60, "and a stranger may not ask about one all day");
   assert.ok(LIMITS.accountDelete.limit <= 5, "an account is deleted once");
   assert.ok(LIMITS.social.limit <= 60, "the landing page asks once per visit");
   for (const rule of Object.values(LIMITS)) {

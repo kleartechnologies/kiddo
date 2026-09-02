@@ -1,25 +1,25 @@
 /**
  * Measures the road into KIDDO — landing → pricing → account → payment →
  * welcome → play — in a real browser, on a build with no Firebase and no
- * Stripe.
+ * Billplz.
  *
  * The device opts into the pretend cloud (`kiddo.preview.cloud`), the same
  * one `measure-account.mjs` uses: sign-in state arrives through a listener,
- * "Checkout" is a page on this site, and the "webhook" is a timer. Nothing
- * here touches Stripe; what it proves is every screen and transition
- * around it, in the order a parent meets them.
+ * the "payment page" is a page on this site, and the "callback" is a timer.
+ * Nothing here touches Billplz; what it proves is every screen and
+ * transition around it, in the order a parent meets them.
  *
  *    1 signed out       /join asks for an account and charges nothing;
  *                       /welcome says where to go; /play stays closed with
  *                       no money words and no way to sign out
- *    2 the main road    plan → account → Checkout starts by itself →
+ *    2 the main road    the offer → account → the payment starts by itself →
  *                       /welcome: confirming → "Welcome to KIDDO! 🎉" →
  *                       the child's name → Enter KIDDO → /play opens
  *    3 log out          the parent area signs out; the child's home closes
  *    4 coming back      a parent who is already signed in gets a button,
  *                       not an automatic charge; paying opens KIDDO again
- *    5 already paid     /join tells a subscriber there is nothing to pay
- *    6 access           an expired subscription closes the child's home
+ *    5 already paid     /join tells an owner there is nothing to pay
+ *    6 access           the child's home follows the entitlement
  *    7 viewports        /join and /welcome at every size
  *    8 reduced motion   both pages readable at once
  *    9 console          nothing logged, nothing failed
@@ -136,17 +136,19 @@ await js(`localStorage.clear(); sessionStorage.clear(); localStorage.setItem("ki
 
 section("1 · signed out: nothing is charged and nothing is open");
 {
-  await go("/join?plan=yearly");
+  await go("/join");
   const gate = await attr("[data-join-gate]", "data-join-gate");
   const card = await exists("[data-auth-card]");
-  const plan = await attr("[data-join-plan]", "data-join-plan");
-  const stayed = (await href()) === "/join?plan=yearly";
+  const offer = await attr("[data-join-offer]", "data-join-offer");
+  const price = await text("[data-join-price]");
+  const stayed = (await href()) === "/join";
   await wait(1200);
-  report(`/join (gate=${gate}) asks for an account for the ${plan} plan, and stays put`, [
+  report(`/join (gate=${gate}) asks for an account, shows "${price}", and stays put`, [
     gate === "signed-out" ? null : `gate ${gate}`,
     card ? null : "no auth card",
-    plan === "yearly" ? null : `plan ${plan}`,
-    stayed && (await href()) === "/join?plan=yearly" ? null : "left /join on its own",
+    offer === "lifetime" ? null : `offer ${offer}`,
+    /RM29\.90/.test(price ?? "") ? null : `the offer says ${price}`,
+    stayed && (await href()) === "/join" ? null : "left /join on its own",
   ].filter(Boolean));
   await shoot("01-join-signed-out");
 
@@ -165,24 +167,24 @@ section("1 · signed out: nothing is charged and nothing is open");
   ].filter(Boolean));
 }
 
-section("2 · the main road: plan → account → payment → welcome → play");
+section("2 · the main road: the offer → account → payment → welcome → play");
 {
   await go("/");
-  await tap("[data-pricing-cta='yearly']");
+  await tap("[data-pricing-cta='lifetime']");
   await until(`location.pathname === "/join"`);
-  report(`Start Yearly → ${await href()}`, (await href()) === "/join?plan=yearly" ? [] : ["wrong destination"]);
+  report(`Get KIDDO → ${await href()}`, (await href()) === "/join" ? [] : ["wrong destination"]);
 
   await createAccount("parent@example.com", "secret1");
-  /* The parent said which plan they wanted; Checkout starts by itself. */
+  /* Coming here was the decision; the payment starts by itself. */
   await until(`location.pathname === "/welcome"`, 15000);
-  /* Read once: /welcome strips `?checkout=success` from the address as
-     soon as it has read it, so a second look would miss it. */
+  /* Read once: /welcome strips Billplz's `billplz[id]` and `billplz[paid]`
+     from the address as soon as it has read them. */
   const landed = await href();
-  report(`the account is made and Checkout takes over → ${landed}`,
-    landed.startsWith("/welcome") ? [] : ["did not reach Checkout"]);
+  report(`the account is made and the payment takes over → ${landed}`,
+    landed.startsWith("/welcome") ? [] : ["did not reach the payment page"]);
 
   const confirming = await until(`document.querySelector("[data-welcome='confirming']")`, 6000);
-  report(`/welcome while the webhook is in flight: "${await text("[data-welcome='confirming'] h1")}"`,
+  report(`/welcome while the callback is in flight: "${await text("[data-welcome='confirming'] h1")}"`,
     confirming ? [] : ["no confirming state"]);
   await shoot("02-welcome-confirming");
 
@@ -197,9 +199,12 @@ section("2 · the main road: plan → account → payment → welcome → play")
   }))()`);
   report(`welcome: "${facts.heading}" / "${facts.line}" / [${facts.enter}] · asks the child's name (${facts.asksName})`, [
     open ? null : "never opened",
-    facts.heading === "Welcome to KIDDO! 🎉" ? null : "wrong heading",
-    facts.line === "Your KIDDO adventure starts here." ? null : "wrong line",
-    facts.enter === "Enter KIDDO" ? null : "wrong call to action",
+    /* The words a parent reads the moment the money lands, quoted in the
+       language KIDDO is sold in. `measure:language` proves the English
+       catalogue says the same thing. */
+    facts.heading === "Pembayaran berjaya! 🎉" ? null : `wrong heading: "${facts.heading}"`,
+    facts.line === "Anda kini mempunyai akses KIDDO seumur hidup." ? null : `wrong line: "${facts.line}"`,
+    facts.enter === "Masuk ke KIDDO" ? null : `wrong call to action: "${facts.enter}"`,
     facts.asksName ? null : "never asks who is playing",
     facts.h1s === 1 ? null : `${facts.h1s} h1s`,
     facts.address === "/welcome" ? null : `address not cleaned: ${facts.address}`,
@@ -237,18 +242,18 @@ section("4 · coming back: signed in already, nothing charged without a press");
   await type("[data-auth-password]", "secret1");
   await tap("[data-auth-submit]");
   await until(`document.querySelector("[data-parent-gate='ready']")`, 8000);
-  /* Pretend the subscription lapsed, so pricing is the road again. */
-  await js(`window.__kiddoPreviewSetSubscription?.({ status: "none", plan: null })`);
+  /* Take the purchase away again, so the offer is the road once more. */
+  await js(`window.__kiddoPreviewSetAccess?.({ lifetime: false })`);
   await go("/");
-  await tap("[data-pricing-cta='monthly']");
+  await tap("[data-pricing-cta='lifetime']");
   await until(`location.pathname === "/join"`);
   const started = await until(`document.querySelector("[data-join-start]")`, 6000);
   await wait(1500);
-  const stillHere = (await href()) === "/join?plan=monthly";
+  const stillHere = (await href()) === "/join";
   report(`/join offers a button (${started}) and charges nothing by itself (${stillHere})`,
-    started && stillHere ? [] : ["a signed-in parent was sent to Checkout without pressing anything"]);
-  const chosen = await attr("[data-join-plan]", "data-join-plan");
-  report(`the plan carried across: ${chosen}`, chosen === "monthly" ? [] : [`plan ${chosen}`]);
+    started && stillHere ? [] : ["a signed-in parent was sent to a payment page without pressing anything"]);
+  const shown = await text("[data-join-price]");
+  report(`the one price is on the page: ${shown}`, /RM29\.90/.test(shown ?? "") ? [] : [`says ${shown}`]);
   await shoot("04-join-signed-in");
 
   await tap("[data-join-start]");
@@ -260,24 +265,24 @@ section("4 · coming back: signed in already, nothing charged without a press");
 
 section("5 · already paid");
 {
-  await go("/join?plan=yearly");
+  await go("/join");
   const gate = await until(`document.querySelector("[data-join-gate='subscribed']")`, 6000);
-  report(`/join tells a subscriber there is nothing to pay: "${await text("[data-join-gate='subscribed'] h1")}"`,
-    gate ? [] : ["offered to charge a subscriber again"]);
+  report(`/join tells an owner there is nothing to pay: "${await text("[data-join-gate='subscribed'] h1")}"`,
+    gate ? [] : ["offered to charge a parent who already owns KIDDO"]);
 }
 
-section("6 · access follows the subscription");
+section("6 · the child's home follows the entitlement and nothing else");
 {
   await go("/parents");
   await until(`document.querySelector("[data-parent-gate='ready']")`);
-  await js(`window.__kiddoPreviewSetSubscription?.({ status: "expired" })`);
+  await js(`window.__kiddoPreviewSetAccess?.({ lifetime: false })`);
   await go("/play");
-  report(`expired → /play closed`, (await attr("[data-play-gate]", "data-play-gate")) === "closed" ? [] : ["open while expired"]);
+  report(`no purchase → /play closed`, (await attr("[data-play-gate]", "data-play-gate")) === "closed" ? [] : ["open without paying"]);
   await go("/parents");
-  await until(`document.querySelector("[data-subscription-gate]")`, 6000);
-  await js(`window.__kiddoPreviewSetSubscription?.({ status: "active", plan: "monthly" })`);
+  await until(`document.querySelector("[data-access-gate]")`, 6000);
+  await js(`window.__kiddoPreviewSetAccess?.({ lifetime: true })`);
   await go("/play");
-  report(`active → /play open`, (await exists("[data-play-gate]")) ? ["still closed"] : []);
+  report(`bought → /play open`, (await exists("[data-play-gate]")) ? ["still closed"] : []);
 }
 
 section("7 · viewports");
@@ -290,7 +295,7 @@ for (const viewport of VIEWPORTS) {
       .filter((t) => t.r.height > 0 && t.r.height < 48).map((t) => t.n);
     return { small, wide: document.documentElement.scrollWidth > innerWidth, h1s: document.querySelectorAll("h1").length };
   })()`);
-  await go("/join?plan=yearly");
+  await go("/join");
   const joined = await jsObject(`(() => {
     const small = [...document.querySelectorAll("a[href],button")]
       .map((el) => ({ r: el.getBoundingClientRect(), n: (el.textContent || "").trim().slice(0, 20) }))
@@ -314,7 +319,7 @@ section("8 · reduced motion");
     const h = document.querySelector("h1");
     return { opacity: +getComputedStyle(h).opacity, moving: [...document.querySelectorAll("*")].filter((el) => { const a = getComputedStyle(el); return a.animationIterationCount === "infinite" && a.animationName !== "none"; }).length };
   })()`);
-  await go("/join?plan=yearly", 400);
+  await go("/join", 400);
   const joinOpacity = await js(`+getComputedStyle(document.querySelector("h1")).opacity`);
   report(`readable at once: welcome ${welcome.opacity}, join ${joinOpacity}, ${welcome.moving} loop(s)`, [
     welcome.opacity === 1 && joinOpacity === 1 ? null : "not visible at once",

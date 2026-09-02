@@ -14,15 +14,17 @@
  * with whoever can set a build variable as its author.
  *
  * The conversion events add a third: a purchase is reported once. `/welcome`
- * is a page a parent can reload, and a subscription that is still there on
- * the second reading is not a second sale. That one is checked by driving
- * the reporter itself against a pretend browser, below.
+ * is a page a parent can reload, and a lifetime entitlement that is still
+ * true on the second reading is not a second sale — and unlike a
+ * subscription it is true forever, so the guard has to be the bill rather
+ * than the state. That is checked by driving the reporter itself against a
+ * pretend browser, below.
  */
 import assert from "node:assert/strict";
 import { readdirSync, readFileSync } from "node:fs";
 import { test } from "node:test";
 
-import { AMOUNTS, NO_SUBSCRIPTION, type SubscriptionState } from "@/lib/billing/subscription";
+import { LIFETIME_AMOUNT, NO_ENTITLEMENT, type Entitlement } from "@/lib/billing/access";
 
 /* The id is read from the environment once, when the module is first
    imported, exactly as a build reads it. So it is set here first — a
@@ -51,7 +53,7 @@ test("only a plain number is ever compiled into the pixel's script", () => {
     "');alert(1);//",
     "2532624113883147'); fbq('init','999",
     "<script>alert(1)</script>",
-    "${process.env.STRIPE_SECRET_KEY}",
+    "${process.env.BILLPLZ_SECRET_KEY}",
   ]) {
     assert.equal(pixelId(hostile), null, `${hostile} must not become a pixel`);
   }
@@ -181,41 +183,46 @@ function pretendBrowser(path = "/welcome", storage: "works" | "blocked" = "works
   return { sent, kept, window };
 }
 
-/** A subscription as the webhook writes one. */
-const PAID: SubscriptionState = {
-  ...NO_SUBSCRIPTION,
-  status: "active",
-  plan: "monthly",
-  stripeSubscriptionId: "sub_1234",
+/** An entitlement as the Billplz callback writes one. */
+const PAID: Entitlement = {
+  ...NO_ENTITLEMENT,
+  access: {
+    lifetime: true,
+    grantedAt: 1_700_000_000_000,
+    source: "billplz",
+    billId: "bill_1234",
+    amount: LIFETIME_AMOUNT,
+  },
 };
 
-test("a purchase is reported once per subscription, price and plan only", () => {
+test("a purchase is reported once per bill, price only", () => {
   const { sent, kept } = pretendBrowser("/welcome");
   reportPurchase(PAID);
   reportPurchase(PAID);
-  reportPurchase({ ...PAID, plan: "yearly" });
 
   assert.equal(sent.length, 1, "one Purchase, however many times the page renders");
   const [verb, pixel, event, details, options] = sent[0] as [string, string, string, Record<string, unknown>, Record<string, unknown>];
   assert.equal(verb, "trackSingle", "named, or a second pixel on the page would count it too");
   assert.equal(pixel, PIXEL);
   assert.equal(event, "Purchase");
-  assert.deepEqual(details, { value: AMOUNTS.monthly / 100, currency: "MYR", content_name: "monthly" });
-  /* Derived from the subscription, so a second device — or this one with its
-     storage cleared — is deduplicated by Meta rather than counted twice. */
-  assert.deepEqual(options, { eventID: "purchase_sub_1234" });
-  assert.equal(kept.get(PURCHASE_KEY), "sub_1234");
+  assert.deepEqual(details, { value: LIFETIME_AMOUNT / 100, currency: "MYR", content_name: "lifetime" });
+  /* Derived from the bill, so a second device — or this one with its
+     storage cleared — is deduplicated by Meta rather than counted twice.
+     A lifetime entitlement never lapses, so without this the pixel would
+     count a sale on every visit the parent ever makes. */
+  assert.deepEqual(options, { eventID: "purchase_bill_1234" });
+  assert.equal(kept.get(PURCHASE_KEY), "bill_1234");
 
   /* Nothing in the beacon is about the person who paid. */
-  assert.doesNotMatch(JSON.stringify(sent), /sub_1234(?!")|email|uid|@/);
+  assert.doesNotMatch(JSON.stringify(sent), /email|uid|@/);
 });
 
 test("a purchase with nothing to name it is not reported", () => {
   const { sent } = pretendBrowser("/welcome");
-  reportPurchase(NO_SUBSCRIPTION);
-  reportPurchase({ ...PAID, stripeSubscriptionId: null });
-  reportPurchase({ ...PAID, plan: null });
-  assert.deepEqual(sent, [], "an unnamed subscription cannot be deduplicated, so it is not sent");
+  reportPurchase(NO_ENTITLEMENT);
+  reportPurchase({ ...PAID, access: { ...PAID.access, billId: null } });
+  reportPurchase({ ...PAID, access: { ...PAID.access, lifetime: false } });
+  assert.deepEqual(sent, [], "an unnamed purchase cannot be deduplicated, so it is not sent");
 });
 
 test("a device that cannot remember still reports only what Meta can dedupe", () => {
@@ -231,38 +238,40 @@ test("a device that cannot remember still reports only what Meta can dedupe", ()
 test("no conversion leaves a page the pixel is not allowed on", () => {
   for (const path of ["/play", "/worlds/counting", "/play/sample"]) {
     const { sent, kept } = pretendBrowser(path);
-    reportCheckoutStarted("monthly");
+    reportCheckoutStarted();
     reportPurchase(PAID);
     assert.deepEqual(sent, [], `${path} must report nothing`);
     assert.equal(kept.size, 0, `${path} must not even remember`);
   }
 });
 
-test("a checkout is reported with the plan the parent chose", () => {
+test("a checkout is reported with the one price there is", () => {
   const { sent } = pretendBrowser("/join");
-  reportCheckoutStarted("yearly");
+  reportCheckoutStarted();
   assert.deepEqual(sent[0], [
     "trackSingle",
     PIXEL,
     "InitiateCheckout",
-    { value: AMOUNTS.yearly / 100, currency: "MYR", content_name: "yearly" },
+    { value: LIFETIME_AMOUNT / 100, currency: "MYR", content_name: "lifetime" },
   ]);
 });
 
-test("the checkout event is sent before the browser leaves for Stripe", () => {
+test("the checkout event is sent before the browser leaves for Billplz", () => {
   /* A beacon is cancelled by the navigation that follows it, so the order of
-     these two lines in `startCheckout` is the whole event. */
+     these two lines in `startPurchase` is the whole event. */
   const source = readFileSync(new URL("../src/lib/cloud/session.ts", import.meta.url), "utf8");
-  const reported = source.indexOf("reportCheckoutStarted(plan)");
+  const reported = source.indexOf("reportCheckoutStarted()");
   const left = source.indexOf("window.location.assign(url)");
   assert.ok(reported > -1 && left > -1);
-  assert.ok(reported < left, "report the checkout before redirecting to Stripe");
+  assert.ok(reported < left, "report the checkout before redirecting to Billplz");
 });
 
-test("the purchase is reported from the subscription, not from Stripe's redirect", () => {
+test("the purchase is reported from the entitlement, not from Billplz's redirect", () => {
   const source = readFileSync(new URL("../src/components/account/WelcomeGate.tsx", import.meta.url), "utf8");
-  /* `open` is `hasAccess` on what the webhook wrote. `checkout === "success"`
-     is Stripe saying where the parent came from, which is not a payment. */
-  assert.match(source, /if \(open && subscription\) reportPurchase\(subscription\)/);
-  assert.doesNotMatch(source.replace(/\/\*[\s\S]*?\*\//g, ""), /checkout === "success"[\s\S]{0,80}reportPurchase/);
+  /* `open` is `hasAccess` on what the callback wrote. `billplz[paid]=true` is
+     a string in an address bar, which is not a payment. */
+  assert.match(source, /if \(open && entitlement\) reportPurchase\(entitlement\)/);
+  const code = source.replace(/\/\*[\s\S]*?\*\//g, "");
+  assert.doesNotMatch(code, /checkout[\s\S]{0,80}reportPurchase/);
+  assert.doesNotMatch(code, /paid[\s\S]{0,80}reportPurchase/);
 });

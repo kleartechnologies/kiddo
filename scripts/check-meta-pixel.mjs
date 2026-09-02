@@ -11,9 +11,9 @@
  *
  * The second half checks the conversions. A purchase reported twice is a
  * campaign told it made twice the money, and `/welcome` is a page a parent
- * can reload; the rule that a subscription is counted once is checked by
- * buying one — through the pretend cloud, the same one the measurements
- * use, where "Checkout" is a page on this site and the "webhook" is a timer.
+ * can reload; the rule that a purchase is counted once is checked by making
+ * one — through the pretend cloud, the same one the measurements use, where
+ * the "payment page" is a page on this site and the "callback" is a timer.
  * That half needs the account-free build; against a configured server it
  * says so and skips rather than failing.
  *
@@ -226,9 +226,9 @@ try {
       return true;
     })()`);
 
-    /* Landing → plan → account → "Checkout" → /welcome, which is the road a
-       parent takes and the only road either event is sent from. */
-    await visit(cdp, sessionId, `${BASE}/join?plan=yearly`, 1200);
+    /* Landing → the offer → account → "Billplz" → /welcome, which is the
+       road a parent takes and the only road either event is sent from. */
+    await visit(cdp, sessionId, `${BASE}/join`, 1200);
     await until(`document.querySelector("[data-auth-card]")`);
     if ((await js(`document.querySelector("[data-auth-card]")?.dataset.authCard`)) !== "signup") await tap("[data-auth-switch]");
     await type("[data-auth-email]", "parent@example.com");
@@ -238,25 +238,25 @@ try {
 
     const arrived = await until(`location.pathname === "/welcome"`, 15000);
     const started = (await logged()).filter((b) => b.event === "InitiateCheckout");
-    console.log("\n5 · plan → account → Checkout");
+    console.log("\n5 · the offer → account → Billplz");
     console.log(`  reached /welcome    : ${arrived}`);
     console.log(`  reported            : ${started.map((b) => `${b.event} ${JSON.stringify(b.custom)} from ${new URL(b.page).pathname}`).join("\n                        ") || "(nothing)"}`);
-    console.log("  expected            : 1 InitiateCheckout, RM59.90 as MYR 59.9, sent from /join");
+    console.log("  expected            : 1 InitiateCheckout, RM29.90 as MYR 29.9, sent from /join");
 
-    /* The webhook is a timer here; the page says "confirming" until it
+    /* The callback is a timer here; the page says "confirming" until it
        lands, and nothing may be reported as bought before it does. */
     const early = count(await logged(), "Purchase");
     const opened = await until(`document.querySelector("[data-welcome='open']")`, 15000);
     await settle(cdp, sessionId, 1200);
     const afterOpen = (await logged()).filter((b) => b.event === "Purchase");
-    console.log("\n6 · the webhook lands");
+    console.log("\n6 · the callback lands");
     console.log(`  /welcome opened     : ${opened}`);
     console.log(`  before it landed    : ${early} purchases`);
     console.log(`  reported            : ${afterOpen.map((b) => `${b.event} ${JSON.stringify(b.custom)} id=${b.id}`).join("\n                        ") || "(nothing)"}`);
-    console.log("  expected            : 1 Purchase, MYR 59.9, deduplicated by the subscription");
+    console.log("  expected            : 1 Purchase, MYR 29.9, deduplicated by the bill");
 
     /* And the thing the whole design is for: a parent who reloads the page,
-       or comes back to it, has not bought a second subscription. */
+       or comes back to it, has not bought KIDDO twice. */
     await visit(cdp, sessionId, `${BASE}/welcome`, 2000);
     await until(`document.querySelector("[data-welcome='open']")`, 10000);
     await visit(cdp, sessionId, `${BASE}/welcome`, 2000);
@@ -273,15 +273,15 @@ try {
       arrived ? null : "the parent never reached /welcome",
       started.length === 1 ? null : `${started.length} InitiateCheckout events, expected 1`,
       started[0] && new URL(started[0].page).pathname === "/join" ? null : "InitiateCheckout was not sent from /join",
-      started[0] && started[0].custom.value === "59.9" && started[0].custom.currency === "MYR"
+      started[0] && started[0].custom.value === "29.9" && started[0].custom.currency === "MYR"
         ? null
-        : `InitiateCheckout carried ${JSON.stringify(started[0]?.custom)}, expected the yearly price in MYR`,
+        : `InitiateCheckout carried ${JSON.stringify(started[0]?.custom)}, expected the one price in MYR`,
       opened ? null : "/welcome never opened",
-      early === 0 ? null : "a purchase was reported before the webhook wrote the subscription",
+      early === 0 ? null : "a purchase was reported before the callback wrote the access",
       afterOpen.length === 1 ? null : `${afterOpen.length} Purchase events, expected 1`,
-      one && one.custom.value === "59.9" && one.custom.currency === "MYR" && one.custom.content_name === "yearly"
+      one && one.custom.value === "29.9" && one.custom.currency === "MYR" && one.custom.content_name === "lifetime"
         ? null
-        : `Purchase carried ${JSON.stringify(one?.custom)}, expected the yearly price in MYR`,
+        : `Purchase carried ${JSON.stringify(one?.custom)}, expected the one price in MYR`,
       one && one.id ? null : "Purchase carried no eventID, so Meta cannot deduplicate it",
       count(reloaded, "Purchase") === 1 ? null : `reloading /welcome reported ${count(reloaded, "Purchase")} purchases`,
       reloaded.some((b) => b.custom.email || b.custom.uid) ? "a conversion carried something about the parent" : null,

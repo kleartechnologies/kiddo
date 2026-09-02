@@ -278,14 +278,14 @@ function sentencesOf(challenge: Challenge): string[] {
 /* 7 ---------------------------------------------------------------------- */
 test("a language is a set of words, never a way into the content", () => {
   /* The one thing localization must not have bought anybody. The round route
-     reads `locale` last, after the token, the subscription and the budget, so
+     reads `locale` last, after the token, the purchase and the budget, so
      there is no ordering in which a language string decides whether content
      is dealt — and there is no second route that deals it without them. */
   const route = read("../src/app/api/content/round/route.ts");
-  const guard = route.indexOf("hasAccess(state");
+  const guard = route.indexOf("hasAccess(entitlement");
   const budget = route.indexOf("consume(LIMITS.content");
   const locale = route.indexOf("body.locale");
-  assert.ok(guard > 0 && budget > guard, "the subscription is checked before the budget");
+  assert.ok(guard > 0 && budget > guard, "the purchase is checked before the budget");
   assert.ok(locale > budget, "the language is read after every check, or it is a bypass");
 
   /* `dealRound` treats a language it does not speak as English rather than as

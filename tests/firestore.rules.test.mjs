@@ -182,6 +182,11 @@ describe("subscription (server-owned)", () => {
     await assertFails(updateDoc(doc(db, "users/alice"), { subscription: ACTIVE }));
     await assertFails(updateDoc(doc(db, "users/alice"), { "subscription.currentPeriodEnd": 9999999999999 }));
     await assertFails(setDoc(doc(db, "users/alice"), { email: ALICE.email, createdAt: 1, updatedAt: 2 }));
+    // The lifetime purchase is the same kind of field, and the one that
+    // matters most: a client that could write it would never have to pay.
+    await assertFails(updateDoc(doc(db, "users/alice"), { "access.lifetime": true }));
+    await assertFails(updateDoc(doc(db, "users/alice"), { access: { lifetime: true, grantedAt: 1, source: "billplz", billId: "b1", amount: 3990 } }));
+    await assertFails(setDoc(doc(db, "users/alice"), { email: ALICE.email, createdAt: 1, updatedAt: 2, access: { lifetime: true } }));
     // The ordinary client update still works alongside it.
     await assertSucceeds(updateDoc(doc(db, "users/alice"), { email: ALICE.email, updatedAt: 2 }));
     // Nobody else can read it.
@@ -193,6 +198,18 @@ describe("subscription (server-owned)", () => {
     await assertFails(setDoc(doc(db, "stripeEvents/evt_1"), { type: "x", receivedAt: 1 }));
     await assertFails(getDoc(doc(db, "stripeEvents/evt_1")));
     await assertFails(getDocs(collection(db, "stripeEvents")));
+  });
+
+  it("the Billplz ledger is closed to every client, signed in or not", async () => {
+    // It says whose a bill is and whether it has been settled. A client
+    // that could write it could point a stranger's paid bill at its own
+    // account; one that could read it would learn other parents' bill ids.
+    for (const db of [as(ALICE), nobody()]) {
+      await assertFails(setDoc(doc(db, "billplzBills/bill_1"), { uid: "alice", settled: true, amount: 3990 }));
+      await assertFails(updateDoc(doc(db, "billplzBills/bill_1"), { settled: false }));
+      await assertFails(getDoc(doc(db, "billplzBills/bill_1")));
+      await assertFails(getDocs(collection(db, "billplzBills")));
+    }
   });
 
   it("the rate-limit counters are closed to every client, signed in or not", async () => {
@@ -211,8 +228,8 @@ describe("subscription (server-owned)", () => {
     // no client may read one either. The server serves them at
     // /api/social/recent, from two fields that identify nobody.
     for (const db of [as(ALICE), nobody()]) {
-      await assertFails(setDoc(doc(db, "joinEvents/sub_1"), { at: 1, plan: "yearly" }));
-      await assertFails(getDoc(doc(db, "joinEvents/sub_1")));
+      await assertFails(setDoc(doc(db, "joinEvents/bill_1"), { at: 1 }));
+      await assertFails(getDoc(doc(db, "joinEvents/bill_1")));
       await assertFails(getDocs(collection(db, "joinEvents")));
     }
   });

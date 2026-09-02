@@ -43,7 +43,7 @@ export const ms: Record<MessageKey, string> = {
   "common.tryAgain": "Cuba lagi",
   "common.signOut": "Log keluar",
   "common.oneMoment": "Sekejap ya…",
-  "common.enterKiddo": "Masuk KIDDO",
+  "common.enterKiddo": "Masuk ke KIDDO",
   "common.and": "dan",
   "common.somethingWentWrong": "Ada sesuatu yang tidak kena. Sila cuba lagi.",
 
@@ -62,7 +62,7 @@ export const ms: Record<MessageKey, string> = {
   /* ---- Landing: metadata --------------------------------------------- */
   "landing.meta.title": "KIDDO — Tukar screen time anak kepada masa bermain & belajar",
   "landing.meta.description":
-    "KIDDO ialah dunia permainan interaktif untuk anak berumur 4 hingga 8 tahun — tempat anak bermain, meneroka dan belajar dengan lebih bermakna. Satu langganan untuk ibu bapa; tiada iklan, tiada pembelian dalam aplikasi.",
+    "KIDDO ialah dunia permainan interaktif untuk anak berumur 4 hingga 8 tahun — tempat anak bermain, meneroka dan belajar dengan lebih bermakna. Satu bayaran sahaja oleh ibu bapa; tiada iklan, tiada pembelian dalam aplikasi.",
   "landing.meta.ogDescription":
     "Dunia permainan interaktif untuk anak 4 hingga 8 tahun — bermain, meneroka dan belajar dengan lebih bermakna.",
   "landing.meta.twitterDescription":
@@ -73,13 +73,13 @@ export const ms: Record<MessageKey, string> = {
   "landing.hero.title": "Tukar Screen Time Anak Kepada Masa Bermain & Belajar.",
   "landing.hero.body":
     "KIDDO ialah dunia permainan interaktif untuk anak 4 hingga 8 tahun — tempat anak boleh bermain, meneroka dan belajar dengan lebih bermakna.",
-  "landing.hero.price": "{monthly}/bulan atau {yearly}/tahun",
+  "landing.hero.price": "{price} sekali. Akses seumur hidup.",
   "landing.hero.cta": "Mulakan KIDDO Untuk Anak",
   "landing.hero.secondary": "Lihat Cara KIDDO Berfungsi",
   "landing.hero.trustAria": "Apa yang anda dapat",
   "landing.hero.trust.1": "Tiada iklan",
   "landing.hero.trust.2": "Tiada pembelian dalam aplikasi",
-  "landing.hero.trust.3": "Boleh batal bila-bila masa",
+  "landing.hero.trust.3": "Sekali bayar, tiada pembaharuan",
 
   /* ---- Landing: the real product, on film ------------------------------ */
   "landing.showcase.eyebrow": "Rakaman sebenar dari dalam KIDDO",
@@ -247,16 +247,15 @@ export const ms: Record<MessageKey, string> = {
   "landing.pricing.eyebrow": "Harga",
   "landing.pricing.title": "Jadikan Screen Time Lebih Bermakna.",
   "landing.pricing.body":
-    "Satu langganan untuk anda, orang dewasa. Anak tidak pernah log masuk, tidak pernah nampak harga, dan tidak pernah diminta membeli apa-apa.",
+    "Satu bayaran sahaja, oleh anda, orang dewasa. Anak tidak pernah log masuk, tidak pernah nampak harga, dan tidak pernah diminta membeli apa-apa.",
   "landing.pricing.included.1": "Setiap dunia, setiap pintu dan setiap permainan",
   "landing.pricing.included.2":
     "Perjalanan seorang anak, disimpan dan dibawa antara peranti",
   "landing.pricing.included.3":
     "Ruang ibu bapa, dengan apa yang diteroka dan apa yang seterusnya",
   "landing.pricing.included.4": "Tiada iklan dan tiada apa-apa untuk dibeli di dalam",
-  "landing.pricing.saving": "Jimat {amount} setahun — {saving}% berbanding bayar bulanan",
   "landing.pricing.footnote":
-    "Batal bila-bila masa dari ruang ibu bapa. Pembayaran dikendalikan oleh Stripe — KIDDO tidak pernah melihat atau menyimpan kad anda.",
+    "Bayar sekali sahaja. Tiada pembaharuan, jadi tiada apa-apa untuk dibatalkan. Pembayaran dikendalikan oleh Billplz — KIDDO tidak pernah melihat atau menyimpan kad anda.",
 
   /* ---- Landing: questions parents ask ---------------------------------- */
   "landing.faq.eyebrow": "Soalan lazim",
@@ -275,16 +274,16 @@ export const ms: Record<MessageKey, string> = {
     "Setiap aktiviti ialah satu pusingan pendek lima soalan yang ada penghujungnya, jadi sentiasa ada masa yang sesuai untuk berhenti. Tiada iklan, tiada video yang main sendiri dan tiada apa-apa untuk dibeli. Apa yang anak siapkan tinggal di dalam dunianya, dan anda boleh lihat apa yang diteroka di ruang ibu bapa.",
   "landing.faq.q5": "Berapa harga KIDDO?",
   "landing.faq.a5":
-    "{monthly} sebulan atau {yearly} setahun, dan satu langganan membuka seluruh KIDDO. Boleh dibatalkan bila-bila masa dari ruang ibu bapa.",
+    "{price}, dibayar sekali sahaja. Itu membuka seluruh KIDDO untuk selamanya — tiada bayaran bulanan, tiada bayaran tahunan dan tiada pembaharuan.",
   "landing.faq.q6": "Adakah KIDDO ada iklan atau pembelian dalam aplikasi?",
   "landing.faq.a6":
-    "Tiada iklan, dan tiada pembelian dalam aplikasi. Satu langganan membuka seluruh KIDDO — anak tidak pernah nampak harga, iklan atau butang beli.",
-  "landing.faq.q7": "Apakah perbezaan pelan bulanan dan tahunan?",
+    "Tiada iklan, dan tiada pembelian dalam aplikasi. Satu bayaran membuka seluruh KIDDO — anak tidak pernah nampak harga, iklan atau butang beli.",
+  "landing.faq.q7": "Betulkah ini bayaran sekali sahaja?",
   "landing.faq.a7":
-    "Kedua-duanya membuka KIDDO sepenuhnya — tiada beza dari segi kandungan. Bezanya hanya cara bayar: {monthly} setiap bulan, atau {yearly} sekali setahun, iaitu sama seperti {perMonth} sebulan.",
-  "landing.faq.q8": "Bagaimana cara membatalkan langganan?",
+    "Betul. {price} sekali, dan KIDDO jadi milik anda. Tiada caj bulanan, tiada caj tahunan, tiada tarikh pembaharuan dan tiada kad yang disimpan untuk dicaj lagi.",
+  "landing.faq.q8": "Ada apa-apa yang perlu dibatalkan?",
   "landing.faq.a8":
-    "Bila-bila masa dari ruang ibu bapa, dalam beberapa klik — tiada panggilan dan tiada borang. Pembayaran dikendalikan oleh Stripe.",
+    "Tiada. Tiada langganan, jadi tiada apa-apa untuk dibatalkan dan tiada apa-apa yang boleh mencaj anda kali kedua. Pembayaran dikendalikan oleh Billplz, yang menerima FPX perbankan dalam talian dan kad.",
   "landing.faq.q9": "Apa yang anak boleh buat dalam KIDDO?",
   "landing.faq.a9":
     "Bermain permainan interaktif: mengira, memadan, mengenal huruf, perkataan, bentuk dan warna, berjumpa haiwan dan meneroka dunia kecil KIDDO. Setiap aktiviti ialah pusingan pendek yang ada penghujungnya.",
@@ -296,9 +295,9 @@ export const ms: Record<MessageKey, string> = {
   "landing.closing.cta": "Mulakan KIDDO Untuk Anak",
 
   /* ---- Landing: the sticky bar on a phone ------------------------------ */
-  "landing.sticky.aria": "Mula melanggan KIDDO",
-  "landing.sticky.price": "{monthly}/bulan · {yearly}/tahun",
-  "landing.sticky.cta": "Mulakan KIDDO",
+  "landing.sticky.aria": "Dapatkan KIDDO — akses seumur hidup",
+  "landing.sticky.price": "{price} · sekali bayar",
+  "landing.sticky.cta": "Dapatkan KIDDO",
 
   /* ---- The worlds, as places a child goes ---------------------------- */
   "world.meadow.name": "Padang",
@@ -481,44 +480,48 @@ export const ms: Record<MessageKey, string> = {
   "character.wally.blurb": "Seekor ikan paus kecil yang mesra.",
 
   /* ---- The two plans -------------------------------------------------- */
-  "plan.yearly.name": "Tahunan",
-  "plan.yearly.per": "tahun",
-  "plan.yearly.note": "Paling berbaloi",
-  "plan.yearly.blurb": "{perMonth} sebulan, dibayar sekali setahun",
-  "plan.yearly.cta": "Mulakan KIDDO",
-  "plan.monthly.name": "Bulanan",
-  "plan.monthly.per": "bulan",
-  "plan.monthly.note": "",
-  "plan.monthly.blurb": "Akses bulanan yang fleksibel",
-  "plan.monthly.cta": "Pilih Pelan Bulanan",
+  "offer.name": "Akses Seumur Hidup",
+  "offer.per": "sekali bayar",
+  "offer.note": "Harga Pelancaran",
+  "offer.was": "Harga asal {price}.",
+  "offer.blurb": "Bayar sekali sahaja. Akses KIDDO seumur hidup — tiada pembaharuan, tiada apa-apa untuk dibatalkan.",
+  "offer.cta": "Dapatkan KIDDO — {price}",
+  "offer.ctaShort": "Dapatkan Akses — {price}",
+
+  "access.label.lifetime": "Akses seumur hidup",
+  "access.label.legacy": "Langganan lama",
+  "access.label.none": "Belum dibeli",
+
+  "access.describe.lifetime":
+    "Dibeli dengan {price}, sekali sahaja. KIDDO kekal terbuka — tiada tarikh pembaharuan dan tiada apa-apa untuk dibatalkan.",
+  "access.describe.legacy":
+    "Anda melanggan sebelum KIDDO menjadi bayaran sekali. Langganan itu masih membuka KIDDO, dan anda boleh menguruskan atau menamatkannya di bawah.",
+  "access.describe.none": "KIDDO belum terbuka lagi.",
 
   /* ---- What state the subscription is in, in one word ----------------- */
-  "billing.status.active": "Aktif",
-  "billing.status.renewing": "Memperbaharui",
-  "billing.status.ending": "Akan tamat",
-  "billing.status.past_due": "Bayaran gagal",
-  "billing.status.incomplete": "Sedang disahkan",
-  "billing.status.cancelled": "Dibatalkan",
-  "billing.status.expired": "Sudah tamat",
-  "billing.status.none": "Tiada langganan",
+  "legacy.status.active": "Aktif",
+  "legacy.status.renewing": "Memperbaharui",
+  "legacy.status.ending": "Akan tamat",
+  "legacy.status.past_due": "Bayaran gagal",
+  "legacy.status.incomplete": "Sedang disahkan",
+  "legacy.status.cancelled": "Dibatalkan",
+  "legacy.status.expired": "Sudah tamat",
+  "legacy.status.none": "Tiada langganan",
 
   /* ---- ...and in one sentence a parent can act on --------------------- */
-  "billing.describe.renewing":
+  "legacy.describe.renewing":
     "Langganan anda sedang diperbaharui. Jika ia mengambil masa lebih daripada sehari, sila semak butiran pembayaran anda.",
-  "billing.describe.endingOn": "Dibatalkan. KIDDO kekal terbuka sehingga {when}.",
-  "billing.describe.ending":
+  "legacy.describe.endingOn": "Dibatalkan. KIDDO kekal terbuka sehingga {when}.",
+  "legacy.describe.ending":
     "Dibatalkan. KIDDO kekal terbuka sehingga tamat tempoh yang telah dibayar.",
-  "billing.describe.planRenews":
-    "Pelan {plan}, {price} se{per}. Diperbaharui pada {when}.",
-  "billing.describe.plan": "Pelan {plan}, {price} se{per}.",
-  "billing.describe.activeRenews": "Aktif. Diperbaharui pada {when}.",
-  "billing.describe.active": "Aktif.",
-  "billing.describe.past_due":
+  "legacy.describe.activeRenews": "Aktif. Diperbaharui pada {when}.",
+  "legacy.describe.active": "Aktif.",
+  "legacy.describe.past_due":
     "Bayaran terakhir tidak berjaya, jadi KIDDO dijeda buat sementara. Kemas kini butiran pembayaran anda untuk menyambung semula.",
-  "billing.describe.incomplete": "Bayaran anda masih dalam pengesahan.",
-  "billing.describe.endedOn": "Langganan anda tamat pada {when}.",
-  "billing.describe.ended": "Langganan anda telah tamat.",
-  "billing.describe.none": "Belum ada langganan.",
+  "legacy.describe.incomplete": "Bayaran anda masih dalam pengesahan.",
+  "legacy.describe.endedOn": "Langganan anda tamat pada {when}.",
+  "legacy.describe.ended": "Langganan anda telah tamat.",
+  "legacy.describe.none": "Belum ada langganan.",
 
   /* ---- Signing in, and making an account ------------------------------ */
   "auth.signin.title": "Log masuk ke KIDDO",
@@ -563,7 +566,7 @@ export const ms: Record<MessageKey, string> = {
   "auth.error.offline": "KIDDO tidak dapat menghubungi internet sekarang. Semak sambungan dan cuba lagi.",
   "auth.error.bad-link": "Pautan itu sudah luput. Minta pautan baharu di bawah.",
   "auth.error.recent-login": "Sila log masuk semula dahulu.",
-  "auth.error.billing-unavailable": "Langganan belum disediakan pada KIDDO ini.",
+  "auth.error.billing-unavailable": "Pembayaran belum disediakan pada KIDDO ini.",
   "auth.error.popup-blocked":
     "Pelayar anda menghalang tetingkap Google daripada dibuka. Benarkan tetingkap timbul untuk KIDDO, atau guna e-mel dan kata laluan di bawah.",
   "auth.error.different-sign-in":
@@ -573,80 +576,76 @@ export const ms: Record<MessageKey, string> = {
   "auth.error.unknown": "Ada sesuatu yang tidak kena. Sila cuba lagi.",
 
   /* ---- /join: the road from choosing a plan to paying for it ---------- */
-  "join.unavailable.title": "Langganan belum disediakan di sini",
+  "join.unavailable.title": "Pembayaran belum disediakan di sini",
   "join.unavailable.body":
     "Salinan KIDDO ini berjalan tanpa akaun, jadi tiada apa-apa untuk dibayar lagi. Semua permainan anak anda kekal pada peranti ini.",
   "join.unavailable.cta": "Buka KIDDO",
   "join.subscribed.title": "Anda sudah pun ada KIDDO",
   "join.subscribed.body":
-    "Langganan anda aktif, jadi tiada apa-apa untuk dibayar. Semuanya terbuka.",
+    "KIDDO sudah pun milik anda, jadi tiada apa-apa untuk dibayar. Semuanya terbuka.",
   "join.subscribed.parents": "Ruang ibu bapa",
   "join.trouble.title": "Kami tidak dapat menghubungi akaun anda",
   "join.trouble.body": "Semak sambungan anda dan cuba lagi — tiada apa-apa yang dicaj.",
-  "join.beforeStripe":
-    "Anda akan dibawa ke Stripe untuk membayar sebaik sahaja akaun anda siap. Tiada caj sehingga anda selesai di sana, dan KIDDO tidak pernah melihat kad anda.",
-  "join.checkout.starting": "Membawa anda ke Stripe…",
+  "join.beforePayment":
+    "Anda akan dibawa ke Billplz untuk membayar sebaik sahaja akaun anda siap. Tiada caj sehingga anda selesai di sana, dan KIDDO tidak pernah melihat kad anda.",
+  "join.checkout.starting": "Membawa anda ke Billplz…",
   "join.checkout.ready": "Sedia bila-bila anda mahu",
   "join.checkout.signedInAs":
-    "Log masuk sebagai {email}. Langkah seterusnya ialah pembayaran selamat Stripe.",
+    "Log masuk sebagai {email}. Langkah seterusnya ialah halaman pembayaran selamat Billplz.",
   "join.checkout.yourAccount": "akaun anda",
   "join.checkout.cta": "Teruskan ke pembayaran",
   "join.checkout.differentAccount": "Guna akaun lain",
-  "join.plan.eyebrow": "Pelan anda",
-  "join.plan.heading": "{name} · {price} setiap {per}",
-  "join.plan.yearlyBlurb": "{blurb} — {saving}% lebih murah daripada bayaran bulanan.",
-  "join.plan.monthlyBlurb": "{blurb}. Batal bila-bila masa.",
-  "join.plan.legend": "Pilih satu pelan",
-  "join.plan.option": "{name} · {price}/{per}",
-  "join.plan.compare": "Bandingkan pelan sekali lagi",
+  "join.offer.eyebrow": "Apa yang anda dapat",
+  "join.offer.heading": "{name} · {price}",
+  "join.offer.blurb": "{blurb}",
+  "join.offer.back": "Lihat apa yang disertakan",
   "join.error.billing-unavailable":
-    "Langganan belum disediakan pada KIDDO ini. Sila cuba lagi nanti.",
-  "join.error.no-account": "Sila log masuk semula, kemudian pilih pelan.",
+    "Pembayaran belum disediakan pada KIDDO ini. Sila cuba lagi nanti.",
+  "join.error.no-account": "Sila log masuk semula, kemudian cuba bayar sekali lagi.",
+  "join.error.already-owned": "Anda sudah pun ada KIDDO. Tiada apa-apa yang dicaj.",
   "join.error.checkout": "Ada masalah semasa memulakan pembayaran. Sila cuba lagi.",
 
-  /* ---- The subscription gate ------------------------------------------ */
-  "sub.confirming.title": "Kami sedang mengesahkan akses KIDDO anda",
-  "sub.confirming.body":
-    "Terima kasih! Bayaran anda sudah sampai ke Stripe dan KIDDO sedang dibuka. Biasanya ia mengambil masa beberapa saat sahaja — tiada apa-apa yang perlu anda lakukan.",
-  "sub.headline.past_due": "Ada bayaran yang tidak berjaya",
-  "sub.headline.returning": "Selamat kembali ke KIDDO",
-  "sub.headline.incomplete": "Bayaran anda masih dalam pengesahan",
-  "sub.headline.ready": "Pengembaraan anak anda sudah sedia.",
-  "sub.lead.past_due":
+  /* ---- The purchase gate ---------------------------------------------- */
+  "gate.confirming.title": "Kami sedang mengesahkan akses KIDDO anda",
+  "gate.confirming.body":
+    "Terima kasih! Bayaran anda sudah sampai ke Billplz dan KIDDO sedang dibuka. Biasanya ia mengambil masa beberapa saat sahaja — tiada apa-apa yang perlu anda lakukan.",
+  "gate.headline.past_due": "Ada bayaran yang tidak berjaya",
+  "gate.headline.returning": "Selamat kembali ke KIDDO",
+  "gate.headline.incomplete": "Bayaran anda masih dalam pengesahan",
+  "gate.headline.ready": "Pengembaraan anak anda sudah sedia.",
+  "gate.lead.past_due":
     "KIDDO dihentikan sementara sehingga bayaran berjaya. Mengemas kini kad dalam bahagian bayaran biasanya menyelesaikannya terus.",
-  "sub.lead.ended":
-    "Langganan anda telah tamat. Pilih satu pelan dan semua yang anak anda mainkan masih ada di tempatnya.",
-  "sub.lead.incomplete":
-    "Stripe belum mengesahkan bayaran pertama. Jika ia ditolak, anda boleh cuba lagi di bawah; bayaran yang masih diproses akan membuka KIDDO sebaik sahaja ia selesai.",
-  "sub.lead.stale":
-    "Kami masih belum menerima maklum balas tentang bayaran itu. Jika kad anda sudah dicaj, KIDDO akan terbuka dengan sendirinya sebentar lagi — jangan bayar dua kali. Jika bayaran itu tidak berjaya, anda boleh cuba lagi di bawah.",
-  "sub.lead.default":
-    "Satu langganan membuka setiap dunia, setiap permainan dan setiap cerita baharu untuk anak anda. Tiada iklan, tiada apa-apa untuk dibeli di dalamnya.",
-  "sub.cancelledNote": "Tiada bayaran dibuat. Bila-bila anda sedia, pelan-pelan ada di bawah.",
-  "sub.updatePayment": "Kemas kini butiran bayaran",
-  "sub.start": "Mulakan KIDDO",
-  "sub.footnote": "Batal bila-bila masa. Bayaran dikendalikan oleh Stripe.",
-  "sub.billingHistory": "Sejarah bayaran",
-  "sub.error.portal": "KIDDO tidak dapat membuka bahagian bayaran sekarang. Sila cuba lagi.",
+  "gate.lead.ended":
+    "Langganan lama anda telah tamat. Dapatkan akses seumur hidup di bawah, dan semua yang anak anda mainkan masih ada di tempatnya.",
+  "gate.lead.incomplete":
+    "Bayaran pertama langganan lama anda belum disahkan. Anda boleh terus mendapatkan akses seumur hidup di bawah — satu bayaran, dan tiada pembaharuan.",
+  "gate.lead.stale":
+    "Kami masih belum menerima maklum balas tentang bayaran itu. Jika ia berjaya, KIDDO akan terbuka dengan sendirinya sebentar lagi — jangan bayar dua kali. Jika tidak, anda boleh cuba lagi di bawah.",
+  "gate.lead.default":
+    "Satu bayaran membuka setiap dunia, setiap permainan dan setiap cerita baharu untuk anak anda, untuk selamanya. Tiada iklan, tiada apa-apa untuk dibeli di dalamnya.",
+  "gate.cancelledNote": "Tiada bayaran dibuat. Bila-bila anda sedia, KIDDO ada di bawah.",
+  "gate.updatePayment": "Kemas kini butiran bayaran",
+  "gate.footnote": "Satu bayaran. Tiada pembaharuan. Bayaran dikendalikan oleh Billplz.",
+  "gate.billingHistory": "Sejarah bayaran",
+  "gate.error.portal": "KIDDO tidak dapat membuka bahagian bayaran sekarang. Sila cuba lagi.",
 
-  /* ---- /welcome: back from Stripe ------------------------------------- */
-  "welcome.title": "Selamat datang ke KIDDO! 🎉",
-  "welcome.body": "Pengembaraan KIDDO anda bermula di sini.",
+  /* ---- /welcome: back from Billplz ------------------------------------ */
+  "welcome.title": "Pembayaran berjaya! 🎉",
+  "welcome.body": "Anda kini mempunyai akses KIDDO seumur hidup.",
   "welcome.who": "Siapa yang nak main?",
   "welcome.toParents": "Pergi ke ruang ibu bapa",
   "welcome.signedOut.title": "Log masuk untuk menyelesaikannya",
   "welcome.signedOut.body":
-    "Kami tidak nampak akaun anda pada peranti ini, jadi KIDDO tidak dapat menyemak langganan anda. Log masuk dan ruang ibu bapa akan menunjukkan keadaan sebenarnya.",
-  "welcome.cancelled.title": "Tiada bayaran dibuat",
-  "welcome.cancelled.body":
-    "Anda keluar dari pembayaran sebelum membayar, dan tiada apa-apa yang dicaj. Pelan-pelan menunggu bila-bila anda sedia.",
-  "welcome.cancelled.cta": "Lihat pelan-pelan",
+    "Kami tidak nampak akaun anda pada peranti ini, jadi KIDDO tidak dapat menyemak pembayaran anda. Log masuk dan ruang ibu bapa akan menunjukkan keadaan sebenarnya.",
+  "welcome.cancelled.title": "Pembayaran belum berjaya.",
+  "welcome.cancelled.body": "Anda boleh cuba lagi bila-bila masa.",
+  "welcome.cancelled.cta": "Lihat harga",
   "welcome.confirming.title": "Kami sedang mengesahkan akses KIDDO anda",
   "welcome.confirming.body":
-    "Terima kasih! Bayaran anda sudah sampai ke Stripe dan KIDDO sedang dibuka. Biasanya ia mengambil masa beberapa saat sahaja — tiada apa-apa yang perlu anda lakukan, dan halaman ini akan bergerak sendiri.",
+    "Terima kasih! Bayaran anda sudah sampai ke Billplz dan KIDDO sedang dibuka. Biasanya ia mengambil masa beberapa saat sahaja — tiada apa-apa yang perlu anda lakukan, dan halaman ini akan bergerak sendiri.",
   "welcome.waiting.title": "Masih mengesahkan",
   "welcome.waiting.body":
-    "Kami masih belum menerima maklum balas tentang bayaran itu. Jika kad anda sudah dicaj, KIDDO akan terbuka dengan sendirinya sebentar lagi — jangan bayar dua kali. Ruang ibu bapa sentiasa menunjukkan keadaan semasa langganan anda.",
+    "Kami masih belum menerima maklum balas tentang bayaran itu. Jika ia berjaya, KIDDO akan terbuka dengan sendirinya sebentar lagi — jangan bayar dua kali. Ruang ibu bapa sentiasa menunjukkan keadaan sebenarnya.",
 
   /* ---- The parent area's own gate ------------------------------------- */
   "parents.gate.deviceNote":
@@ -664,6 +663,7 @@ export const ms: Record<MessageKey, string> = {
   "onboarding.blurb":
     "Satu perkara terakhir: apakah nama pertama anak anda? KIDDO menggunakannya untuk menyapa. Hanya perkataan pertama disimpan.",
   "onboarding.field": "Nama pertama anak anda",
+  "onboarding.submit": "Mulakan KIDDO",
   "onboarding.error.empty": "Sila taip nama pertama anak anda.",
   "onboarding.error.save": "KIDDO tidak dapat menyimpannya sekarang. Sila cuba lagi.",
 
@@ -685,17 +685,17 @@ export const ms: Record<MessageKey, string> = {
   "account.delete.open": "Padam akaun",
   "account.delete.title": "Padam akaun KIDDO anda?",
   "account.delete.body":
-    "Log masuk anda, nama anak anda dan setiap kemajuan akan dibuang daripada KIDDO, dan sebarang langganan akan dibatalkan supaya tiada caj lagi. Ini tidak boleh dibatalkan.",
+    "Log masuk anda, nama anak anda dan setiap kemajuan akan dibuang daripada KIDDO, termasuk akses yang anda telah bayar — ia tidak boleh dikembalikan dan tiada bayaran balik. Sebarang langganan lama akan dibatalkan supaya tiada caj lagi. Ini tidak boleh dibatalkan.",
   "account.delete.busy": "Sedang memadam…",
   "account.delete.error.recent-login":
     "Demi keselamatan, sila log keluar, log masuk semula, kemudian padam akaun.",
   "account.delete.error.unknown": "KIDDO tidak dapat memadam akaun sekarang. Sila cuba lagi.",
 
   /* ---- The billing card ------------------------------------------------ */
-  "billing.title": "Langganan anda",
+  "billing.title": "KIDDO anda",
   "billing.confirmed": "Semuanya sedia — KIDDO sudah terbuka untuk anak anda.",
-  "billing.planLine": "{name} · {price}/{per}",
-  "billing.unknownPlan": "Langganan KIDDO",
+  "billing.offerLine": "{name} · {price}",
+  "billing.receipt": "Dibayar pada {when}.",
   "billing.manage": "Urus langganan",
 
   /* ---- Where the emailed links land ----------------------------------- */
@@ -736,7 +736,7 @@ export const ms: Record<MessageKey, string> = {
   /* ---- Page metadata, evaluated at build time (see app/page.tsx) ------- */
   "meta.parents.title": "Untuk orang dewasa",
   "meta.join.title": "Mulakan KIDDO",
-  "meta.join.description": "Pilih pelan dan buka akaun ibu bapa KIDDO anda.",
+  "meta.join.description": "Dapatkan akses KIDDO seumur hidup dan buka akaun ibu bapa anda.",
   "meta.welcome.title": "Selamat datang",
   "meta.reset.title": "Tetapkan semula kata laluan",
   "meta.privacy.title": "Privasi",
@@ -874,11 +874,11 @@ export const ms: Record<MessageKey, string> = {
   "privacy.short.3":
     "Orang dewasa boleh membuka akaun ibu bapa — satu alamat e-mel dan satu kata laluan — supaya kemajuan mengikut anak antara peranti. Selepas itu nama pertama dan perjalanan turut disimpan di bawah akaun tersebut, dan tiada apa-apa lagi.",
   "privacy.short.4":
-    "KIDDO ialah langganan yang dibayar oleh ibu bapa. Bayaran diambil oleh Stripe, yang menyimpan butiran kad; KIDDO tidak pernah melihat atau menyimpan nombor kad.",
+    "KIDDO dibeli sekali sahaja oleh ibu bapa. Bayaran diambil oleh Billplz, yang menyimpan butiran pembayaran; KIDDO tidak pernah melihat atau menyimpan nombor kad.",
   "privacy.short.5":
-    "Skrin anak anda tiada iklan, tiada analitik dan tiada penjejakan dalam apa jua bentuk, dan tiada apa-apa yang dijual atau ditayangkan kepada anak anda. Halaman yang ditulis untuk anda — halaman ini, halaman utama, halaman daftar dan ruang ibu bapa — membawa satu tag pengukuran daripada Meta (Facebook) yang mengira lawatan dan, apabila langganan dibeli, pelan yang dipilih serta harganya — supaya KIDDO tahu iklan yang mana berbaloi dibayar.",
+    "Skrin anak anda tiada iklan, tiada analitik dan tiada penjejakan dalam apa jua bentuk, dan tiada apa-apa yang dijual atau ditayangkan kepada anak anda. Halaman yang ditulis untuk anda — halaman ini, halaman utama, halaman daftar dan ruang ibu bapa — membawa satu tag pengukuran daripada Meta (Facebook) yang mengira lawatan dan, apabila KIDDO dibeli, berapa harganya — supaya KIDDO tahu iklan yang mana berbaloi dibayar.",
   "privacy.short.6":
-    "Anda boleh menukar atau memadam segala yang disimpan KIDDO, dan membatalkan langganan, dari ruang ibu bapa pada bila-bila masa.",
+    "Anda boleh menukar atau memadam segala yang disimpan KIDDO dari ruang ibu bapa pada bila-bila masa.",
 
   "privacy.s.stores": "Apa yang KIDDO simpan",
   "privacy.stores.intro":
@@ -903,10 +903,10 @@ export const ms: Record<MessageKey, string> = {
     "Nama pertama anak anda — perkataan yang sama seperti di atas, dan tidak lebih daripada itu. Nama keluarga, tarikh lahir, gambar atau jantina tidak pernah diminta.",
   "privacy.cloud.3": "Perjalanan anak anda — senarai aktiviti siap yang sama seperti di atas.",
   "privacy.cloud.4":
-    "Keadaan langganan anda: sama ada ia aktif, pelan yang mana (bulanan atau tahunan), bila tempoh semasa berakhir, dan pengenalan yang diberikan Stripe kepada rekod pelanggan dan langganan anda supaya kedua-dua perkhidmatan merujuk perkara yang sama. Semua ini ditulis hanya oleh pelayan KIDDO apabila Stripe melaporkan perubahan; aplikasi dalam pelayar anda boleh membacanya tetapi tidak sekali-kali mengubahnya.",
+    "Sama ada anda telah membeli KIDDO, bila, berapa yang dibayar, dan pengenalan yang diberikan Billplz kepada bayaran itu supaya kedua-dua perkhidmatan merujuk perkara yang sama. Jika anda melanggan sebelum KIDDO menjadi bayaran sekali, keadaan langganan itu turut disimpan. Semua ini ditulis hanya oleh pelayan KIDDO, selepas ia bertanya kepada perkhidmatan pembayaran apa yang berlaku; aplikasi dalam pelayar anda boleh membacanya tetapi tidak sekali-kali mengubahnya.",
   "privacy.cloud.5": "Tarikh rekod ini dicipta dan kali terakhir diubah.",
   "privacy.stores.stripe":
-    "Butiran pembayaran anda disimpan oleh Stripe, bukan oleh KIDDO. Apabila anda melanggan, anda dibawa ke halaman yang dihidangkan oleh Stripe, tempat anda memasukkan kad anda; Stripe menyimpan alamat e-mel anda, kad itu, dan sejarah bayaran serta invois bagi langganan tersebut, di bawah dasar privasinya sendiri. KIDDO menandakan rekod Stripe itu dengan pengenalan akaun anda supaya bayaran dapat dipadankan dengan akaun anda, dan tiada apa-apa lagi tentang anda atau anak anda.",
+    "Butiran pembayaran anda disimpan oleh Billplz, bukan oleh KIDDO. Apabila anda membeli KIDDO, anda dibawa ke halaman yang dihidangkan oleh Billplz, tempat anda memilih bank atau kad anda; Billplz menyimpan nama anda, alamat e-mel anda dan rekod bayaran itu, di bawah dasar privasinya sendiri. KIDDO menandakan bil itu dengan pengenalan akaun anda supaya bayaran dapat dipadankan dengan akaun anda, dan tiada apa-apa lagi tentang anda atau anak anda.",
   "privacy.stores.noName":
     "Tiada ruangan untuk nama anda sendiri, dan tiada profil tentang anda selain alamat e-mel yang anda gunakan untuk log masuk.",
 
@@ -914,19 +914,19 @@ export const ms: Record<MessageKey, string> = {
   "privacy.where.device":
     "Pada peranti anda, sentiasa — dalam pelayar tempat anda membuka KIDDO, di bawah alamat tempat anda membukanya. Jika anda memasang KIDDO ke skrin utama, ia menggunakan storan setempat yang sama, jadi kemajuan berpindah antara aplikasi yang dipasang dan pelayar tempat ia dipasang pada peranti yang sama.",
   "privacy.where.cloud":
-    "Dengan akaun ibu bapa, nama pertama, perjalanan dan keadaan langganan turut disimpan dalam Firebase milik Google — khususnya Firebase Authentication untuk log masuk dan Cloud Firestore untuk profil anak dan perjalanan — dalam projek milik KIDDO (pengenalannya ialah {project}). Peranti menyimpan satu salinan perjalanan supaya kunjungan berikutnya terbuka serta-merta; semasa anda log masuk, salinan awan itulah yang dikira, dan salinan pada peranti disegarkan daripadanya.",
+    "Dengan akaun ibu bapa, nama pertama, perjalanan dan sama ada KIDDO telah dibeli turut disimpan dalam Firebase milik Google — khususnya Firebase Authentication untuk log masuk dan Cloud Firestore untuk profil anak dan perjalanan — dalam projek milik KIDDO (pengenalannya ialah {project}). Peranti menyimpan satu salinan perjalanan supaya kunjungan berikutnya terbuka serta-merta; semasa anda log masuk, salinan awan itulah yang dikira, dan salinan pada peranti disegarkan daripadanya.",
   "privacy.where.rules":
     "Peraturan akses yang dikuatkuasakan oleh Firestore sendiri — bukan hanya oleh aplikasi — bermakna sesebuah akaun hanya boleh membaca dan menulis rekodnya sendiri, profil anaknya sendiri, dan perjalanan anak itu. Sesiapa yang tidak log masuk tidak boleh membaca apa-apa, dan tiada akaun boleh menyenaraikan atau mencari anak akaun lain. TODO(launch): nyatakan wilayah Firestore (tempat Google menyimpan data) di sini setelah lokasi projek disahkan.",
   "privacy.where.billing":
-    "Rekod bil — kad, bayaran, invois, resit — disimpan oleh Stripe, dalam sistem Stripe, di bawah alamat e-mel yang sama yang anda gunakan untuk akaun anda.",
+    "Rekod pembayaran — bil, jumlah yang dibayar dan resit — disimpan oleh Billplz, dalam sistem Billplz, di bawah alamat e-mel yang sama yang anda gunakan untuk akaun anda. Langganan yang dibuat sebelum KIDDO menjadi bayaran sekali masih dipegang oleh Stripe.",
   "privacy.where.meta":
-    "Kiraan lawatan itu pergi kepada Meta. Halaman KIDDO untuk ibu bapa — halaman utama, halaman pelan dan pendaftaran, halaman ini, dan ruang ibu bapa — memuatkan piksel Meta, yang merekodkan bahawa sesebuah halaman telah dibuka dan menetapkan satu kuki supaya lawatan yang bermula daripada iklan KIDDO dapat dikenali sebagai lawatan yang sama kemudian. Ia diberitahu alamat halaman itu, dan — pada dua saat sahaja — sedikit lagi: ketika anda meninggalkan KIDDO menuju Stripe untuk membayar, dan ketika bayaran telah berjaya, ia turut diberitahu pelan yang mana antara dua itu dan berapa harganya, supaya KIDDO tahu iklan yang mana membawa langganan dan bukan sekadar lawatan. Itu sahaja senarainya. KIDDO mematikan pengumpulan automatik piksel tersebut, jadi ia tidak pernah membaca butang yang anda tekan atau apa-apa yang anda taip, dan alamat e-mel anda, kad anda, nama anak anda serta perjalanan anak anda tidak pernah dihantar kepadanya. Ia tidak dimuatkan pada mana-mana skrin tempat anak anda bermain — bukan laman utama, bukan dunia, bukan permainan — jadi anak anda tidak pernah dikira langsung. Jika anda pun lebih suka tidak dikira, penyekat penjejak atau tetapan “sekat penjejak” dalam pelayar anda menghentikannya, dan KIDDO berfungsi sama sahaja tanpanya.",
+    "Kiraan lawatan itu pergi kepada Meta. Halaman KIDDO untuk ibu bapa — halaman utama, halaman pelan dan pendaftaran, halaman ini, dan ruang ibu bapa — memuatkan piksel Meta, yang merekodkan bahawa sesebuah halaman telah dibuka dan menetapkan satu kuki supaya lawatan yang bermula daripada iklan KIDDO dapat dikenali sebagai lawatan yang sama kemudian. Ia diberitahu alamat halaman itu, dan — pada dua saat sahaja — sedikit lagi: ketika anda meninggalkan KIDDO menuju Billplz untuk membayar, dan ketika bayaran telah berjaya, ia turut diberitahu berapa harga KIDDO, supaya KIDDO tahu iklan yang mana membawa pembelian dan bukan sekadar lawatan. Itu sahaja senarainya. KIDDO mematikan pengumpulan automatik piksel tersebut, jadi ia tidak pernah membaca butang yang anda tekan atau apa-apa yang anda taip, dan alamat e-mel anda, kad anda, nama anak anda serta perjalanan anak anda tidak pernah dihantar kepadanya. Ia tidak dimuatkan pada mana-mana skrin tempat anak anda bermain — bukan laman utama, bukan dunia, bukan permainan — jadi anak anda tidak pernah dikira langsung. Jika anda pun lebih suka tidak dikira, penyekat penjejak atau tetapan “sekat penjejak” dalam pelayar anda menghentikannya, dan KIDDO berfungsi sama sahaja tanpanya.",
   "privacy.where.noAccount":
     "Tanpa akaun, KIDDO tiada tempat lain untuk menyimpan apa-apa: membuka KIDDO dalam pelayar lain, atau pada peranti lain, bermula dengan perjalanan yang baharu dan kosong.",
 
   "privacy.s.why": "Mengapa ia disimpan",
   "privacy.why.body":
-    "Supaya kunjungan semula terasa seperti pulang: KIDDO ingat di mana anak anda berada, apa yang telah ditemuinya, dan apa panggilannya. Akaun ibu bapa wujud atas satu sebab tambahan — supaya perjalanan yang sama ada pada tablet di rumah dan telefon di dalam kereta. Keadaan langganan disimpan supaya KIDDO tahu sama ada perlu dibuka untuk anak anda, dan supaya ruang ibu bapa dapat menunjukkan pelan dan tarikh pembaharuan anda. Tiada apa-apa tentang anak anda yang disimpan untuk pemasaran, untuk pengukuran atau untuk membina profil. Satu-satunya pengukuran yang KIDDO lakukan ialah kiraan lawatan ke halaman untuk ibu bapanya sendiri, seperti yang diterangkan di bawah “Di mana ia disimpan”. Alamat e-mel anda digunakan untuk log masuk, untuk menghantar e-mel tetapan semula kata laluan dan pengesahan, dan — oleh Stripe — untuk menghantar resit langganan anda.",
+    "Supaya kunjungan semula terasa seperti pulang: KIDDO ingat di mana anak anda berada, apa yang telah ditemuinya, dan apa panggilannya. Akaun ibu bapa wujud atas satu sebab tambahan — supaya perjalanan yang sama ada pada tablet di rumah dan telefon di dalam kereta. Sama ada KIDDO telah dibeli disimpan supaya KIDDO tahu sama ada perlu dibuka untuk anak anda, dan supaya ruang ibu bapa dapat menunjukkan apa yang anda miliki. Tiada apa-apa tentang anak anda yang disimpan untuk pemasaran, untuk pengukuran atau untuk membina profil. Satu-satunya pengukuran yang KIDDO lakukan ialah kiraan lawatan ke halaman untuk ibu bapanya sendiri, seperti yang diterangkan di bawah “Di mana ia disimpan”. Alamat e-mel anda digunakan untuk log masuk, untuk menghantar e-mel tetapan semula kata laluan dan pengesahan, dan — oleh Billplz — untuk menghantar resit bayaran anda.",
 
   "privacy.s.not": "Apa yang tidak disimpan atau dikumpul",
   "privacy.not.1": "Tiada akaun anak, e-mel anak, kata laluan anak atau log masuk anak dalam apa jua bentuk.",
@@ -937,11 +937,11 @@ export const ms: Record<MessageKey, string> = {
   "privacy.not.5":
     "Tiada kuki yang ditetapkan oleh KIDDO sendiri, dan tiada skrip pihak ketiga dalam apa jua bentuk di bahagian anak anda — tiada analitik, tiada pengiklanan, tiada plugin sosial. Pengira Meta, yang memang menetapkan kukinya sendiri, hanya berjalan pada halaman untuk ibu bapa.",
   "privacy.not.6":
-    "Tiada nombor kad, tarikh luput atau kod keselamatan. Semua itu dimasukkan pada halaman Stripe dan disimpan oleh Stripe.",
+    "Tiada nombor kad, tarikh luput, kod keselamatan atau log masuk perbankan dalam talian. Semua itu dimasukkan pada halaman penyedia pembayaran dan disimpan di sana, tidak pernah oleh KIDDO.",
   "privacy.not.7":
     "Tiada harga, skrin bayaran, ajakan menaik taraf atau mesej bil pada mana-mana skrin anak anda. Semua itu berada di ruang ibu bapa.",
   "privacy.not.8":
-    "Dari skrin anak anda, tiada permintaan kepada mana-mana perkhidmatan selain yang menghidangkan KIDDO itu sendiri dan, dengan akaun, Firebase untuk menyimpan perjalanan. Dari halaman untuk ibu bapa, perkhidmatan yang dihubungi ialah Firebase (log masuk dan storan), Stripe (pembayaran dan bil) dan Meta (kiraan yang disebut di atas).",
+    "Dari skrin anak anda, tiada permintaan kepada mana-mana perkhidmatan selain yang menghidangkan KIDDO itu sendiri dan, dengan akaun, Firebase untuk menyimpan perjalanan. Dari halaman untuk ibu bapa, perkhidmatan yang dihubungi ialah Firebase (log masuk dan storan), Billplz (pembayaran) dan Meta (kiraan yang disebut di atas).",
   "privacy.not.logs":
     "Seperti mana-mana laman web, perkhidmatan hos yang menghantar KIDDO, dan Firebase apabila sesebuah akaun digunakan, mungkin menyimpan log akses biasa (contohnya, alamat dan masa sesuatu permintaan) untuk keselamatan dan kebolehpercayaan. TODO(launch): namakan penyedia hos dan tempoh simpanan lognya di sini sebelum pelancaran.",
 
@@ -954,9 +954,9 @@ export const ms: Record<MessageKey, string> = {
   "privacy.controls.3":
     "“Log keluar” menamatkan log masuk pada peranti ini dan membersihkan nama serta perjalanan yang disimpan sementara padanya. Akaun dan salinan awannya tidak disentuh.",
   "privacy.controls.4":
-    "“Urus langganan” membuka halaman bil Stripe untuk akaun anda, tempat anda boleh menukar kad, melihat invois, atau membatalkan. Langganan yang dibatalkan mengekalkan KIDDO terbuka sehingga hujung tempoh yang telah dibayar, dan tidak dicaj lagi.",
+    "Membeli KIDDO ialah satu bayaran sahaja: tiada apa-apa yang diperbaharui, jadi tiada pembaharuan untuk dihentikan dan tiada kad disimpan untuk dicaj lagi. Jika anda melanggan sebelum KIDDO menjadi bayaran sekali, “Urus langganan” masih membuka halaman bil Stripe untuk langganan itu, tempat anda boleh menukar kad, melihat invois, atau membatalkannya.",
   "privacy.controls.5":
-    "“Padam akaun” mula-mula membatalkan mana-mana langganan yang masih berjalan, membuang rekod pelanggan Stripe anda, kemudian membuang log masuk, profil anak dan perjalanan daripada Firebase, serta salinan simpanan pada peranti ini. Ia tidak boleh dibatalkan. Demi keselamatan, anda akan diminta log masuk semula dahulu jika log masuk anda sudah lama. Stripe menyimpan rekod bayaran lalu sebagaimana yang dikehendaki peraturannya sendiri.",
+    "“Padam akaun” mula-mula membatalkan mana-mana langganan lama yang masih berjalan dan membuang rekod pelanggan Stripe anda, kemudian membuang log masuk, profil anak, perjalanan dan rekod bahawa anda telah membeli KIDDO daripada Firebase, serta salinan simpanan pada peranti ini. Oleh itu memadam akaun menamatkan akses yang telah anda bayar, dan ia tidak boleh dibatalkan atau dikembalikan wangnya. Demi keselamatan, anda akan diminta log masuk semula dahulu jika log masuk anda sudah lama. Billplz dan Stripe menyimpan rekod bayaran lalu sebagaimana yang dikehendaki peraturannya sendiri.",
   "privacy.controls.6":
     "Tanpa akaun, membersihkan data laman ini dalam tetapan pelayar anda akan membuang segalanya sekali gus.",
   "privacy.controls.cta": "Buka ruang ibu bapa",
@@ -1287,7 +1287,6 @@ export const ms: Record<MessageKey, string> = {
   "worlds.game.start": "Jom pergi!",
 
   /* ---- The little notice: another family joined ----------------------- */
-  "social.join.plan": "🚀 Satu keluarga baru sahaja memilih pelan {plan}",
   "social.join.joined": "🎉 Satu lagi keluarga KIDDO baru sahaja menyertai",
   "social.join.started": "✨ Satu lagi keluarga memulakan perjalanan KIDDO mereka",
 };

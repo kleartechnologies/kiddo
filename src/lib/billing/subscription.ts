@@ -1,109 +1,32 @@
 /**
- * KIDDO's subscription, as one small state the whole product agrees on.
+ * The Stripe subscription, kept alive for the parents who already have one.
  *
- * Stripe is the billing authority; this module is the vocabulary. The
- * server (webhook) turns a Stripe subscription into a `SubscriptionState`
- * and writes it to `users/{uid}.subscription`; the client reads it back
- * and asks one question — `hasAccess` — to decide whether KIDDO is open.
- * Nothing here talks to the network, so every transition is unit-tested.
+ * KIDDO used to sell a monthly and a yearly plan. It does not any more —
+ * there is one price, paid once, and `src/lib/billing/access.ts` is the
+ * vocabulary for it. But subscriptions that were live on the day the shop
+ * changed are still live in Stripe, and a parent who is paying must not
+ * lose the product they are paying for. So this module survives, reduced
+ * to the one job it still has:
  *
- * There are exactly two plans. No free tier, no trial, no lifetime.
+ *   read what the Stripe webhook wrote, and say whether it still opens KIDDO.
+ *
+ * What is deliberately gone: the plans, the prices, the per-month
+ * arithmetic and every sentence a *buyer* would read. Nothing sells a
+ * subscription any more, so nothing here describes one to a shopper. What
+ * an existing subscriber sees in the account area is a status and a way
+ * into Stripe's own portal to change or stop it — no price, because the
+ * price they pay is the one Stripe already has and not one KIDDO should be
+ * quoting back at them.
+ *
+ * No new code path writes any of this. See `docs/kiddo-billing.md`.
  */
 
 import { formatDay } from "@/lib/i18n/format";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/messages";
 
+/** The two plans that were once for sale. Historical; read, never offered. */
 export type Plan = "monthly" | "yearly";
-
-/**
- * The prices, in one place.
- *
- * `AMOUNTS` is the only place a number is written down: everything a parent
- * reads — the price on a card, the "a month, billed yearly" line, the
- * saving on the annual plan — is derived from it, so changing a price is
- * changing one integer here (and the matching price in Stripe, which is
- * what actually charges the card; see `src/server/stripe.ts`).
- *
- * Amounts are in sen, the smallest unit of the Malaysian ringgit, the way
- * Stripe holds them: RM9.90 is 990.
- */
-export const CURRENCY_SYMBOL = "RM";
-
-/**
- * The same currency, as the three letters anything that is not a price on
- * screen wants: Stripe's own code for the prices in `src/server/stripe.ts`,
- * and the currency the conversion events carry (`src/lib/analytics`).
- */
-export const CURRENCY_CODE = "MYR";
-
-export const AMOUNTS: Record<Plan, number> = {
-  monthly: 990,
-  yearly: 5990,
-};
-
-/** How many months one billing period of each plan covers. */
-export const MONTHS: Record<Plan, number> = { monthly: 1, yearly: 12 };
-
-/** An amount in sen as a parent reads it: 990 → "RM9.90". */
-export function money(sen: number): string {
-  return `${CURRENCY_SYMBOL}${(sen / 100).toFixed(2)}`;
-}
-
-/** What a year of the yearly plan works out at per month. */
-export const YEARLY_PER_MONTH = money(Math.round(AMOUNTS.yearly / MONTHS.yearly));
-
-/**
- * How much less a year on the yearly plan costs than twelve monthly ones,
- * as a whole percent. Arithmetic on the two amounts above — never a figure
- * typed into a marketing string.
- */
-export const YEARLY_SAVING_PERCENT = Math.round(
-  (1 - AMOUNTS.yearly / (AMOUNTS.monthly * MONTHS.yearly)) * 100,
-);
-
-/** The same saving in ringgit: twelve monthly payments less one yearly one. */
-export const YEARLY_SAVING_AMOUNT = money(AMOUNTS.monthly * MONTHS.yearly - AMOUNTS.yearly);
-
-export interface PlanDetail {
-  /** What the plan is called on screen. */
-  name: string;
-  /** The amount charged each period, in sen. */
-  amount: number;
-  /** That amount as a parent reads it. */
-  price: string;
-  /** The period, for "RM9.90 a month". */
-  per: string;
-  /** The badge on the card, when there is one. */
-  note: string | null;
-  /** One line under the price. */
-  blurb: string;
-  /** The button that starts this plan. */
-  cta: string;
-}
-
-export const PLANS: Record<Plan, PlanDetail> = {
-  yearly: {
-    name: "Yearly",
-    amount: AMOUNTS.yearly,
-    price: money(AMOUNTS.yearly),
-    per: "year",
-    note: "Best value",
-    blurb: `${YEARLY_PER_MONTH} a month, billed once a year`,
-    cta: "Start Yearly",
-  },
-  monthly: {
-    name: "Monthly",
-    amount: AMOUNTS.monthly,
-    price: money(AMOUNTS.monthly),
-    per: "month",
-    note: null,
-    blurb: "Flexible monthly access",
-    cta: "Start Monthly",
-  },
-};
-
-export const PLAN_ORDER: Plan[] = ["yearly", "monthly"];
 
 export function isPlan(value: unknown): value is Plan {
   return value === "monthly" || value === "yearly";
@@ -152,11 +75,15 @@ export const NO_SUBSCRIPTION: SubscriptionState = {
 const RENEWAL_GRACE_MS = 24 * 60 * 60 * 1000;
 
 /**
- * Whether KIDDO is open. Only `active` counts — and even then, if the paid
- * period ended more than a day ago and no renewal has been heard about,
- * the answer is no: a stale "active" must never outlive its payment.
+ * Whether this legacy subscription still opens KIDDO. Only `active` counts
+ * — and even then, if the paid period ended more than a day ago and no
+ * renewal has been heard about, the answer is no: a stale "active" must
+ * never outlive its payment.
+ *
+ * Callers ask `hasAccess` in `./access`, which consults this second and
+ * only when there is no lifetime purchase.
  */
-export function hasAccess(state: SubscriptionState | null | undefined, now: number): boolean {
+export function subscriptionActive(state: SubscriptionState | null | undefined, now: number): boolean {
   if (!state || state.status !== "active") return false;
   if (state.currentPeriodEnd === null) return true;
   return now <= state.currentPeriodEnd + RENEWAL_GRACE_MS;
@@ -193,7 +120,7 @@ export interface StripeSubscriptionLike {
 export function statusFromStripe(status: string): SubscriptionStatus {
   switch (status) {
     case "active":
-    /* KIDDO sells no trials, so `trialing` cannot happen; if it ever did
+    /* KIDDO sold no trials, so `trialing` cannot happen; if it ever did
        (a trial granted by hand in the Stripe dashboard) it is paid-for
        access in every way that matters. */
     case "trialing":
@@ -308,116 +235,63 @@ export function parseSubscription(raw: unknown): SubscriptionState {
 }
 
 /**
- * The words on a plan, in the language the reader is in.
+ * The status as one word, for the row an existing subscriber still sees.
  *
- * `PLANS` above stays exactly as it was — English, and the only place a
- * price is written down. What moves here is the half of a plan that is
- * *language* rather than *fact*: its name, its period, its badge and its
- * button. The amount, the formatted price and the plan key are the same
- * sentence in every language, and a translator can no more change RM59.90
- * than they can change which Stripe price it maps to.
- *
- * The default locale on this and the two functions below is what keeps the
- * existing billing tests meaningful: called the way they were always called,
- * these return the English they always returned.
+ * No prices and no plan names: the sentence below says what is happening
+ * and where to change it, and quoting a figure back at somebody whose card
+ * Stripe is already charging would be a number KIDDO no longer owns.
  */
-export interface PlanText {
-  name: string;
-  price: string;
-  per: string;
-  note: string | null;
-  blurb: string;
-  cta: string;
-}
-
-export function planText(plan: Plan, locale: Locale = DEFAULT_LOCALE): PlanText {
-  return {
-    name: translate(locale, `plan.${plan}.name`),
-    price: PLANS[plan].price,
-    per: translate(locale, `plan.${plan}.per`),
-    /* Only the yearly plan has a badge, and "no badge" is an empty string in
-       the catalogue rather than a missing key — a translator should see every
-       row of the plan, including the one that is deliberately blank. */
-    note: translate(locale, `plan.${plan}.note`) || null,
-    blurb: translate(locale, `plan.${plan}.blurb`, { perMonth: YEARLY_PER_MONTH }),
-    cta: translate(locale, `plan.${plan}.cta`),
-  };
-}
-
-/**
- * The status as one word for the account area's chip. The sentence below
- * says what to do about it; this says what it is.
- */
-export function statusLabel(
+export function subscriptionLabel(
   state: SubscriptionState,
   now: number,
   locale: Locale = DEFAULT_LOCALE,
 ): string {
   switch (state.status) {
     case "active":
-      if (!hasAccess(state, now)) return translate(locale, "billing.status.renewing");
-      return translate(
-        locale,
-        state.cancelAtPeriodEnd ? "billing.status.ending" : "billing.status.active",
-      );
+      if (!subscriptionActive(state, now)) return translate(locale, "legacy.status.renewing");
+      return translate(locale, state.cancelAtPeriodEnd ? "legacy.status.ending" : "legacy.status.active");
     case "past_due":
-      return translate(locale, "billing.status.past_due");
+      return translate(locale, "legacy.status.past_due");
     case "incomplete":
-      return translate(locale, "billing.status.incomplete");
+      return translate(locale, "legacy.status.incomplete");
     case "cancelled":
-      return translate(locale, "billing.status.cancelled");
+      return translate(locale, "legacy.status.cancelled");
     case "expired":
-      return translate(locale, "billing.status.expired");
+      return translate(locale, "legacy.status.expired");
     case "none":
-      return translate(locale, "billing.status.none");
+      return translate(locale, "legacy.status.none");
   }
 }
 
-/**
- * The sentence a parent reads on the billing card. Plain, never a code.
- *
- * Every branch is a whole sentence in the catalogue rather than English
- * fragments glued together, because the pieces do not survive translation in
- * the same order: "Yearly plan, RM59.90 a year" becomes "Pelan Tahunan,
- * RM59.90 setahun", where the period word has grown a prefix and the plan
- * name has moved behind its noun. A sentence a translator can see whole is a
- * sentence they can get right.
- */
+/** The sentence under it. Plain, never a code, and never a price. */
 export function describeSubscription(
   state: SubscriptionState,
   now: number,
   locale: Locale = DEFAULT_LOCALE,
 ): string {
-  const plan = state.plan ? planText(state.plan, locale) : null;
   const when = state.currentPeriodEnd ? formatDay(state.currentPeriodEnd, locale) : null;
   switch (state.status) {
     case "active":
-      if (!hasAccess(state, now)) return translate(locale, "billing.describe.renewing");
+      if (!subscriptionActive(state, now)) return translate(locale, "legacy.describe.renewing");
       if (state.cancelAtPeriodEnd) {
         return when
-          ? translate(locale, "billing.describe.endingOn", { when })
-          : translate(locale, "billing.describe.ending");
-      }
-      if (plan) {
-        const vars = { plan: plan.name, price: plan.price, per: plan.per };
-        return when
-          ? translate(locale, "billing.describe.planRenews", { ...vars, when })
-          : translate(locale, "billing.describe.plan", vars);
+          ? translate(locale, "legacy.describe.endingOn", { when })
+          : translate(locale, "legacy.describe.ending");
       }
       return when
-        ? translate(locale, "billing.describe.activeRenews", { when })
-        : translate(locale, "billing.describe.active");
+        ? translate(locale, "legacy.describe.activeRenews", { when })
+        : translate(locale, "legacy.describe.active");
     case "past_due":
-      return translate(locale, "billing.describe.past_due");
+      return translate(locale, "legacy.describe.past_due");
     case "incomplete":
-      return translate(locale, "billing.describe.incomplete");
+      return translate(locale, "legacy.describe.incomplete");
     case "cancelled":
       return when
-        ? translate(locale, "billing.describe.endedOn", { when })
-        : translate(locale, "billing.describe.ended");
+        ? translate(locale, "legacy.describe.endedOn", { when })
+        : translate(locale, "legacy.describe.ended");
     case "expired":
-      return translate(locale, "billing.describe.ended");
+      return translate(locale, "legacy.describe.ended");
     case "none":
-      return translate(locale, "billing.describe.none");
+      return translate(locale, "legacy.describe.none");
   }
 }

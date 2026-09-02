@@ -21,13 +21,8 @@ export const PRIVACY = "/privacy";
 /** The pricing section on the landing page, where "Start KIDDO" leads. */
 export const PRICING = "/#pricing";
 
-/** Choosing a plan, then creating (or signing into) the parent's account. */
+/** Creating (or signing into) the parent's account, then paying. */
 export const JOIN = "/join";
 
-/** Where Stripe sends a parent back after a successful Checkout. */
+/** Where Billplz sends a parent back after a payment. */
 export const WELCOME = "/welcome";
-
-/** `/join` for one plan: the choice made on the landing page, carried on. */
-export function joinWithPlan(plan: "monthly" | "yearly"): string {
-  return `${JOIN}?plan=${plan}`;
-}

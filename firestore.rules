@@ -91,11 +91,16 @@ service cloud.firestore {
 
     // users/{uid} — one document per parent account, keyed by auth uid.
     //
-    // `subscription` is the server's field: written by the Stripe webhook
-    // through the Admin SDK (which bypasses these rules), readable by the
-    // owner, and never creatable or changeable from a client. An update
-    // may only touch `email` and `updatedAt`; a create may not carry
-    // `subscription` at all.
+    // `access` and `subscription` are the server's fields: `access` is the
+    // lifetime purchase, written only after the server has asked Billplz
+    // whether the money arrived (src/server/entitlement.ts), and
+    // `subscription` is what the Stripe webhook wrote for the parents who
+    // subscribed before KIDDO was sold once. Both go in through the Admin
+    // SDK, which bypasses these rules; both are readable by the owner and
+    // never creatable or changeable from a client. That is the enforcement
+    // behind the whole payment story — a browser that could write
+    // `access.lifetime` would not need to pay at all. An update may only
+    // touch `email` and `updatedAt`; a create may carry neither field.
     match /users/{uid} {
       allow read: if isOwner(uid);
       allow create: if isOwner(uid)
@@ -113,26 +118,40 @@ service cloud.firestore {
       // Never, by anybody, signed in or not.
       //
       // This document is the account's billing identity: it carries the
-      // Stripe customer id and the subscription the webhook writes. A
-      // client that could delete it could throw away the link between a
-      // person and a subscription that goes on renewing, and then start a
-      // second one — so deleting an account is the server's job, at
-      // POST /api/account/delete, which cancels Stripe first and removes
-      // everything with the Admin SDK. The Admin SDK does not go through
-      // these rules, so closing the door here costs the parent nothing.
+      // lifetime access the server granted and, for older accounts, the
+      // Stripe customer id and subscription the webhook wrote. A client
+      // that could delete it could throw away the record of a payment and
+      // ask to be sold KIDDO again — so deleting an account is the
+      // server's job, at POST /api/account/delete, which cancels any old
+      // Stripe subscription first and removes everything with the Admin
+      // SDK. The Admin SDK does not go through these rules, so closing the
+      // door here costs the parent nothing.
       allow delete: if false;
     }
 
-    // stripeEvents/{eventId} — the webhook's idempotency log. Server only.
+    // billplzBills/{billId} — the ledger: which account each bill was
+    // created for, and whether it has already been settled. Server only,
+    // and emphatically so. It is what lets a callback be believed about
+    // *whose* payment it is without believing the callback, and what makes
+    // a repeated callback harmless. A client that could read it could
+    // learn other parents' bill ids; one that could write it could point a
+    // stranger's paid bill at its own account.
+    match /billplzBills/{billId} {
+      allow read, write: if false;
+    }
+
+    // stripeEvents/{eventId} — the old webhook's idempotency log. Server
+    // only. Nothing new is written here; see docs/kiddo-billing.md.
     match /stripeEvents/{eventId} {
       allow read, write: if false;
     }
 
-    // joinEvents/{stripeSubscriptionId} — "a family joined", as a time and
-    // a plan and nothing else. Written by the webhook through the Admin SDK
-    // and read only by the server, which serves it at /api/social/recent.
-    // No client touches it, so no client can add a join that did not happen.
-    match /joinEvents/{subscriptionId} {
+    // joinEvents/{billId} — "a family joined", as a time and nothing else.
+    // Written by the server on the same transaction that grants access, and
+    // read only by the server, which serves it at /api/social/recent. No
+    // client touches it, so no client can add a join that did not happen.
+    // Older rows are keyed by a Stripe subscription id instead.
+    match /joinEvents/{joinId} {
       allow read, write: if false;
     }
 

@@ -88,7 +88,7 @@ export function ChildOnboarding({
           {error ? t(error) : ""}
         </p>
         <Button type="submit" size="md" icon={<ArrowRight className="size-5" aria-hidden />} iconRight className="self-start" aria-busy={busy} data-onboarding-submit>
-          {t(busy ? "common.oneMoment" : "sub.start")}
+          {t(busy ? "common.oneMoment" : "onboarding.submit")}
         </Button>
       </form>
     </Card>

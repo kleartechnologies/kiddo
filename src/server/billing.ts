@@ -9,24 +9,24 @@ import {
   type Plan,
   type SubscriptionState,
 } from "@/lib/billing/subscription";
-import { parseJoinEvent, type JoinEvent } from "@/lib/social/joins";
 import { adminDb } from "./firebaseAdmin";
 import { priceIds, stripe } from "./stripe";
 
 /**
- * What the billing routes share: finding or making the parent's Stripe
- * customer, and applying a Stripe subscription to `users/{uid}`.
+ * What is left of Stripe: reading a parent's old subscription, and applying
+ * a Stripe event to `users/{uid}`.
  *
- * The customer id is remembered on the user document so a parent who opens
- * Checkout twice (or cancels and comes back) is one customer in Stripe, not
- * two — which is also what stops a second, duplicate subscription: before
- * starting Checkout the route looks for a live subscription on the
- * customer and refuses to start another.
+ * KIDDO is sold once now, through Billplz — see `src/server/billplz.ts` and
+ * `src/server/entitlement.ts`. This file no longer opens Checkout, no longer
+ * creates customers and no longer starts subscriptions; nothing here can.
+ * It exists for the parents who subscribed before the change: their
+ * subscription still renews at Stripe, the webhook still records what
+ * happens to it, `hasAccess` still honours it, and the customer portal still
+ * lets them manage or end it. See `docs/kiddo-billing.md`.
  */
 
 const USERS = "users";
 const EVENTS = "stripeEvents";
-const JOINS = "joinEvents";
 
 export async function userDoc(uid: string): Promise<FirebaseFirestore.DocumentData | null> {
   const snap = await adminDb().collection(USERS).doc(uid).get();
@@ -38,34 +38,11 @@ export async function subscriptionOf(uid: string): Promise<SubscriptionState> {
   return parseSubscription(data?.subscription);
 }
 
-/** The parent's Stripe customer id, creating the customer on first use. */
-export async function customerFor(uid: string, email: string | null): Promise<string> {
-  const data = await userDoc(uid);
-  const existing = data?.subscription?.stripeCustomerId;
-  if (typeof existing === "string" && existing) return existing;
-  const customer = await stripe().customers.create({
-    email: email ?? undefined,
-    metadata: { uid },
-  });
-  await adminDb()
-    .collection(USERS)
-    .doc(uid)
-    .set({ subscription: { stripeCustomerId: customer.id } }, { merge: true });
-  return customer.id;
-}
-
-/** Subscriptions on the customer that still count as "in progress". */
-export async function liveSubscriptions(customerId: string): Promise<Stripe.Subscription[]> {
-  const list = await stripe().subscriptions.list({ customer: customerId, status: "all", limit: 10 });
-  return list.data.filter((s) =>
-    ["active", "trialing", "past_due", "incomplete", "unpaid"].includes(s.status),
-  );
-}
-
 /**
  * Write a Stripe subscription to the user document, unless an event newer
- * than this one has already been applied. Nothing but this function and
- * `customerFor` writes the `subscription` field; the client cannot.
+ * than this one has already been applied. Nothing but this function writes
+ * the `subscription` field; the client cannot, and neither can the Billplz
+ * side, which writes `access` and leaves this alone.
  */
 export async function applySubscription(
   uid: string,
@@ -95,44 +72,13 @@ export async function applySubscription(
     const existing = snap.exists ? parseSubscription(snap.data()?.subscription) : null;
     if (existing && existing.eventCreated > 0 && !isNewer(incoming, existing)) return null;
     tx.set(ref, { subscription: { ...incoming, updatedAt: Date.now() } }, { merge: true });
-    return { incoming, wasActive: existing?.status === "active" };
+    return incoming;
   });
-  if (!applied) return null;
-  /* A subscription that has just started paying for the first time is the
-     one thing a stranger may be told about — as "a family joined", nothing
-     more. A renewal is active → active and says nothing new. */
-  if (applied.incoming.status === "active" && !applied.wasActive) {
-    await recordJoin(sub.id, applied.incoming.plan, eventCreated * 1000);
-  }
-  return applied.incoming;
-}
-
-/**
- * Remember, in a form that identifies nobody, that a family joined: when,
- * and which plan. Keyed by the Stripe subscription id so one subscription
- * can only ever produce one notice however many times Stripe tells us
- * about it. Never blocks the webhook — a notice is not worth a retry.
- */
-export async function recordJoin(
-  subscriptionId: string,
-  plan: Plan | null,
-  at: number,
-): Promise<void> {
-  try {
-    await adminDb().collection(JOINS).doc(subscriptionId).create({ at, plan });
-  } catch (error) {
-    if (isAlreadyExists(error)) return;
-    console.error("[billing/join]", error instanceof Error ? error.message : error);
-  }
-}
-
-/**
- * The recent joins, for `GET /api/social/recent`. Reads only the two
- * public fields; the private ones are not in the document to begin with.
- */
-export async function recentJoinEvents(limit: number): Promise<JoinEvent[]> {
-  const snap = await adminDb().collection(JOINS).orderBy("at", "desc").limit(limit).get();
-  return snap.docs.map((doc) => parseJoinEvent(doc.data())).filter((e): e is JoinEvent => e !== null);
+  /* No join notice from here any more. A join is a family arriving, and
+     nobody arrives through Stripe now — nothing can start a subscription,
+     so every event this function still sees belongs to a parent who joined
+     long ago. `settleBill` writes the notices; see `entitlement.ts`. */
+  return applied;
 }
 
 /**

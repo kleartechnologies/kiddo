@@ -1,7 +1,7 @@
 import type Stripe from "stripe";
 
 import { applySubscription, claimEvent, releaseEvent, uidOf } from "@/server/billing";
-import { billingUnavailable, json, problem } from "@/server/http";
+import { legacyBillingUnavailable, json, problem } from "@/server/http";
 import { stripe, webhookSecret } from "@/server/stripe";
 
 export const runtime = "nodejs";
@@ -33,7 +33,7 @@ export const HANDLED_EVENTS = new Set([
 ]);
 
 export async function POST(request: Request) {
-  const down = billingUnavailable();
+  const down = legacyBillingUnavailable();
   if (down) return down;
   if (!process.env.STRIPE_WEBHOOK_SECRET) return problem(503, "billing-not-configured");
 

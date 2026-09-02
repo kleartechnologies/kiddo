@@ -1,30 +1,30 @@
-import { isPlan, planText, type Plan } from "@/lib/billing/subscription";
 import { DEFAULT_LOCALE, type Locale } from "@/lib/i18n/locale";
 import { translate } from "@/lib/i18n/messages";
 
 /**
  * "A new KIDDO family just joined" — and nothing more than that.
  *
- * KIDDO shows a small notice on the landing page when another family
- * subscribes. Every one of them is a real Stripe subscription that really
- * became active; there is no generator, no sample data and no way for this
- * module to invent an event, because it only ever formats events it is
- * handed and the only thing that writes them is the Stripe webhook
- * (`src/server/billing.ts`).
+ * KIDDO shows a small notice on the landing page when another family buys
+ * it. Every one of them is a real Billplz bill that really settled; there is
+ * no generator, no sample data and no way for this module to invent an
+ * event, because it only ever formats events it is handed and the only thing
+ * that writes them is the server, on the same transaction that grants access
+ * (`src/server/entitlement.ts`).
  *
- * A join event carries two facts and no third: when it happened, and which
- * of the two plans it was. No uid, no email, no name, no country, no city,
- * no amount, no count of how many families there are. That is deliberate:
- * a notice must never let a stranger learn something about a parent, and
- * the cheapest way to guarantee that is for the private facts never to
- * leave the server in the first place.
+ * A join event carries one fact and no second: when it happened. No uid, no
+ * email, no name, no country, no city, no amount, no count of how many
+ * families there are. That is deliberate: a notice must never let a stranger
+ * learn something about a parent, and the cheapest way to guarantee that is
+ * for the private facts never to leave the server in the first place.
+ *
+ * Rows written while KIDDO was a subscription also carry `plan`. It is
+ * dropped on the way in rather than carried around: with one price there is
+ * no plan to name, and an event that holds one fact cannot leak a second.
  */
 
 export interface JoinEvent {
-  /** Unix ms, from the Stripe event that made the subscription active. */
+  /** Unix ms, from the moment the server granted lifetime access. */
   at: number;
-  /** Which plan, when it was one KIDDO recognises. */
-  plan: Plan | null;
 }
 
 /** Nothing older than this is worth mentioning; a notice must be news. */
@@ -38,7 +38,7 @@ export function parseJoinEvent(raw: unknown): JoinEvent | null {
   if (!raw || typeof raw !== "object") return null;
   const r = raw as Record<string, unknown>;
   if (typeof r.at !== "number" || !Number.isFinite(r.at) || r.at <= 0) return null;
-  return { at: r.at, plan: isPlan(r.plan) ? r.plan : null };
+  return { at: r.at };
 }
 
 /**
@@ -54,21 +54,14 @@ export function recentJoins(events: readonly JoinEvent[], now: number): JoinEven
 }
 
 /**
- * The sentence for one event, in the reader's language. Each says only what
- * the event proves: a family joined, and — when KIDDO knows which — on which
- * plan. No names, no places, no numbers.
+ * The sentence for one event, in the reader's language. It says only what
+ * the event proves: a family joined. No names, no places, no numbers, and
+ * — now that KIDDO is sold once — no plan.
  *
- * The plan's name comes from `planText`, the same place the pricing cards
- * read it, so the notice and the card cannot disagree about what the yearly
- * plan is called in either language.
+ * The wording alternates on the event's own timestamp rather than at random,
+ * so the same event reads the same way on a reload and two notices in a row
+ * are not identical sentences.
  */
 export function noticeFor(event: JoinEvent, locale: Locale = DEFAULT_LOCALE): string {
-  switch (event.plan) {
-    case "yearly":
-      return translate(locale, "social.join.plan", { plan: planText("yearly", locale).name });
-    case "monthly":
-      return translate(locale, "social.join.joined");
-    default:
-      return translate(locale, "social.join.started");
-  }
+  return translate(locale, event.at % 2 === 0 ? "social.join.joined" : "social.join.started");
 }

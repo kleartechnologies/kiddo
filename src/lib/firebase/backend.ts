@@ -33,7 +33,7 @@ import {
   type Firestore,
 } from "firebase/firestore";
 
-import { NO_SUBSCRIPTION, parseSubscription } from "@/lib/billing/subscription";
+import { NO_ENTITLEMENT, parseEntitlement } from "@/lib/billing/access";
 import { parseJourney } from "@/lib/journey/journey";
 import { childSlotIds } from "@/lib/cloud/children";
 import type { CloudBackend, ParentUser } from "@/lib/cloud/types";
@@ -349,21 +349,28 @@ export const firebaseBackend: CloudBackend = {
 
   /* ---- Billing --------------------------------------------------------- */
 
-  watchSubscription(uid, listener) {
+  watchEntitlement(uid, listener) {
     const { db } = services();
     return onSnapshot(
       doc(db, "users", uid),
-      (snap) => listener(snap.exists() ? parseSubscription(snap.data().subscription) : NO_SUBSCRIPTION),
+      (snap) => listener(snap.exists() ? parseEntitlement(snap.data()) : NO_ENTITLEMENT),
       () => {
         /* Say nothing on error: the session keeps whatever it last knew. */
       },
     );
   },
 
-  startCheckout: (plan, returnTo) =>
+  startPurchase: (returnTo) =>
     guarded(async () => {
-      const { url } = await callApi<{ url: string }>("/api/billing/checkout", { plan, returnTo });
-      return url;
+      /* No amount and no plan: there is one thing to buy, and its price is
+         the server's to know. All the browser sends is where to come back. */
+      return await callApi<{ url: string; billId: string }>("/api/billing/billplz/create", { returnTo });
+    }),
+
+  confirmPurchase: (billId) =>
+    guarded(async () => {
+      const { paid } = await callApi<{ paid: boolean }>("/api/billing/billplz/confirm", { billId });
+      return paid === true;
     }),
 
   openPortal: (returnTo) =>

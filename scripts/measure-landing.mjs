@@ -5,8 +5,8 @@
  *    1 layout          no horizontal scroll, one h1, headings in order
  *    2 targets         every link and button is at least 48px tall
  *    3 honesty         the page is built from the real product, not claims,
- *                      and the saving on the yearly plan is arithmetic on
- *                      the two prices printed beside it
+ *                      and the one price it prints is the one price KIDDO
+ *                      charges, with nothing recurring said anywhere
  *    4 navigation      landing → pricing → join → parents → privacy → landing
  *    5 reduced motion  nothing keeps moving; the hero is readable at once
  *    6 console         nothing logged
@@ -107,17 +107,18 @@ const honest = await ev(`(() => {
   const worlds = [...document.querySelectorAll("[data-landing-world]")].map((w) => w.dataset.landingWorld);
   const doors = document.querySelectorAll("[data-landing-doors] > li").length;
   const banned = ["AI", "million", "thousands of", "guaranteed", "COPPA", "clinically"].filter((w) => new RegExp("\\\\b" + w + "\\\\b").test(text));
-  /* Prices as printed, so the saving can be checked against them. */
+  /* The price as printed, so it can be checked against the one KIDDO charges. */
   const sen = (el) => Math.round(parseFloat((el?.textContent || "").replace(/[^0-9.]/g, "")) * 100);
-  const card = (plan) => document.querySelector('[data-pricing-plan="' + plan + '"]');
-  const money = { monthly: sen(card("monthly")?.querySelector("[data-pricing-price]")), yearly: sen(card("yearly")?.querySelector("[data-pricing-price]")) };
-  const saving = card("yearly")?.querySelector("[data-pricing-saving]")?.textContent || "";
-  const plans = [...document.querySelectorAll("[data-pricing-plan]")].map((el) => el.dataset.pricingPlan);
-  const noted = [...document.querySelectorAll("[data-pricing-plan]")].filter((el) => el.querySelector("[data-pricing-note]")).map((el) => el.dataset.pricingPlan);
+  const card = (offer) => document.querySelector('[data-pricing-offer="' + offer + '"]');
+  const price = sen(card("lifetime")?.querySelector("[data-pricing-price]"));
+  const was = sen(card("lifetime")?.querySelector("[data-pricing-was]"));
+  const plans = [...document.querySelectorAll("[data-pricing-offer]")].map((el) => el.dataset.pricingOffer);
+  const noted = [...document.querySelectorAll("[data-pricing-offer]")].filter((el) => el.querySelector("[data-pricing-note]")).map((el) => el.dataset.pricingOffer);
   return {
-    worlds, doors, banned, money, plans, noted,
+    worlds, doors, banned, price, was, plans, noted,
     percents: [...text.matchAll(/(\\d+)%/g)].map((m) => +m[1]),
-    claimed: +(saving.match(/(\\d+)%/) || [])[1],
+    recurring: ["monthly", "yearly", "per month", "per year", "subscribe", "free trial", "sebulan", "setahun", "langgan"]
+      .filter((w) => new RegExp(w, "i").test(text)),
     cta: document.querySelector("[data-landing-cta]")?.getAttribute("href"),
     /* The gameplay reel: real footage, and polite about it — it must carry a
        poster (no blank rectangle before load), stay muted (autoplay rules and
@@ -141,16 +142,21 @@ report(
       : null,
   ].filter(Boolean),
 );
-/* The persuasion has to be arithmetic: whatever saving the yearly card
-   claims must follow from the two prices the same page prints. */
-const truthful = Math.round((1 - honest.money.yearly / (honest.money.monthly * 12)) * 100);
+/* One thing to buy, at the price KIDDO actually charges, described as the
+   one-time payment it is. The launch saving is said with the old price
+   struck through, never as a percentage, so a percentage anywhere on the
+   page is still a leftover. */
+const PRICE_SEN = 2990;
+const ORIGINAL_SEN = 3990;
 report(
-  `plans ${honest.plans.join("/")} · ${honest.money.monthly / 100}/mo, ${honest.money.yearly / 100}/yr · claims ${honest.claimed}% saved`,
+  `offer ${honest.plans.join("/") || "none"} · RM${(honest.price / 100).toFixed(2)} once`,
   [
-    honest.plans.length === 2 && honest.plans[0] === "yearly" ? null : "yearly is not the first of exactly two plans",
-    honest.noted.join() === "yearly" ? null : `best-value badge on ${honest.noted.join("/") || "nothing"}`,
-    honest.claimed === truthful ? null : `saving says ${honest.claimed}% but the prices say ${truthful}%`,
-    honest.percents.every((n) => n === truthful) ? null : `a percentage on the page is not the saving: ${honest.percents.join(", ")}`,
+    honest.plans.length === 1 && honest.plans[0] === "lifetime" ? null : `not one lifetime offer: ${honest.plans.join("/") || "nothing"}`,
+    honest.price === PRICE_SEN ? null : `the page prints ${honest.price / 100}, not ${PRICE_SEN / 100}`,
+    honest.was === ORIGINAL_SEN ? null : `the struck original is ${honest.was / 100}, not ${ORIGINAL_SEN / 100}`,
+    honest.noted.join() === "lifetime" ? null : `the badge is on ${honest.noted.join("/") || "nothing"}`,
+    honest.recurring.length ? `a recurring word on a one-time offer: ${honest.recurring.join(", ")}` : null,
+    honest.percents.length ? `a percentage with nothing to be a percentage of: ${honest.percents.join(", ")}` : null,
   ].filter(Boolean),
 );
 await go("/privacy");
@@ -181,8 +187,8 @@ const hop = async (path, selector, expected) => {
   const got = await ev("location.pathname");
   report(`${path} · ${selector} → ${got}`, got === expected ? [] : [`expected ${expected}`]);
 };
-/* "Start KIDDO" is an anchor now: it stays on the page and brings the
-   two plans into view. Only choosing one leaves the landing page. */
+/* "Start KIDDO" is an anchor now: it stays on the page and brings the offer
+   into view. Only taking it leaves the landing page. */
 await go("/");
 await ev(`document.querySelector("[data-landing-cta]").click()`);
 await settle(cdp, sessionId, 1200);
@@ -195,13 +201,13 @@ report(`/ · [data-landing-cta] → ${toPricing.path}`, [
   toPricing.onScreen ? null : "pricing did not come into view",
 ].filter(Boolean));
 
-for (const plan of ["yearly", "monthly"]) {
-  await go("/");
-  await ev(`document.querySelector('[data-pricing-cta="${plan}"]').click()`);
-  await settle(cdp, sessionId, 1200);
-  const got = await ev("location.pathname + location.search");
-  report(`/ · ${plan} plan → ${got}`, got === `/join?plan=${plan}` ? [] : [`expected /join?plan=${plan}`]);
-}
+/* And the offer's own button goes to the join page with nothing in the
+   address bar: there is no plan to name, and the price is the server's. */
+await go("/");
+await ev(`document.querySelector('[data-pricing-cta="lifetime"]').click()`);
+await settle(cdp, sessionId, 1200);
+const toJoin = await ev("location.pathname + location.search");
+report(`/ · lifetime offer → ${toJoin}`, toJoin === "/join" ? [] : ["expected /join, with no query"]);
 
 await hop("/play", 'a[href="/parents"]', "/parents");
 

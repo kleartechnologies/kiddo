@@ -1,4 +1,4 @@
-import { NO_SUBSCRIPTION, type Plan, type SubscriptionState } from "@/lib/billing/subscription";
+import { LIFETIME_AMOUNT, NO_ENTITLEMENT, type AccessState, type Entitlement } from "@/lib/billing/access";
 import type { Journey } from "@/lib/journey/journey";
 import { parseJourney } from "@/lib/journey/journey";
 
@@ -6,20 +6,20 @@ import { CloudError, type ChildProfile, type CloudBackend, type ParentUser } fro
 
 /**
  * A pretend cloud, for looking at the account screens on a build that has
- * no Firebase and no Stripe — the browser measurements use it, and so can
+ * no Firebase and no Billplz — the browser measurements use it, and so can
  * a designer. Everything lives in one localStorage key on this device.
  *
  * Only loaded when the build is unconfigured AND the device has opted in
  * (`localStorage["kiddo.preview.cloud"] = "1"`); it is never part of a
- * configured build's path and grants nothing real. "Checkout" is a page on
- * this site, and the "webhook" is a timer.
+ * configured build's path and grants nothing real. The "payment page" is a
+ * page on this site, and the "callback" is a timer.
  */
 
 export const PREVIEW_FLAG_KEY = "kiddo.preview.cloud";
 /** Who the pretend Google popup always comes back as. */
 const PREVIEW_GOOGLE_EMAIL = "parent@example.com";
 const STATE_KEY = "kiddo.preview.state.v1";
-const WEBHOOK_DELAY_MS = 2500;
+const CALLBACK_DELAY_MS = 2500;
 
 interface State {
   /**
@@ -31,13 +31,13 @@ interface State {
   current: string | null;
   children: Record<string, ChildProfile>;
   journeys: Record<string, Journey>;
-  subscriptions: Record<string, SubscriptionState>;
-  /** A Checkout that "Stripe" will confirm shortly. */
-  pending: { uid: string; plan: Plan; at: number } | null;
+  entitlements: Record<string, Entitlement>;
+  /** A bill that "Billplz" will confirm shortly. */
+  pending: { uid: string; billId: string; at: number } | null;
   codes: Record<string, { email: string; kind: "reset" | "verify" }>;
 }
 
-const EMPTY: State = { accounts: {}, current: null, children: {}, journeys: {}, subscriptions: {}, pending: null, codes: {} };
+const EMPTY: State = { accounts: {}, current: null, children: {}, journeys: {}, entitlements: {}, pending: null, codes: {} };
 
 export function previewEnabled(): boolean {
   try {
@@ -69,7 +69,7 @@ function mutate<T>(work: (state: State) => T): T {
 
 const authListeners = new Set<(user: ParentUser | null) => void>();
 const journeyListeners = new Map<string, Set<(journey: Journey | null) => void>>();
-const subscriptionListeners = new Map<string, Set<(state: SubscriptionState) => void>>();
+const entitlementListeners = new Map<string, Set<(state: Entitlement) => void>>();
 
 function userOf(state: State): ParentUser | null {
   if (!state.current) return null;
@@ -90,44 +90,46 @@ function settlePending(): void {
     const p = state.pending;
     if (!p || Date.now() < p.at) return null;
     state.pending = null;
-    const sub: SubscriptionState = {
-      status: "active",
-      plan: p.plan,
-      currentPeriodEnd: Date.now() + (p.plan === "yearly" ? 365 : 30) * 24 * 60 * 60 * 1000,
-      cancelAtPeriodEnd: false,
-      stripeCustomerId: `cus_preview_${p.uid}`,
-      stripeSubscriptionId: `sub_preview_${p.uid}`,
-      eventCreated: Math.floor(Date.now() / 1000),
+    const entitlement: Entitlement = {
+      ...(state.entitlements[p.uid] ?? NO_ENTITLEMENT),
+      access: {
+        lifetime: true,
+        grantedAt: Date.now(),
+        source: "billplz",
+        billId: p.billId,
+        amount: LIFETIME_AMOUNT,
+      },
     };
-    state.subscriptions[p.uid] = sub;
-    return { uid: p.uid, sub };
+    state.entitlements[p.uid] = entitlement;
+    return { uid: p.uid, entitlement };
   });
-  if (fired) for (const listener of subscriptionListeners.get(fired.uid) ?? []) listener(fired.sub);
+  if (fired) for (const listener of entitlementListeners.get(fired.uid) ?? []) listener(fired.entitlement);
 }
 
-/** Test hook: put the signed-in parent's subscription in a given state. */
-export function previewSetSubscription(patch: Partial<SubscriptionState>): void {
+/** Test hook: put the signed-in parent's access in a given state. */
+export function previewSetAccess(patch: Partial<AccessState>): void {
   const fired = mutate((state) => {
     if (!state.current) return null;
     const uid = state.accounts[state.current]?.uid;
     if (!uid) return null;
-    const sub = { ...(state.subscriptions[uid] ?? NO_SUBSCRIPTION), ...patch };
-    state.subscriptions[uid] = sub;
-    return { uid, sub };
+    const existing = state.entitlements[uid] ?? NO_ENTITLEMENT;
+    const entitlement = { ...existing, access: { ...existing.access, ...patch } };
+    state.entitlements[uid] = entitlement;
+    return { uid, entitlement };
   });
-  if (fired) for (const listener of subscriptionListeners.get(fired.uid) ?? []) listener(fired.sub);
+  if (fired) for (const listener of entitlementListeners.get(fired.uid) ?? []) listener(fired.entitlement);
 }
 
 declare global {
   interface Window {
-    /** Measurement hook (pretend cloud only): flip the parent's subscription. */
-    __kiddoPreviewSetSubscription?: (patch: Partial<SubscriptionState>) => void;
+    /** Measurement hook (pretend cloud only): flip the parent's access. */
+    __kiddoPreviewSetAccess?: (patch: Partial<AccessState>) => void;
   }
 }
 
 export const previewBackend: CloudBackend = {
   onAuth(listener) {
-    if (typeof window !== "undefined") window.__kiddoPreviewSetSubscription = previewSetSubscription;
+    if (typeof window !== "undefined") window.__kiddoPreviewSetAccess = previewSetAccess;
     authListeners.add(listener);
     queueMicrotask(() => listener(userOf(load())));
     return () => authListeners.delete(listener);
@@ -220,7 +222,7 @@ export const previewBackend: CloudBackend = {
         delete state.children[id];
         delete state.journeys[id];
       }
-      delete state.subscriptions[user.uid];
+      delete state.entitlements[user.uid];
       for (const [email, account] of Object.entries(state.accounts)) if (account.uid === user.uid) delete state.accounts[email];
     });
     become(null);
@@ -265,11 +267,11 @@ export const previewBackend: CloudBackend = {
     return userOf(load());
   },
 
-  watchSubscription(uid, listener) {
-    const set = subscriptionListeners.get(uid) ?? new Set();
+  watchEntitlement(uid, listener) {
+    const set = entitlementListeners.get(uid) ?? new Set();
     set.add(listener);
-    subscriptionListeners.set(uid, set);
-    queueMicrotask(() => listener(load().subscriptions[uid] ?? NO_SUBSCRIPTION));
+    entitlementListeners.set(uid, set);
+    queueMicrotask(() => listener(load().entitlements[uid] ?? NO_ENTITLEMENT));
     const pending = load().pending;
     let timer: ReturnType<typeof setTimeout> | null = null;
     if (pending && pending.uid === uid) timer = setTimeout(settlePending, Math.max(0, pending.at - Date.now()));
@@ -278,14 +280,28 @@ export const previewBackend: CloudBackend = {
       if (timer) clearTimeout(timer);
     };
   },
-  async startCheckout(plan, returnTo) {
+  async startPurchase(returnTo) {
     const user = userOf(load());
     if (!user) throw new CloudError("no-account");
+    const billId = `preview-bill-${Math.random().toString(36).slice(2, 10)}`;
     mutate((state) => {
-      state.pending = { uid: user.uid, plan, at: Date.now() + WEBHOOK_DELAY_MS };
+      state.pending = { uid: user.uid, billId, at: Date.now() + CALLBACK_DELAY_MS };
     });
+    /* Straight back where it came from, with the parameters Billplz would
+       have added. Nothing here grants anything: `settlePending` is the
+       pretend callback, and it is on a timer like the real one is on a
+       network. */
     const joiner = returnTo.includes("?") ? "&" : "?";
-    return `${returnTo}${joiner}checkout=success`;
+    return { url: `${returnTo}${joiner}billplz%5Bid%5D=${billId}&billplz%5Bpaid%5D=true`, billId };
+  },
+  async confirmPurchase(billId) {
+    /* The pretend server: it will not say yes before its own timer has. */
+    settlePending();
+    const state = load();
+    for (const entitlement of Object.values(state.entitlements)) {
+      if (entitlement.access.billId === billId) return entitlement.access.lifetime;
+    }
+    return false;
   },
   async openPortal(returnTo) {
     return `${returnTo}?portal=preview`;

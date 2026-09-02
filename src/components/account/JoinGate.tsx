@@ -5,40 +5,35 @@ import { useEffect, useId, useRef, useState } from "react";
 
 import { Button, ButtonLink } from "@/components/ui/Button";
 import { Card } from "@/components/ui/Card";
-import {
-  planText,
-  PLAN_ORDER,
-  YEARLY_SAVING_PERCENT,
-  type Plan,
-} from "@/lib/billing/subscription";
-import { retrySession, sessionHasAccess, signOut, startCheckout, useSession } from "@/lib/cloud/session";
+import { LIFETIME_PRICE } from "@/lib/billing/access";
+import { retrySession, sessionHasAccess, signOut, startPurchase, useSession } from "@/lib/cloud/session";
 import type { AuthFailure } from "@/lib/cloud/types";
 import type { MessageKey } from "@/lib/i18n/messages/en";
-import { useT, useTranslation } from "@/lib/i18n/useLocale";
+import { useT } from "@/lib/i18n/useLocale";
 import { KIDDO_HOME, PARENTS, PRICING, WELCOME } from "@/lib/routes";
 
 import { AuthCard } from "./AuthCard";
-import { SubscriptionGate } from "./SubscriptionGate";
+import { AccessGate } from "./AccessGate";
 
 /**
- * `/join` — the road between choosing a plan and paying for it.
+ * `/join` — the road between deciding on KIDDO and paying for it.
  *
- * A parent arrives here from the pricing section with a plan already in
- * mind, and this page is the two steps that follow it: the account, then
- * Stripe. Nothing else happens on it. There is no child yet, no journey,
- * no product — those come after the payment the webhook confirms.
+ * A parent arrives here from the pricing section having decided, and this
+ * page is the two steps that follow: the account, then Billplz. Nothing else
+ * happens on it. There is no child yet, no journey, no product — those come
+ * after the payment the server confirms.
  *
- *   plan (from /#pricing) → account (Firebase) → Stripe Checkout → /welcome
+ *   /#pricing → account (Firebase) → Billplz → /welcome
  *
- * The plan can still be changed here, because a parent who has just been
- * asked for a password is allowed to reconsider; it is carried in this
- * component's state and handed to the server when Checkout is asked for.
- * The price itself is never sent — the server reads it from Stripe.
+ * There is nothing to choose here, because there is one price and one thing
+ * to buy. The amount is never sent from the browser either: the server puts
+ * `LIFETIME_AMOUNT` on the bill, and the figure shown here is the same
+ * constant, read for display only.
  *
- * Once the account exists, Checkout starts on its own: the parent already
- * said which plan they wanted, and asking again would be a second decision
- * where there is only one. If that request fails they get the reason and a
- * button, never a dead end.
+ * Once the account exists, the payment starts on its own: the parent already
+ * said what they wanted by coming here, and asking again would be a second
+ * decision where there is only one. If that request fails they get the
+ * reason and a button, never a dead end.
  */
 
 const WORDS: Partial<Record<AuthFailure, MessageKey>> = {
@@ -47,37 +42,36 @@ const WORDS: Partial<Record<AuthFailure, MessageKey>> = {
   "no-account": "join.error.no-account",
 };
 
-export function JoinGate({ plan: chosen }: { plan: Plan }) {
+export function JoinGate() {
   const session = useSession();
-  const [plan, setPlan] = useState<Plan>(chosen);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<MessageKey | null>(null);
   const t = useT();
   const id = useId();
   /* Whether the account was made (or signed into) on this visit. Only then
-     does Checkout start by itself — a parent who arrived already signed in
-     gets a button, because nothing they just did asked for a payment. */
+     does the payment start by itself — a parent who arrived already signed
+     in gets a button, because nothing they just did asked for a payment. */
   const arrivedSignedOut = useRef(false);
   const started = useRef(false);
 
   const status = session.status;
-  const ready = status === "needs-subscription" && !sessionHasAccess(session);
-  const subStatus = session.subscription?.status ?? "none";
-  /* A payment that failed or is still clearing is not a fresh purchase; the
-     subscription gate already says the right thing about both. */
+  const ready = status === "needs-purchase" && !sessionHasAccess(session);
+  const subStatus = session.entitlement?.subscription.status ?? "none";
+  /* An old subscription that failed or is still clearing is not a fresh
+     purchase; the access gate already says the right thing about both. */
   const complicated = subStatus === "past_due" || subStatus === "incomplete";
 
-  async function go(next: Plan = plan) {
+  async function go() {
     if (busy) return;
     setBusy(true);
     setError(null);
-    const failure = await startCheckout(next, WELCOME);
+    const failure = await startPurchase(WELCOME);
     if (failure) {
       setBusy(false);
       started.current = false;
       setError(WORDS[failure] ?? "join.error.checkout");
     }
-    /* On success the browser is already on its way to Stripe. */
+    /* On success the browser is already on its way to Billplz. */
   }
 
   /* Marked in an effect rather than during render, and declared before the
@@ -90,10 +84,10 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   useEffect(() => {
     if (!ready || complicated || !arrivedSignedOut.current || started.current) return;
     started.current = true;
-    void go(plan);
-    /* `go` is stable enough for this: it only reads `plan`, passed in. */
+    void go();
+    /* `go` is stable enough for this: it reads nothing that changes here. */
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ready, complicated, plan]);
+  }, [ready, complicated]);
 
   if (status === "unavailable") {
     return (
@@ -143,9 +137,9 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
     );
   }
 
-  /* A payment that failed or has not cleared: the gate handles both, with
-     the Customer Portal rather than a second Checkout. */
-  if (session.user && complicated) return <SubscriptionGate />;
+  /* An old subscription that failed or has not cleared: the gate handles
+     both, with the Customer Portal rather than a second payment. */
+  if (session.user && complicated) return <AccessGate />;
 
   if (status === "loading" || status === "signed-in") {
     return (
@@ -157,12 +151,12 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
 
   return (
     <div className="flex flex-col gap-6" data-join-gate={status}>
-      <ChosenPlan plan={plan} onChange={setPlan} disabled={busy} id={id} />
+      <TheOffer id={id} />
 
       {status === "signed-out" ? (
         <>
           <AuthCard initialMode="signup" />
-          <p className="text-ink-500 text-sm leading-snug">{t("join.beforeStripe")}</p>
+          <p className="text-ink-500 text-sm leading-snug">{t("join.beforePayment")}</p>
         </>
       ) : (
         <Card as="section" padding="lg" radius="hero" className="flex flex-col gap-4" data-join-checkout>
@@ -203,84 +197,30 @@ export function JoinGate({ plan: chosen }: { plan: Plan }) {
   );
 }
 
-/** The plan being bought, and the chance to change your mind about it. */
-function ChosenPlan({
-  plan,
-  onChange,
-  disabled,
-  id,
-}: {
-  plan: Plan;
-  onChange: (plan: Plan) => void;
-  disabled: boolean;
-  id: string;
-}) {
-  const { locale, t } = useTranslation();
-  const detail = planText(plan, locale);
+/** What is being bought: one thing, one price, and nothing to choose. */
+function TheOffer({ id }: { id: string }) {
+  const t = useT();
   return (
-    <Card as="section" aria-labelledby={`${id}-plan`} padding="lg" radius="hero" className="flex flex-col gap-5" data-join-plan={plan}>
+    <Card as="section" aria-labelledby={`${id}-offer`} padding="lg" radius="hero" className="flex flex-col gap-5" data-join-offer="lifetime">
       <div className="flex items-start gap-4">
         <span className="bg-honey-soft text-honey-ink flex size-12 shrink-0 items-center justify-center rounded-2xl">
           <Sparkles className="size-6" aria-hidden />
         </span>
         <div className="space-y-1">
           <p className="text-ink-500 text-xs font-semibold tracking-wide uppercase">
-            {t("join.plan.eyebrow")}
+            {t("join.offer.eyebrow")}
           </p>
-          <h1 id={`${id}-plan`} className="font-display text-2xl font-semibold sm:text-3xl">
-            {t("join.plan.heading", {
-              name: detail.name,
-              price: detail.price,
-              per: detail.per,
-            })}
+          <h1 id={`${id}-offer`} className="font-display text-2xl font-semibold sm:text-3xl" data-join-price>
+            {t("join.offer.heading", { name: t("offer.name"), price: LIFETIME_PRICE })}
           </h1>
           <p className="text-ink-700 text-base leading-snug">
-            {plan === "yearly"
-              ? t("join.plan.yearlyBlurb", {
-                  blurb: detail.blurb,
-                  saving: YEARLY_SAVING_PERCENT,
-                })
-              : t("join.plan.monthlyBlurb", { blurb: detail.blurb })}
+            {t("join.offer.blurb", { blurb: t("offer.blurb") })}
           </p>
         </div>
       </div>
 
-      <fieldset className="flex flex-col gap-2 sm:flex-row" disabled={disabled}>
-        <legend className="sr-only">{t("join.plan.legend")}</legend>
-        {PLAN_ORDER.map((key) => {
-          const selected = plan === key;
-          const option = planText(key, locale);
-          return (
-            <label
-              key={key}
-              className={`flex min-h-12 flex-1 cursor-pointer items-center gap-3 rounded-tile border-2 px-4 py-3 transition-colors ${
-                selected ? "border-ink-900 bg-cream-50" : "border-edge hover:bg-cream-50"
-              }`}
-              data-join-plan-option={key}
-              data-join-plan-selected={selected || undefined}
-            >
-              <input
-                type="radio"
-                name="plan"
-                value={key}
-                checked={selected}
-                onChange={() => onChange(key)}
-                className="accent-ink-900 size-5 shrink-0"
-              />
-              <span className="text-ink-900 text-base font-semibold">
-                {t("join.plan.option", {
-                  name: option.name,
-                  price: option.price,
-                  per: option.per,
-                })}
-              </span>
-            </label>
-          );
-        })}
-      </fieldset>
-
       <ButtonLink href={PRICING} variant="quiet" size="sm" className="self-start" data-join-back>
-        {t("join.plan.compare")}
+        {t("join.offer.back")}
       </ButtonLink>
     </Card>
   );

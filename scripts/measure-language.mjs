@@ -15,7 +15,7 @@
  *    3 privacy         the same page in two languages
  *    4 join            both; the plan the parent chose survives the switch
  *    5 welcome         both; the child's name is a name, not a string
- *    6 parent area     both; account, subscription and billing labels
+ *    6 parent area     both; account and billing labels
  *    7 games           all six quests, in both — and a language changed in
  *                      the middle of a round moves nothing but the words:
  *                      same options, same ids, same order, same verdict on
@@ -347,34 +347,32 @@ section("2 · landing");
     header: "header",
     footer: "footer",
     closing: "[data-landing-closing-cta]",
-    yearly: '[data-pricing-plan="yearly"]',
-    monthly: '[data-pricing-plan="monthly"]',
-    yearlyCta: '[data-pricing-cta="yearly"]',
-    badge: '[data-pricing-plan="yearly"] [data-pricing-note]',
-    saving: "[data-pricing-saving]",
-    yearlyPrice: '[data-pricing-plan="yearly"] [data-pricing-price]',
-    monthlyPrice: '[data-pricing-plan="monthly"] [data-pricing-price]',
+    offer: '[data-pricing-offer="lifetime"]',
+    offerCta: '[data-pricing-cta="lifetime"]',
+    badge: '[data-pricing-offer="lifetime"] [data-pricing-note]',
+    footnote: "#pricing p:last-of-type",
+    price: '[data-pricing-offer="lifetime"] [data-pricing-price]',
   };
   const { english, malay } = await bothWays("/", hooks);
   report(
     `landing · en "${english.hero?.slice(0, 34)}…" → ms "${malay.hero?.slice(0, 34)}…"`,
     compare(english, malay, {
-      changes: ["hero", "cta", "signin", "header", "footer", "closing", "yearly", "monthly", "yearlyCta", "badge", "saving"],
-      keeps: ["yearlyPrice", "monthlyPrice"],
+      changes: ["hero", "cta", "signin", "header", "footer", "closing", "offer", "offerCta", "badge", "footnote"],
+      keeps: ["price"],
     }),
   );
-  report(`landing · prices unmoved: ${malay.yearlyPrice} / ${malay.monthlyPrice}`, [
-    /RM59\.90/.test(malay.yearlyPrice ?? "") ? null : `yearly says ${malay.yearlyPrice}`,
-    /RM9\.90/.test(malay.monthlyPrice ?? "") ? null : `monthly says ${malay.monthlyPrice}`,
+  report(`landing · the price is unmoved: ${malay.price}`, [
+    /RM29\.90/.test(malay.price ?? "") ? null : `the offer says ${malay.price}`,
   ].filter(Boolean));
   await shoot("02-landing-ms");
 
-  /* The plan is chosen by pressing a card, and which card was pressed is in
-     the address. A language is not a plan. */
-  await tap('[data-pricing-cta="yearly"]');
+  /* One offer, taken by pressing it, and the address says nothing about
+     money. A language does not choose what is bought, because nothing is
+     chosen. */
+  await tap('[data-pricing-cta="lifetime"]');
   await until(`location.pathname === "/join"`, 4000);
   const wentTo = await js("location.pathname + location.search");
-  report(`landing · a Malay parent choosing yearly lands on ${wentTo}`, wentTo === "/join?plan=yearly" ? [] : ["plan lost in translation"]);
+  report(`landing · a Malay parent taking the offer lands on ${wentTo}`, wentTo === "/join" ? [] : ["the offer led somewhere else"]);
 }
 
 section("3 · privacy");
@@ -388,36 +386,34 @@ section("3 · privacy");
 section("4 · join");
 {
   const hooks = {
-    plan: "[data-join-plan]",
-    yearly: '[data-join-plan-option="yearly"]',
-    monthly: '[data-join-plan-option="monthly"]',
+    offer: "[data-join-price]",
     auth: "[data-auth-card]",
     submit: "[data-auth-submit]",
     switch: "[data-auth-switch]",
     back: "[data-join-back]",
   };
-  await go("/join?plan=monthly");
+  /* The amount printed on a line, whatever language the words around it
+     are in. It is the one thing on this page that must not translate. */
+  const money = (line) => (line ?? "").match(/RM[\d.]+/)?.[0] ?? null;
+  await go("/join");
   await until(`document.querySelector("[data-join-gate='signed-out']")`, 6000);
   await chooseLanguage("en");
   const english = await saidOn(hooks);
   const gateBefore = await attr("[data-join-gate]", "data-join-gate");
-  const chosenBefore = await attr("[data-join-plan]", "data-join-plan");
-  const selectedBefore = await js(`[...document.querySelectorAll("[data-join-plan-option]")].filter((o) => o.hasAttribute("data-join-plan-selected")).map((o) => o.dataset.joinPlanOption).join()`);
+  const priceBefore = money(await text("[data-join-price]"));
   await chooseLanguage("ms");
   const malay = await saidOn(hooks);
   const gateAfter = await attr("[data-join-gate]", "data-join-gate");
-  const chosenAfter = await attr("[data-join-plan]", "data-join-plan");
-  const selectedAfter = await js(`[...document.querySelectorAll("[data-join-plan-option]")].filter((o) => o.hasAttribute("data-join-plan-selected")).map((o) => o.dataset.joinPlanOption).join()`);
+  const priceAfter = money(await text("[data-join-price]"));
   report(
     `join · the sign-up form in two languages ("${english.submit}" → "${malay.submit}")`,
-    compare(english, malay, { changes: ["plan", "yearly", "monthly", "auth", "submit", "switch", "back"], keeps: [] }),
+    compare(english, malay, { changes: ["offer", "auth", "submit", "switch", "back"], keeps: [] }),
   );
-  report(`join · the plan chosen stays chosen: ${gateBefore}/${chosenBefore}/${selectedBefore} → ${gateAfter}/${chosenAfter}/${selectedAfter}`, [
+  report(`join · the offer survives the switch: ${gateBefore}/${priceBefore} → ${gateAfter}/${priceAfter}`, [
     gateBefore === "signed-out" ? null : `arrived at the ${gateBefore} gate`,
     gateAfter === gateBefore ? null : `the switch moved the gate to ${gateAfter}`,
-    chosenBefore === "monthly" ? null : `arrived on ${chosenBefore}`,
-    chosenAfter === chosenBefore ? null : `the switch changed the plan to ${chosenAfter}`,
-    selectedAfter === selectedBefore ? null : `the selected card moved to ${selectedAfter}`,
+    priceBefore === "RM29.90" ? null : `arrived showing ${priceBefore}`,
+    priceAfter === priceBefore ? null : `the switch changed the price to ${priceAfter}`,
     (await exists("[data-auth-email]")) && (await exists("[data-auth-password]")) ? null : "the sign-up form went missing",
   ].filter(Boolean));
   await shoot("04-join-ms");
@@ -434,17 +430,17 @@ section("5 · an account, in Malay");
   await typeInto("[data-auth-password]", "secret1");
   await typeInto("[data-auth-confirm]", "secret1");
   await tap("[data-auth-submit]");
-  const gate = await until(`document.querySelector("[data-subscription-gate]")`, 8000);
-  const gateText = await text("[data-subscription-gate] h1");
-  report(`signing up in Malay reaches the subscription gate (${gate}): "${gateText}"`, [
+  const gate = await until(`document.querySelector("[data-access-gate]")`, 8000);
+  const gateText = await text("[data-access-gate] h1");
+  report(`signing up in Malay reaches the purchase gate (${gate}): "${gateText}"`, [
     gate ? null : "no gate",
     ENGLISH_ONLY.test(gateText ?? "") ? `the gate is in English: "${gateText}"` : null,
   ].filter(Boolean));
 
-  await tap("[data-subscription-start]");
-  await until(`location.search.includes("checkout=success") || document.querySelector("[data-subscription-gate='confirming']")`, 8000);
+  await tap("[data-access-start]");
+  await until(`location.search.includes("billplz") || document.querySelector("[data-access-gate='confirming']")`, 8000);
   const onboarding = await until(`document.querySelector("[data-onboarding]")`, 10000);
-  report(`the pretend webhook lands and onboarding asks in Malay (${onboarding})`, onboarding ? [] : ["no onboarding"]);
+  report(`the pretend callback lands and onboarding asks in Malay (${onboarding})`, onboarding ? [] : ["no onboarding"]);
   await typeInto("[data-onboarding] input", CHILD);
   await tap("[data-onboarding] button[type=submit]");
   const ready = await until(`document.querySelector("[data-parent-gate='ready']")`, 8000);
@@ -478,10 +474,9 @@ section("6 · welcome & the parent area");
     account: "[data-account-row]",
     signout: "[data-account-signout]",
     billing: "[data-billing-row]",
-    plan: "[data-billing-plan]",
+    offer: "[data-billing-offer]",
     line: "[data-billing-line]",
     status: "[data-billing-status]",
-    manage: "[data-billing-manage]",
     privacy: "[data-parent-privacy]",
     email: "[data-account-email]",
     child: "[data-parent-child]",
@@ -489,7 +484,9 @@ section("6 · welcome & the parent area");
   report(
     `parent area · billing "${parents.english.status}" → "${parents.malay.status}"`,
     compare(parents.english, parents.malay, {
-      changes: ["greeting", "open", "summary", "overview", "worlds", "next", "account", "signout", "billing", "plan", "line", "status", "manage", "privacy", "child"],
+      /* No "manage" here: a parent who bought KIDDO once has no subscription
+         to manage, so that button is not on the page to be translated. */
+      changes: ["greeting", "open", "summary", "overview", "worlds", "next", "account", "signout", "billing", "offer", "line", "status", "privacy", "child"],
       /* An email address is a fact about the account, not a word. */
       keeps: ["email"],
     }),

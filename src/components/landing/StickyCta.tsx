@@ -4,10 +4,10 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 import { reportCta } from "@/lib/analytics/events";
-import { planText } from "@/lib/billing/subscription";
+import { LIFETIME_PRICE } from "@/lib/billing/access";
 import { cn } from "@/lib/cn";
 import { followHashLink } from "@/lib/hashLink";
-import { useTranslation } from "@/lib/i18n/useLocale";
+import { useT } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
 /**
@@ -15,7 +15,7 @@ import { PRICING } from "@/lib/routes";
  *
  * The landing page is long on purpose, and on a phone the hero's button is
  * eight screens above the testimonials. This bar carries the same two facts
- * — the price and the way in — pinned to the bottom edge, so the moment a
+ * — the one price and the way in — pinned to the bottom edge, so the moment a
  * parent is persuaded is never far from the place they act on it.
  *
  * It knows when to be quiet. Not while the hero is still on screen, because
@@ -30,9 +30,7 @@ import { PRICING } from "@/lib/routes";
  * respects reduced motion by arriving without travelling.
  */
 export function StickyCta() {
-  const { locale, t } = useTranslation();
-  const monthly = planText("monthly", locale);
-  const yearly = planText("yearly", locale);
+  const t = useT();
 
   const [show, setShow] = useState(false);
   /* What each observer last said, kept between callbacks. */
@@ -93,7 +91,7 @@ export function StickyCta() {
       <div className="border-edge bg-paper/95 border-t px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] shadow-lift backdrop-blur-sm">
         <div className="mx-auto flex max-w-xl items-center justify-between gap-3">
           <p className="text-ink-700 min-w-0 text-sm leading-snug font-medium">
-            {t("landing.sticky.price", { monthly: monthly.price, yearly: yearly.price })}
+            {t("landing.sticky.price", { price: LIFETIME_PRICE })}
           </p>
           <Link
             href={PRICING}

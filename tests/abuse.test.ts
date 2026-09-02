@@ -16,6 +16,12 @@ import test from "node:test";
 
 const read = (path: string) => readFileSync(new URL(path, import.meta.url), "utf8");
 
+/** Every TypeScript file under `src/`, for the scans that must miss none. */
+const walk = (dir: string): string[] =>
+  readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
+    entry.isDirectory() ? walk(`${dir}/${entry.name}`) : /\.(ts|tsx)$/.test(entry.name) ? [`${dir}/${entry.name}`] : [],
+  );
+
 /* ---- Account enumeration ---------------------------------------------- */
 
 test("a failed sign-in never says whether the email is one KIDDO knows", () => {
@@ -66,7 +72,8 @@ test("App Check is off unless it is configured, and never guards the webhook", (
 
 test("the routes a signed-in parent calls all ask for an attestation", () => {
   for (const path of [
-    "../src/app/api/billing/checkout/route.ts",
+    "../src/app/api/billing/billplz/create/route.ts",
+    "../src/app/api/billing/billplz/confirm/route.ts",
     "../src/app/api/billing/portal/route.ts",
     "../src/app/api/account/delete/route.ts",
   ]) {
@@ -86,7 +93,8 @@ test("the routes a signed-in parent calls all ask for an attestation", () => {
  * to add one is to say here which kind it is.
  */
 const PROTECTED: ReadonlyArray<{ path: string; method: "GET" | "POST" }> = [
-  { path: "billing/checkout", method: "POST" },
+  { path: "billing/billplz/create", method: "POST" },
+  { path: "billing/billplz/confirm", method: "POST" },
   { path: "billing/portal", method: "POST" },
   { path: "account/delete", method: "POST" },
   { path: "content/round", method: "POST" },
@@ -98,6 +106,10 @@ const PUBLIC: ReadonlyArray<{ path: string; guard: RegExp }> = [
   { path: "social/recent", guard: /consume\(LIMITS\.social, clientIp\(request\), now\)/ },
   /* Stripe is not a signed-in parent; its signature is the credential. */
   { path: "billing/webhook", guard: /webhooks\.constructEvent\(raw, signature, webhookSecret\(\)\)/ },
+  /* Neither is Billplz. Its X-Signature is checked, and then — the part
+     that actually decides anything — the bill is re-read from Billplz with
+     KIDDO's own key. See `docs/kiddo-billing.md`. */
+  { path: "billing/billplz/callback", guard: /if \(key && !verifySignature\(fields, fields\.x_signature, key\)\)/ },
 ];
 
 function apiRoutes(dir: string, prefix = ""): string[] {
@@ -133,6 +145,8 @@ test("a protected route answers 401 to no token, a malformed one, and a forged o
   process.env.STRIPE_SECRET_KEY = "sk_test_unit";
   process.env.STRIPE_PRICE_MONTHLY = "price_monthly_unit";
   process.env.STRIPE_PRICE_YEARLY = "price_yearly_unit";
+  process.env.BILLPLZ_SECRET_KEY = "billplz_test_unit";
+  process.env.BILLPLZ_COLLECTION_ID = "collection_unit";
 
   const headers: ReadonlyArray<[string, Record<string, string>]> = [
     ["no authorization header at all", {}],
@@ -154,7 +168,7 @@ test("a protected route answers 401 to no token, a malformed one, and a forged o
       const response = await handler(new Request(`https://kiddo.test/api/${route.path}`, {
         method: route.method,
         headers: { "content-type": "application/json", ...auth },
-        body: JSON.stringify({ plan: "monthly", uid: "victim", returnTo: "/parents" }),
+        body: JSON.stringify({ billId: "bill_victim", uid: "victim", returnTo: "/parents" }),
       }));
       assert.equal(response.status, 401, `${route.path} with ${what}`);
       assert.deepEqual(await response.json(), { error: "unauthorized" }, `${route.path} with ${what}`);
@@ -163,9 +177,9 @@ test("a protected route answers 401 to no token, a malformed one, and a forged o
 });
 
 test("no route reads an identity out of the request body", () => {
-  /* The only two things a body may say are which plan and where to return
-     to. Anything that decides *whose* money or *whose* account is involved
-     comes from the verified token or from Firestore. */
+  /* The only things a body may say are which bill it is asking about and
+     where to return to. Anything that decides *whose* money or *whose*
+     account is involved comes from the verified token or from Firestore. */
   const identity = /body\.(uid|userId|customer|customerId|stripeCustomerId|subscription|subscriptionId|price|priceId|amount|email|status|plan_id)\b/;
   for (const route of [...PROTECTED, ...PUBLIC]) {
     const source = read(`../src/app/api/${route.path}/route.ts`);
@@ -175,16 +189,25 @@ test("no route reads an identity out of the request body", () => {
          and cannot become one: it picks which words a round is said in and
          nothing else — see `dealRound`. Whose round it is still comes from
          the verified token. */
-      assert.ok(["body.plan", "body.returnTo", "body.round", "body.tier", "body.seed",
+      assert.ok(["body.billId", "body.returnTo", "body.round", "body.tier", "body.seed",
         "body.locale"].includes(field),
         `${route.path} reads ${field}`);
     }
   }
-  /* And the two that matter are read from the token, not the body. */
-  const checkout = read("../src/app/api/billing/checkout/route.ts");
-  assert.match(checkout, /customerFor\(caller\.uid, caller\.email\)/);
-  assert.match(checkout, /client_reference_id: caller\.uid/);
-  assert.match(checkout, /line_items: \[\{ price: priceIds\(\)\[plan\], quantity: 1 \}\]/);
+  /* And the ones that matter are read from the token, not the body. The
+     bill is billed to the verified address and stamped with the verified
+     uid, so a paid bill can only ever open the account that asked for it. */
+  const create = read("../src/app/api/billing/billplz/create/route.ts");
+  assert.match(create, /if \(!caller\.email\) return problem\(400, "no-email"\);/);
+  assert.match(create, /email: caller\.email,/);
+  assert.match(create, /uid: caller\.uid,/);
+  assert.doesNotMatch(create, /body\.email|fields\.email/, "the browser does not name the payer");
+
+  /* `confirm` reads a bill id from the body — which is not an identity:
+     the ledger says whose it is, and a bill that is not yours is a 404. */
+  const confirm = read("../src/app/api/billing/billplz/confirm/route.ts");
+  assert.match(confirm, /if \(!record \|\| record\.uid !== caller\.uid\) return problem\(404, "no-bill"\);/);
+
   const portal = read("../src/app/api/billing/portal/route.ts");
   assert.match(portal, /const state = await subscriptionOf\(caller\.uid\);/);
   assert.match(portal, /customer: state\.stripeCustomerId,/);
@@ -193,38 +216,44 @@ test("no route reads an identity out of the request body", () => {
 /* ---- D, E, F: Stripe takes its instructions from the server ------------ */
 
 test("D — a price the client names is not a price KIDDO will charge", async () => {
-  const { isPlan } = await import("@/lib/billing/subscription");
-  for (const forged of [
-    "price_1FreeForever", "price_live_stolen", "monthly ", "MONTHLY", "yearly\n",
-    "", "__proto__", "constructor", "0", "true",
-  ]) {
-    assert.equal(isPlan(forged), false, forged);
-  }
-  assert.equal(isPlan("monthly"), true);
-  assert.equal(isPlan("yearly"), true);
-  for (const notAString of [1, 0, null, undefined, {}, [], { plan: "monthly" }]) {
-    assert.equal(isPlan(notAString), false);
-  }
+  /* There is one price and the browser is never asked about it, which is a
+     stronger guarantee than validating what it sends: a field that does
+     not exist cannot be tampered with. */
+  const create = read("../src/app/api/billing/billplz/create/route.ts");
+  assert.match(create, /amount: LIFETIME_AMOUNT,/);
+  assert.doesNotMatch(create, /body\.(amount|price|plan|currency)/);
 
-  /* And the route turns anything else away before it reaches Stripe. */
-  const checkout = read("../src/app/api/billing/checkout/route.ts");
-  const decided = checkout.indexOf('if (!plan) return problem(400, "bad-plan");');
-  assert.ok(decided > 0, "an unrecognised plan is a 400");
-  assert.ok(decided < checkout.indexOf("stripe()."), "and it is refused before any Stripe call");
+  const { LIFETIME_AMOUNT } = await import("@/lib/billing/access");
+  assert.equal(LIFETIME_AMOUNT, 2990, "RM29.90, in sen, in one place");
 
-  /* The amounts live in Stripe. KIDDO sends an id, never a sum, so a
-     tampered request cannot change the price of anything. */
-  const server = read("../src/server/stripe.ts");
-  assert.doesNotMatch(server, /unit_amount|price_data/);
-  assert.doesNotMatch(checkout, /unit_amount|price_data|amount/);
+  /* And the sum sent to Billplz is that constant, not arithmetic on
+     anything a request carried. */
+  const asked = create.indexOf("amount: LIFETIME_AMOUNT,");
+  const parsed = create.indexOf("const body = await readJson(request);");
+  assert.ok(parsed > 0 && asked > parsed, "the body is read, and then ignored about money");
+  const { LIMITS } = await import("@/server/rateLimit");
+  assert.ok(LIMITS.checkout.limit <= 10, "and a signed-in caller cannot mint bills all day");
 });
 
-test("E — the customer is looked up from the token, never accepted from the caller", () => {
-  const billing = read("../src/server/billing.ts");
-  assert.match(billing, /export async function customerFor\(uid: string/);
-  /* Whatever the browser sends, the id used is the one already written
-     against this uid — or a new one created for it. */
-  assert.match(billing, /metadata: \{ uid \}/);
+test("E — whose payment a bill is, is decided when it is created and never afterwards", () => {
+  /* The ledger row is written from the verified token before the parent
+     ever reaches Billplz, with `create` so a bill id cannot be re-pointed
+     at another account later. */
+  const entitlement = read("../src/server/entitlement.ts");
+  assert.match(entitlement, /\.doc\(billId\)\n?\s*\.create\(\{ \.\.\.record/, "create(), not set()");
+  assert.match(entitlement, /const uid = typeof raw\.uid === "string" \? raw\.uid : "";/);
+
+  /* The callback names an email and a state; neither is read for identity
+     or for the decision. The uid comes from the ledger, the state from
+     Billplz. */
+  const callback = read("../src/app/api/billing/billplz/callback/route.ts");
+  assert.doesNotMatch(callback, /fields\.(email|uid|paid|state|amount)\b/,
+    "a forged callback body decides nothing");
+  assert.match(callback, /const bill = await getBill\(billId\);/);
+  assert.match(callback, /const settlement = await settleBill\(bill\);/);
+  const asked = callback.indexOf("await getBill(billId)");
+  const granted = callback.indexOf("await settleBill(bill)");
+  assert.ok(asked > 0 && granted > asked, "ask Billplz, then grant — never the other way round");
 
   const portal = read("../src/app/api/billing/portal/route.ts");
   const lookup = portal.indexOf("await subscriptionOf(caller.uid)");
@@ -233,35 +262,63 @@ test("E — the customer is looked up from the token, never accepted from the ca
     "no customer of your own means no portal, not somebody else's");
 });
 
-test("F — a parent who already subscribes cannot open a second checkout", () => {
-  const checkout = read("../src/app/api/billing/checkout/route.ts");
-  assert.match(checkout, /const live = await liveSubscriptions\(customer\);/);
-  assert.match(checkout, /return problem\(409, "already-subscribed"\);/);
-  const guard = checkout.indexOf("already-subscribed");
-  assert.ok(guard < checkout.indexOf("checkout.sessions.create"), "checked before a session is made");
-  assert.match(checkout, /s\.status === "active" \|\| s\.status === "trialing" \|\| s\.status === "past_due"/);
+test("F — a parent who already owns KIDDO is not sold it a second time", () => {
+  const create = read("../src/app/api/billing/billplz/create/route.ts");
+  assert.match(create, /const entitlement = await entitlementOf\(caller\.uid\);/);
+  assert.match(create, /if \(hasAccess\(entitlement, Date\.now\(\)\)\) return problem\(409, "already-owned"\);/);
+  const guard = create.indexOf("already-owned");
+  assert.ok(guard > 0 && guard < create.indexOf("await createBill("), "checked before a bill exists");
+
+  /* And a bill that is settled twice grants once: the ledger row is the
+     lock, and the write is inside the transaction that reads it. */
+  const entitlement = read("../src/server/entitlement.ts");
+  assert.match(entitlement, /if \(raw\.settled === true\) return \{ outcome: "already", uid \} as const;/);
+  const tx = entitlement.indexOf("db.runTransaction");
+  const read2 = entitlement.indexOf("await tx.get(billRef)");
+  const write = entitlement.indexOf("tx.set(\n      userRef,");
+  assert.ok(tx > 0 && read2 > tx && write > read2, "read the ledger, then write, in one transaction");
 });
 
 /* ---- G, H, I, J: the client cannot write what it must not -------------- */
 
-test("G — subscription state is written by the webhook and nothing else", () => {
+test("G — access is written by the server that asked Billplz, and by nothing else", () => {
   const rules = read("../firestore.rules");
-  /* The allowlist for a client update names the fields it may set; the
-     subscription is not among them, so a client write that includes one
-     is refused whatever else it contains. */
-  assert.doesNotMatch(rules, /'subscription'/, "no rule ever admits a client-written subscription");
+  /* The allowlist for a client update names the fields it may set. Neither
+     the purchase nor the old subscription is among them, so a client write
+     that includes one is refused whatever else it contains. */
+  assert.doesNotMatch(rules, /'access'/, "no rule ever admits a client-written entitlement");
+  assert.doesNotMatch(rules, /'subscription'/);
   assert.doesNotMatch(rules, /'stripeCustomerId'/);
+  /* And the ledger is not a client collection at all. */
+  assert.match(rules, /match \/billplzBills\/\{billId\} \{\s*allow read, write: if false;/);
 
   const backend = read("../src/lib/firebase/backend.ts");
-  assert.doesNotMatch(backend, /subscription:/, "the browser never writes one either");
+  assert.doesNotMatch(backend, /access:|subscription:/, "the browser never writes one either");
 
-  /* Server-side, exactly one function writes it, and it is the webhook's. */
+  /* Server-side, exactly one function grants access, and it is the one that
+     has a bill from Billplz in its hand. The preview cloud writes the same
+     shape, which is why it is named here rather than filtered out — and why
+     the two lines below hold it to being what it says it is. */
+  const writers = walk(new URL("../src", import.meta.url).pathname)
+    .filter((file) => /access: \{\s*\n?\s*lifetime: true/.test(readFileSync(file, "utf8")))
+    .map((file) => file.slice(file.indexOf("/src/") + 4));
+  assert.deepEqual(writers, ["/lib/cloud/preview.ts", "/server/entitlement.ts"]);
+
+  const preview = read("../src/lib/cloud/preview.ts");
+  assert.doesNotMatch(preview, /from "firebase|from "@\/lib\/firebase|adminDb\(/,
+    "the preview cloud must not be able to reach a real one");
+  assert.match(preview, /localStorage/, "its whole world is one key on one device");
+
+  const entitlement = read("../src/server/entitlement.ts");
+  assert.match(entitlement, /export async function settleBill\(bill: Bill\)/);
+  assert.match(entitlement, /if \(!billIsSettled\(bill, expected\)\) return \{ outcome: "unpaid", uid \} as const;/);
+
+  /* The old subscription still has exactly one writer too. */
   const billing = read("../src/server/billing.ts");
   assert.match(billing, /export async function applySubscription/);
-  const webhook = read("../src/app/api/billing/webhook/route.ts");
-  assert.match(webhook, /applySubscription\(/);
-  for (const route of ["billing/checkout", "billing/portal", "account/delete"]) {
-    assert.doesNotMatch(read(`../src/app/api/${route}/route.ts`), /applySubscription/, route);
+  assert.match(read("../src/app/api/billing/webhook/route.ts"), /applySubscription\(/);
+  for (const route of ["billing/billplz/create", "billing/billplz/confirm", "billing/portal", "account/delete"]) {
+    assert.doesNotMatch(read(`../src/app/api/${route}/route.ts`), /applySubscription|lifetime: true/, route);
   }
 });
 
@@ -311,7 +368,7 @@ test("M — an Origin header cannot decide where Stripe sends a parent back to",
       { "x-forwarded-host": "evil.example" },
     ];
     for (const headers of claims) {
-      assert.equal(siteUrl(hostile("https://evil.example/api/billing/checkout", headers)), "https://kiddo.my");
+      assert.equal(siteUrl(hostile("https://evil.example/api/billing/billplz/create", headers)), "https://kiddo.my");
     }
 
     /* Unconfigured in production, the honest answer is "I don't know" —
@@ -332,11 +389,18 @@ test("M — an Origin header cannot decide where Stripe sends a parent back to",
   }
 
   /* And a route that cannot name its own site refuses rather than guesses. */
-  for (const route of ["billing/checkout", "billing/portal"]) {
+  for (const route of ["billing/billplz/create", "billing/portal"]) {
     const source = read(`../src/app/api/${route}/route.ts`);
     assert.match(source, /if \(!base\) return problem\(503, "site-url-not-configured"\);/, route);
     assert.doesNotMatch(source, /headers\.get\("origin"\)/, route);
   }
+
+  /* The stake here is higher than a redirect: the same value chooses the
+     address Billplz posts the grant to. */
+  const create = read("../src/app/api/billing/billplz/create/route.ts");
+  assert.match(create, /callbackUrl: `\$\{base\}\/api\/billing\/billplz\/callback`,/);
+  assert.match(create, /redirectUrl: `\$\{base\}\$\{returnTo\}`,/);
+  assert.match(create, /const returnTo = safePath\(body\.returnTo, "\/welcome"\);/);
 
   /* `returnTo` is still only ever a path on that site. */
   const { safePath } = await import("@/server/http");
@@ -517,26 +581,27 @@ test("O, P, Q — a round is dealt only to a signed-in parent who is paying", as
      hold the order in place, because the value of these checks is entirely
      in running before anything is dealt. */
   const token = route.indexOf("await requireCaller(request)");
-  const paid = route.indexOf("hasAccess(state, Date.now())");
+  const paid = route.indexOf("hasAccess(entitlement, Date.now())");
   const budget = route.indexOf("consume(LIMITS.content, caller.uid)");
   const dealt = route.indexOf("dealRound(");
   assert.ok(token > 0 && paid > token && budget > paid && dealt > budget,
-    "token → subscription → budget → content, in that order");
+    "token → entitlement → budget → content, in that order");
 
-  /* P — signed in but not paying is 402, and the body says only that. */
-  assert.match(route, /return problem\(402, "subscription-required"\);/);
+  /* P — signed in but not paid up is 402, and the body says only that. */
+  assert.match(route, /return problem\(402, "purchase-required"\);/);
   assert.doesNotMatch(route, /challenges.*402|402.*challenges/);
 
-  /* Q — a subscriber gets the round, and only ever a round. */
+  /* Q — a parent who owns KIDDO gets the round, and only ever a round. */
   assert.match(route,
     /const challenges = dealRound\(body\.round, body\.tier, body\.seed, body\.locale\);/);
   assert.match(route, /return json\(\{ challenges \}\);/,
     "json() is no-store; a paid answer must not be cached by the CDN");
 
-  /* The subscription is read from Firestore, where only the webhook writes
-     it — not from the token's claims, which a client could ask to refresh. */
-  assert.match(route, /const state = await subscriptionOf\(caller\.uid\);/);
-  assert.doesNotMatch(route, /caller\.(subscription|plan|claims)/);
+  /* The entitlement is read from Firestore, where only the Billplz
+     settlement writes it — not from the token's claims, which a client
+     could ask to refresh. */
+  assert.match(route, /const entitlement = await entitlementOf\(caller\.uid\);/);
+  assert.doesNotMatch(route, /caller\.(entitlement|access|subscription|plan|claims)/);
 
   /* And the dealer hands out rounds, never the shelf. */
   const dealer = await import("@/server/content");

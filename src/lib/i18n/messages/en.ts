@@ -72,7 +72,7 @@ export const en = {
   /* ---- Landing: metadata --------------------------------------------- */
   "landing.meta.title": "KIDDO — Turn your child’s screen time into play and learning",
   "landing.meta.description":
-    "KIDDO is an interactive play world for children aged 4 to 8 — a place to play, explore and learn in a way that means something. One subscription for the parent; no adverts, no in-app purchases.",
+    "KIDDO is an interactive play world for children aged 4 to 8 — a place to play, explore and learn in a way that means something. One payment by the parent; no adverts, no in-app purchases.",
   "landing.meta.ogDescription":
     "An interactive play world for children aged 4 to 8 — play, explore and learn in a way that means something.",
   "landing.meta.twitterDescription":
@@ -83,13 +83,13 @@ export const en = {
   "landing.hero.title": "Turn Your Child’s Screen Time Into Play and Learning.",
   "landing.hero.body":
     "KIDDO is an interactive play world for children aged 4 to 8 — a place for your child to play, explore and learn in a way that means something.",
-  "landing.hero.price": "{monthly}/month or {yearly}/year",
+  "landing.hero.price": "{price} once. Lifetime access.",
   "landing.hero.cta": "Start KIDDO for Your Child",
   "landing.hero.secondary": "See how KIDDO works",
   "landing.hero.trustAria": "What you get",
   "landing.hero.trust.1": "No adverts",
   "landing.hero.trust.2": "No in-app purchases",
-  "landing.hero.trust.3": "Cancel anytime",
+  "landing.hero.trust.3": "One payment, no renewal",
 
   /* ---- Landing: the real product, on film ------------------------------ */
   "landing.showcase.eyebrow": "Real footage from inside KIDDO",
@@ -257,16 +257,15 @@ export const en = {
   "landing.pricing.eyebrow": "Pricing",
   "landing.pricing.title": "Make screen time worth something.",
   "landing.pricing.body":
-    "A plan for you, the grown-up. Your child never signs in, never sees a price and is never asked to buy anything.",
+    "One payment, by you, the grown-up. Your child never signs in, never sees a price and is never asked to buy anything.",
   "landing.pricing.included.1": "Every world, every door and every game",
   "landing.pricing.included.2":
     "One child’s journey, kept and carried between devices",
   "landing.pricing.included.3":
     "The parent area, with what was explored and what is next",
   "landing.pricing.included.4": "No adverts and nothing to buy inside",
-  "landing.pricing.saving": "Save {amount} a year — {saving}% compared with paying monthly",
   "landing.pricing.footnote":
-    "Cancel anytime from the parent area. Payments are handled by Stripe — KIDDO never sees or stores your card.",
+    "Paid once. Nothing renews, so there is nothing to cancel. Payments are handled by Billplz — KIDDO never sees or stores your card.",
 
   /* ---- Landing: questions parents ask ---------------------------------- */
   "landing.faq.eyebrow": "Common questions",
@@ -285,16 +284,16 @@ export const en = {
     "Every activity is a short round of five questions with an ending, so there is always a good moment to stop. There are no adverts, no videos that play by themselves and nothing to buy. What a child finishes stays in its world, and you can see what was explored in the parent area.",
   "landing.faq.q5": "What does KIDDO cost?",
   "landing.faq.a5":
-    "{monthly} a month or {yearly} a year, and one subscription opens all of KIDDO. Cancel anytime from the parent area.",
+    "{price}, paid once. That opens all of KIDDO for good — there is nothing monthly, nothing yearly and nothing to renew.",
   "landing.faq.q6": "Does KIDDO have adverts or in-app purchases?",
   "landing.faq.a6":
-    "No adverts, and no in-app purchases. One subscription opens all of KIDDO — your child never sees a price, an advert or a buy button.",
-  "landing.faq.q7": "What is the difference between the monthly and yearly plans?",
+    "No adverts, and no in-app purchases. One payment opens all of KIDDO — your child never sees a price, an advert or a buy button.",
+  "landing.faq.q7": "Is it really only one payment?",
   "landing.faq.a7":
-    "Both open all of KIDDO — there is no difference in what your child gets. The only difference is how you pay: {monthly} every month, or {yearly} once a year, which works out at {perMonth} a month.",
-  "landing.faq.q8": "How do I cancel the subscription?",
+    "Yes. {price} once, and KIDDO is yours. There is no monthly charge, no yearly charge, no renewal date and no card kept on file to be charged again.",
+  "landing.faq.q8": "Is there anything to cancel?",
   "landing.faq.a8":
-    "Anytime from the parent area, in a few clicks — no phone calls and no forms. Payments are handled by Stripe.",
+    "No. There is no subscription, so there is nothing to cancel and nothing that can charge you a second time. Payments are handled by Billplz, which supports FPX online banking and cards.",
   "landing.faq.q9": "What can my child actually do in KIDDO?",
   "landing.faq.a9":
     "Play interactive games: counting, matching, letters, words, shapes and colours, meeting animals and exploring KIDDO’s little world. Every activity is a short round with an ending.",
@@ -306,9 +305,9 @@ export const en = {
   "landing.closing.cta": "Start KIDDO for Your Child",
 
   /* ---- Landing: the sticky bar on a phone ------------------------------ */
-  "landing.sticky.aria": "Start a KIDDO subscription",
-  "landing.sticky.price": "{monthly}/month · {yearly}/year",
-  "landing.sticky.cta": "Start KIDDO",
+  "landing.sticky.aria": "Get KIDDO — lifetime access",
+  "landing.sticky.price": "{price} · one payment",
+  "landing.sticky.cta": "Get KIDDO",
 
   /* ---- The worlds, as places a child goes ---------------------------- */
   "world.meadow.name": "Meadow",
@@ -488,44 +487,51 @@ export const en = {
   "character.pip.blurb": "A funny little frog.",
   "character.wally.blurb": "A friendly little whale.",
 
-  /* ---- The two plans -------------------------------------------------- */
-  "plan.yearly.name": "Yearly",
-  "plan.yearly.per": "year",
-  "plan.yearly.note": "Best value",
-  "plan.yearly.blurb": "{perMonth} a month, billed once a year",
-  "plan.yearly.cta": "Start KIDDO",
-  "plan.monthly.name": "Monthly",
-  "plan.monthly.per": "month",
-  "plan.monthly.note": "",
-  "plan.monthly.blurb": "Flexible monthly access",
-  "plan.monthly.cta": "Choose the monthly plan",
+  /* ---- The one thing for sale ----------------------------------------- */
+  "offer.name": "Lifetime Access",
+  "offer.per": "one payment",
+  "offer.note": "Launch price",
+  "offer.was": "Normally {price}.",
+  "offer.blurb": "Pay once. Lifetime access to KIDDO — no renewal, nothing to cancel.",
+  "offer.cta": "Get KIDDO — {price}",
+  "offer.ctaShort": "Get Access — {price}",
 
-  /* ---- What state the subscription is in, in one word ----------------- */
-  "billing.status.active": "Active",
-  "billing.status.renewing": "Renewing",
-  "billing.status.ending": "Ending",
-  "billing.status.past_due": "Payment failed",
-  "billing.status.incomplete": "Confirming",
-  "billing.status.cancelled": "Cancelled",
-  "billing.status.expired": "Ended",
-  "billing.status.none": "No subscription",
+  /* ---- What a parent owns, in one word -------------------------------- */
+  "access.label.lifetime": "Lifetime access",
+  "access.label.legacy": "Subscription",
+  "access.label.none": "Not bought yet",
+
+  /* ---- ...and in one sentence -----------------------------------------*/
+  "access.describe.lifetime":
+    "Bought for {price}, once. KIDDO stays open — there is no renewal date and nothing to cancel.",
+  "access.describe.legacy":
+    "You subscribed before KIDDO became a one-time purchase. That subscription still opens KIDDO, and you can manage or end it below.",
+  "access.describe.none": "KIDDO isn’t open yet.",
+
+  /* ---- Older subscriptions: the state one is in, in one word ---------- */
+  "legacy.status.active": "Active",
+  "legacy.status.renewing": "Renewing",
+  "legacy.status.ending": "Ending",
+  "legacy.status.past_due": "Payment failed",
+  "legacy.status.incomplete": "Confirming",
+  "legacy.status.cancelled": "Cancelled",
+  "legacy.status.expired": "Ended",
+  "legacy.status.none": "No subscription",
 
   /* ---- ...and in one sentence a parent can act on --------------------- */
-  "billing.describe.renewing":
+  "legacy.describe.renewing":
     "Your subscription is being renewed. If this takes more than a day, please check your payment details.",
-  "billing.describe.endingOn": "Cancelled. KIDDO stays open until {when}.",
-  "billing.describe.ending":
+  "legacy.describe.endingOn": "Cancelled. KIDDO stays open until {when}.",
+  "legacy.describe.ending":
     "Cancelled. KIDDO stays open until the end of the paid period.",
-  "billing.describe.planRenews": "{plan} plan, {price} a {per}. Renews on {when}.",
-  "billing.describe.plan": "{plan} plan, {price} a {per}.",
-  "billing.describe.activeRenews": "Active. Renews on {when}.",
-  "billing.describe.active": "Active.",
-  "billing.describe.past_due":
+  "legacy.describe.activeRenews": "Active. Renews on {when}.",
+  "legacy.describe.active": "Active.",
+  "legacy.describe.past_due":
     "The last payment didn’t go through, so KIDDO is paused. Update your payment details to carry on.",
-  "billing.describe.incomplete": "Your payment is still being confirmed.",
-  "billing.describe.endedOn": "Your subscription ended on {when}.",
-  "billing.describe.ended": "Your subscription has ended.",
-  "billing.describe.none": "No subscription yet.",
+  "legacy.describe.incomplete": "Your payment is still being confirmed.",
+  "legacy.describe.endedOn": "Your subscription ended on {when}.",
+  "legacy.describe.ended": "Your subscription has ended.",
+  "legacy.describe.none": "No subscription yet.",
 
   /* ---- Signing in, and making an account ------------------------------ */
   "auth.signin.title": "Sign in to KIDDO",
@@ -575,7 +581,7 @@ export const en = {
   "auth.error.offline": "KIDDO can’t reach the internet right now. Check the connection and try again.",
   "auth.error.bad-link": "That link has expired. Ask for a new one below.",
   "auth.error.recent-login": "Please sign in again first.",
-  "auth.error.billing-unavailable": "Subscriptions aren’t set up on this KIDDO yet.",
+  "auth.error.billing-unavailable": "Payments aren’t set up on this KIDDO yet.",
   "auth.error.popup-blocked":
     "Your browser stopped the Google window from opening. Allow pop-ups for KIDDO, or use your email and a password below.",
   "auth.error.different-sign-in":
@@ -587,80 +593,75 @@ export const en = {
     "That took too long, so KIDDO stopped waiting. Please try again, or use your email and password.",
   "auth.error.unknown": "Something went wrong. Please try again.",
 
-  /* ---- /join: the road from choosing a plan to paying for it ---------- */
-  "join.unavailable.title": "Subscriptions aren’t set up here yet",
+  /* ---- /join: the road from wanting KIDDO to owning it ---------------- */
+  "join.unavailable.title": "Payments aren’t set up here yet",
   "join.unavailable.body":
     "This copy of KIDDO is running without accounts, so there is nothing to pay for yet. Everything a child plays stays on this device.",
   "join.unavailable.cta": "Open KIDDO",
   "join.subscribed.title": "You already have KIDDO",
-  "join.subscribed.body":
-    "Your subscription is active, so there is nothing to pay. Everything is open.",
+  "join.subscribed.body": "KIDDO is already yours, so there is nothing to pay. Everything is open.",
   "join.subscribed.parents": "Parent area",
   "join.trouble.title": "We couldn’t reach your account",
   "join.trouble.body": "Check your connection and try again — nothing has been charged.",
-  "join.beforeStripe":
-    "You’ll be taken to Stripe to pay as soon as your account exists. Nothing is charged until you finish there, and KIDDO never sees your card.",
-  "join.checkout.starting": "Taking you to Stripe…",
+  "join.beforePayment":
+    "You’ll be taken to Billplz to pay as soon as your account exists. Nothing is charged until you finish there, and KIDDO never sees your card.",
+  "join.checkout.starting": "Taking you to Billplz…",
   "join.checkout.ready": "Ready when you are",
-  "join.checkout.signedInAs": "Signed in as {email}. The next step is Stripe’s secure checkout.",
+  "join.checkout.signedInAs": "Signed in as {email}. The next step is Billplz’s secure payment page.",
   "join.checkout.yourAccount": "your account",
-  "join.checkout.cta": "Continue to checkout",
+  "join.checkout.cta": "Continue to payment",
   "join.checkout.differentAccount": "Use a different account",
-  "join.plan.eyebrow": "Your plan",
-  "join.plan.heading": "{name} · {price} a {per}",
-  "join.plan.yearlyBlurb": "{blurb} — {saving}% less than paying monthly.",
-  "join.plan.monthlyBlurb": "{blurb}. Cancel anytime.",
-  "join.plan.legend": "Choose a plan",
-  "join.plan.option": "{name} · {price}/{per}",
-  "join.plan.compare": "Compare the plans again",
+  "join.offer.eyebrow": "What you get",
+  "join.offer.heading": "{name} · {price}",
+  "join.offer.blurb": "{blurb}",
+  "join.offer.back": "See what’s included",
   "join.error.billing-unavailable":
-    "Subscriptions aren’t set up on this KIDDO yet. Please try again later.",
-  "join.error.no-account": "Please sign in again and then choose a plan.",
+    "Payments aren’t set up on this KIDDO yet. Please try again later.",
+  "join.error.no-account": "Please sign in again and then try the payment.",
+  "join.error.already-owned": "You already have KIDDO. Nothing has been charged.",
   "join.error.checkout": "Something went wrong starting the payment. Please try again.",
 
-  /* ---- The subscription gate ------------------------------------------ */
-  "sub.confirming.title": "We’re confirming your KIDDO access",
-  "sub.confirming.body":
-    "Thank you! Your payment went through to Stripe and KIDDO is opening up. This usually takes a few seconds — there’s nothing you need to do.",
-  "sub.headline.past_due": "A payment didn’t go through",
-  "sub.headline.returning": "Welcome back to KIDDO",
-  "sub.headline.incomplete": "Your payment is still being confirmed",
-  "sub.headline.ready": "Your child’s adventure is ready.",
-  "sub.lead.past_due":
+  /* ---- The purchase gate ---------------------------------------------- */
+  "gate.confirming.title": "We’re confirming your KIDDO access",
+  "gate.confirming.body":
+    "Thank you! Your payment reached Billplz and KIDDO is opening up. This usually takes a few seconds — there’s nothing you need to do.",
+  "gate.headline.past_due": "A payment didn’t go through",
+  "gate.headline.returning": "Welcome back to KIDDO",
+  "gate.headline.incomplete": "Your payment is still being confirmed",
+  "gate.headline.ready": "Your child’s adventure is ready.",
+  "gate.lead.past_due":
     "KIDDO is paused until the payment goes through. Updating the card in billing usually sorts it out straight away.",
-  "sub.lead.ended":
-    "Your subscription has ended. Choose a plan and everything your child played is right where they left it.",
-  "sub.lead.incomplete":
-    "Stripe hasn’t confirmed the first payment yet. If it was declined, you can try again below; a pending payment opens KIDDO as soon as it clears.",
-  "sub.lead.stale":
-    "We haven’t heard back from the payment yet. If your card was charged, KIDDO will open on its own shortly — please don’t pay twice. If the payment didn’t go through, you can try again below.",
-  "sub.lead.default":
-    "One subscription opens every world, every game and every new story for your child. No ads, nothing to buy inside.",
-  "sub.cancelledNote": "No payment was made. Whenever you’re ready, the plans are below.",
-  "sub.updatePayment": "Update payment details",
-  "sub.start": "Start KIDDO",
-  "sub.footnote": "Cancel anytime. Payments are handled by Stripe.",
-  "sub.billingHistory": "Billing history",
-  "sub.error.portal": "KIDDO couldn’t open billing just now. Please try again.",
+  "gate.lead.ended":
+    "Your old subscription has ended. Get lifetime access below and everything your child played is right where they left it.",
+  "gate.lead.incomplete":
+    "The first payment on your old subscription hasn’t been confirmed. You can get lifetime access below instead — one payment, and nothing renews.",
+  "gate.lead.stale":
+    "We haven’t heard back from the payment yet. If it went through, KIDDO will open on its own shortly — please don’t pay twice. If it didn’t, you can try again below.",
+  "gate.lead.default":
+    "One payment opens every world, every game and every new story for your child, for good. No ads, nothing to buy inside.",
+  "gate.cancelledNote": "No payment was made. Whenever you’re ready, KIDDO is below.",
+  "gate.updatePayment": "Update payment details",
+  "gate.footnote": "One payment. Nothing renews. Payments are handled by Billplz.",
+  "gate.billingHistory": "Billing history",
+  "gate.error.portal": "KIDDO couldn’t open billing just now. Please try again.",
 
-  /* ---- /welcome: back from Stripe ------------------------------------- */
-  "welcome.title": "Welcome to KIDDO! 🎉",
-  "welcome.body": "Your KIDDO adventure starts here.",
+  /* ---- /welcome: back from Billplz ------------------------------------ */
+  "welcome.title": "Payment successful! 🎉",
+  "welcome.body": "You now have lifetime access to KIDDO.",
   "welcome.who": "Who’s playing?",
   "welcome.toParents": "Go to the parent area",
   "welcome.signedOut.title": "Sign in to finish",
   "welcome.signedOut.body":
-    "We can’t see your account on this device, so KIDDO can’t check your subscription. Sign in and the parent area will show exactly where things stand.",
-  "welcome.cancelled.title": "No payment was made",
-  "welcome.cancelled.body":
-    "You left the checkout before paying, and nothing was charged. The plans are waiting whenever you are.",
-  "welcome.cancelled.cta": "See the plans",
+    "We can’t see your account on this device, so KIDDO can’t check your payment. Sign in and the parent area will show exactly where things stand.",
+  "welcome.cancelled.title": "Payment not completed.",
+  "welcome.cancelled.body": "You can try again whenever you like.",
+  "welcome.cancelled.cta": "See the price",
   "welcome.confirming.title": "We’re confirming your KIDDO access",
   "welcome.confirming.body":
-    "Thank you! Your payment reached Stripe and KIDDO is opening up. This usually takes a few seconds — there’s nothing you need to do, and this page will move on by itself.",
+    "Thank you! Your payment reached Billplz and KIDDO is opening up. This usually takes a few seconds — there’s nothing you need to do, and this page will move on by itself.",
   "welcome.waiting.title": "Still confirming",
   "welcome.waiting.body":
-    "We haven’t heard back about the payment yet. If your card was charged, KIDDO will open on its own shortly — please don’t pay twice. The parent area always shows the current state of your subscription.",
+    "We haven’t heard back about the payment yet. If it went through, KIDDO will open on its own shortly — please don’t pay twice. The parent area always shows where things stand.",
 
   /* ---- The parent area's own gate ------------------------------------- */
   "parents.gate.deviceNote":
@@ -678,6 +679,7 @@ export const en = {
   "onboarding.blurb":
     "One last thing: what’s your child’s first name? KIDDO uses it to say hello. Only the first word is kept.",
   "onboarding.field": "Your child’s first name",
+  "onboarding.submit": "Start KIDDO",
   "onboarding.error.empty": "Please type your child’s first name.",
   "onboarding.error.save": "KIDDO couldn’t save that just now. Please try again.",
 
@@ -699,17 +701,17 @@ export const en = {
   "account.delete.open": "Delete account",
   "account.delete.title": "Delete your KIDDO account?",
   "account.delete.body":
-    "Your sign-in, your child’s name and every bit of progress will be removed from KIDDO, and any subscription is cancelled so nothing more is charged. This cannot be undone.",
+    "Your sign-in, your child’s name and every bit of progress will be removed from KIDDO, along with the access you paid for — it cannot be given back, and there is no refund. Any older subscription is cancelled so nothing more is charged. This cannot be undone.",
   "account.delete.busy": "Deleting…",
   "account.delete.error.recent-login":
     "For safety, please sign out, sign in again, and then delete the account.",
   "account.delete.error.unknown": "KIDDO couldn’t delete the account just now. Please try again.",
 
   /* ---- The billing card ------------------------------------------------ */
-  "billing.title": "Your subscription",
+  "billing.title": "Your KIDDO",
   "billing.confirmed": "You’re all set — KIDDO is open for your child.",
-  "billing.planLine": "{name} · {price}/{per}",
-  "billing.unknownPlan": "KIDDO subscription",
+  "billing.offerLine": "{name} · {price}",
+  "billing.receipt": "Paid on {when}.",
   "billing.manage": "Manage subscription",
 
   /* ---- Where the emailed links land ----------------------------------- */
@@ -750,7 +752,7 @@ export const en = {
   /* ---- Page metadata, evaluated at build time (see app/page.tsx) ------- */
   "meta.parents.title": "For grown-ups",
   "meta.join.title": "Start KIDDO",
-  "meta.join.description": "Choose a plan and create your KIDDO parent account.",
+  "meta.join.description": "Get lifetime access to KIDDO and create your parent account.",
   "meta.welcome.title": "Welcome",
   "meta.reset.title": "Reset password",
   "meta.privacy.title": "Privacy",
@@ -886,11 +888,11 @@ export const en = {
   "privacy.short.3":
     "A grown-up can create a parent account — an email address and a password — so progress follows the child between devices. Then the first name and the journey are also kept under that account, and nothing else is.",
   "privacy.short.4":
-    "KIDDO is a subscription paid by the parent. The payment is taken by Stripe, which keeps the card details; KIDDO never sees or stores a card number.",
+    "KIDDO is bought once by the parent. The payment is taken by Billplz, which keeps the payment details; KIDDO never sees or stores a card number.",
   "privacy.short.5":
-    "Your child’s screens have no ads, no analytics and no tracking of any kind, and nothing is ever sold or shown to your child. The pages written for you — this one, the landing page, the sign-up and the parent area — carry one measurement tag from Meta (Facebook) that counts visits and, when a subscription is bought, which plan and what it cost — so KIDDO knows which advertisements are worth paying for.",
+    "Your child’s screens have no ads, no analytics and no tracking of any kind, and nothing is ever sold or shown to your child. The pages written for you — this one, the landing page, the sign-up and the parent area — carry one measurement tag from Meta (Facebook) that counts visits and, when KIDDO is bought, what it cost — so KIDDO knows which advertisements are worth paying for.",
   "privacy.short.6":
-    "You can change or erase everything KIDDO keeps, and cancel the subscription, from the parent area at any time.",
+    "You can change or erase everything KIDDO keeps from the parent area at any time.",
 
   "privacy.s.stores": "What KIDDO stores",
   "privacy.stores.intro":
@@ -915,10 +917,10 @@ export const en = {
     "Your child’s first name — the same word as above, and nothing more. No surname, date of birth, photo or gender is ever asked for.",
   "privacy.cloud.3": "Your child’s journey — the same list of finished activities as above.",
   "privacy.cloud.4":
-    "The state of your subscription: whether it is active, which plan (monthly or yearly), when the current period ends, and the identifiers Stripe gives your customer record and subscription so the two services can refer to the same thing. These are written only by KIDDO’s server when Stripe reports a change; the app in your browser can read them but never change them.",
+    "Whether you have bought KIDDO, when, what was paid, and the identifier Billplz gives the payment so the two services can refer to the same thing. If you subscribed before KIDDO became a one-time purchase, the state of that subscription is kept too. These are written only by KIDDO’s server, after it has asked the payment service what happened; the app in your browser can read them but never change them.",
   "privacy.cloud.5": "The dates these records were created and last changed.",
   "privacy.stores.stripe":
-    "Your payment details are held by Stripe, not by KIDDO. When you subscribe you are taken to a page served by Stripe, where you enter your card; Stripe keeps your email address, the card, and the history of payments and invoices for that subscription, under its own privacy policy. KIDDO tags the Stripe record with your account’s identifier so the payment can be matched to your account, and nothing else about you or your child.",
+    "Your payment details are held by Billplz, not by KIDDO. When you buy KIDDO you are taken to a page served by Billplz, where you choose your bank or card; Billplz keeps your name, your email address and the record of that payment, under its own privacy policy. KIDDO tags the bill with your account’s identifier so the payment can be matched to your account, and nothing else about you or your child.",
   "privacy.stores.noName":
     "There is no field for your own name, and no profile of you beyond the email address you sign in with.",
 
@@ -926,19 +928,19 @@ export const en = {
   "privacy.where.device":
     "On your device, always — in the browser you opened KIDDO in, under the address you opened it at. If you install KIDDO to your home screen, it uses that same local storage, so progress carries across between the installed app and the browser it was installed from on the same device.",
   "privacy.where.cloud":
-    "With a parent account, the first name, the journey and the subscription state are also stored in Google’s Firebase — specifically Firebase Authentication for the sign-in and Cloud Firestore for the child profile and journey — in a project that belongs to KIDDO (its identifier is {project}). The device keeps a copy of the journey so a return visit opens instantly; while you are signed in, the cloud copy is the one that counts, and the device copy is refreshed from it.",
+    "With a parent account, the first name, the journey and whether KIDDO has been bought are also stored in Google’s Firebase — specifically Firebase Authentication for the sign-in and Cloud Firestore for the child profile and journey — in a project that belongs to KIDDO (its identifier is {project}). The device keeps a copy of the journey so a return visit opens instantly; while you are signed in, the cloud copy is the one that counts, and the device copy is refreshed from it.",
   "privacy.where.rules":
     "Access rules enforced by Firestore itself — not only by the app — mean that an account can read and write only its own record, its own child profile, and that child’s journey. Nobody who is not signed in can read anything, and no account can list or look up another account’s child. TODO(launch): state the Firestore region (where Google stores the data) here once the project’s location is confirmed.",
   "privacy.where.billing":
-    "Billing records — card, payments, invoices, receipts — are stored by Stripe, in Stripe’s systems, under the same email address you use for your account.",
+    "Payment records — the bill, what was paid and the receipt — are stored by Billplz, in Billplz’s systems, under the same email address you use for your account. A subscription made before KIDDO became a one-time purchase is still held by Stripe.",
   "privacy.where.meta":
-    "The visit counts go to Meta. KIDDO’s parent-facing pages — the landing page, the plan and sign-up pages, this page, and the parent area — load Meta’s pixel, which records that a page was opened and sets a cookie so that a visit which began with one of KIDDO’s advertisements can be recognised as the same visit later. It is told the address of the page, and — at two moments, and only those two — a little more: when you leave KIDDO for Stripe to pay, and when a payment has gone through, it is also told which of the two plans it was and what that plan costs, so that KIDDO can tell which advertisements lead to subscriptions and not only to visits. That is the whole list. KIDDO switches off the pixel’s automatic collection, so it never reads the buttons you press or anything you type, and your email address, your card, your child’s name and your child’s journey are never sent to it. It is not loaded on any screen your child plays on — not the home, not a world, not a game — so your child is never counted at all. If you would rather not be counted either, a tracker blocker or your browser’s “block trackers” setting stops it, and KIDDO works exactly the same without it.",
+    "The visit counts go to Meta. KIDDO’s parent-facing pages — the landing page, the plan and sign-up pages, this page, and the parent area — load Meta’s pixel, which records that a page was opened and sets a cookie so that a visit which began with one of KIDDO’s advertisements can be recognised as the same visit later. It is told the address of the page, and — at two moments, and only those two — a little more: when you leave KIDDO for Billplz to pay, and when a payment has gone through, it is also told what KIDDO costs, so that KIDDO can tell which advertisements lead to purchases and not only to visits. That is the whole list. KIDDO switches off the pixel’s automatic collection, so it never reads the buttons you press or anything you type, and your email address, your card, your child’s name and your child’s journey are never sent to it. It is not loaded on any screen your child plays on — not the home, not a world, not a game — so your child is never counted at all. If you would rather not be counted either, a tracker blocker or your browser’s “block trackers” setting stops it, and KIDDO works exactly the same without it.",
   "privacy.where.noAccount":
     "Without an account, KIDDO has nowhere else to keep anything: opening KIDDO in a different browser, or on a different device, starts with a fresh, empty journey.",
 
   "privacy.s.why": "Why it is stored",
   "privacy.why.body":
-    "So that a return visit feels like a return: KIDDO remembers where your child was, what they have found, and what to call them. A parent account exists for one reason more — so that the same journey is there on the tablet at home and the phone in the car. The subscription state is kept so KIDDO knows whether to open for your child, and so the parent area can show you your plan and renewal date. Nothing about your child is kept for marketing, for measurement or for building a profile. The only measurement KIDDO does at all is a count of visits to its own parent-facing pages, described under “Where it is stored”. Your email address is used to sign you in, to send password-reset and verification emails, and — by Stripe — to send receipts for your subscription.",
+    "So that a return visit feels like a return: KIDDO remembers where your child was, what they have found, and what to call them. A parent account exists for one reason more — so that the same journey is there on the tablet at home and the phone in the car. Whether KIDDO has been bought is kept so KIDDO knows whether to open for your child, and so the parent area can show you what you own. Nothing about your child is kept for marketing, for measurement or for building a profile. The only measurement KIDDO does at all is a count of visits to its own parent-facing pages, described under “Where it is stored”. Your email address is used to sign you in, to send password-reset and verification emails, and — by Billplz — to send the receipt for your payment.",
 
   "privacy.s.not": "What is not stored or collected",
   "privacy.not.1": "No child account, child email, child password or child login of any kind.",
@@ -949,11 +951,11 @@ export const en = {
   "privacy.not.5":
     "No cookies set by KIDDO itself, and no third-party script of any kind on your child’s side of the app — no analytics, no advertising, no social plugins. Meta’s counter, which does set its own cookie, runs on the parent-facing pages only.",
   "privacy.not.6":
-    "No card numbers, expiry dates or security codes. These are entered on Stripe’s page and held by Stripe.",
+    "No card numbers, expiry dates, security codes or online-banking logins. These are entered on the payment provider’s page and held there, never by KIDDO.",
   "privacy.not.7":
     "No prices, payment screens, upgrade prompts or billing messages on any of your child’s screens. All of that lives in the parent area.",
   "privacy.not.8":
-    "From your child’s screens, no requests to any service other than the one that serves KIDDO itself and, with an account, Firebase to save the journey. From the parent-facing pages, the services contacted are Firebase (sign-in and storage), Stripe (checkout and billing) and Meta (the counting described above).",
+    "From your child’s screens, no requests to any service other than the one that serves KIDDO itself and, with an account, Firebase to save the journey. From the parent-facing pages, the services contacted are Firebase (sign-in and storage), Billplz (payment) and Meta (the counting described above).",
   "privacy.not.logs":
     "Like any website, the hosting service that delivers KIDDO, and Firebase when an account is used, may keep ordinary access logs (for example, the address and time of a request) for security and reliability. TODO(launch): name the hosting provider and its log retention here before going live.",
 
@@ -966,9 +968,9 @@ export const en = {
   "privacy.controls.3":
     "“Sign out” ends the sign-in on this device and clears the cached name and journey from it. The account and its cloud copy are untouched.",
   "privacy.controls.4":
-    "“Manage subscription” opens Stripe’s billing page for your account, where you can change the card, see invoices, or cancel. A cancelled subscription keeps KIDDO open until the end of the period already paid for, and is not charged again.",
+    "Buying KIDDO is a single payment: nothing renews, so there is no renewal to stop and no card kept to be charged again. If you subscribed before KIDDO became a one-time purchase, “Manage subscription” still opens Stripe’s billing page for that subscription, where you can change the card, see invoices, or cancel it.",
   "privacy.controls.5":
-    "“Delete account” first cancels any subscription still running, removes your Stripe customer record, then removes the sign-in, the child profile and the journey from Firebase, and the cached copies from this device. It cannot be undone. For safety, you will be asked to sign in again first if your sign-in is old. Stripe keeps records of past payments as its own rules require.",
+    "“Delete account” first cancels any older subscription still running and removes your Stripe customer record, then removes the sign-in, the child profile, the journey and the record that you had bought KIDDO from Firebase, and the cached copies from this device. Deleting the account therefore ends the access you paid for, and it cannot be undone or refunded. For safety, you will be asked to sign in again first if your sign-in is old. Billplz and Stripe keep records of past payments as their own rules require.",
   "privacy.controls.6":
     "Without an account, clearing this site’s data in your browser settings removes everything at once.",
   "privacy.controls.cta": "Open the parent area",
@@ -1291,7 +1293,6 @@ export const en = {
   "worlds.game.start": "Let's go!",
 
   /* ---- The little notice: another family joined ----------------------- */
-  "social.join.plan": "🚀 A family just chose the {plan} plan",
   "social.join.joined": "🎉 A new KIDDO family just joined",
   "social.join.started": "✨ Another family started their KIDDO journey",
 } as const;

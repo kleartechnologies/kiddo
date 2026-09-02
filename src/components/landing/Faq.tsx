@@ -2,9 +2,9 @@
 
 import { ChevronDown } from "lucide-react";
 
-import { planText, YEARLY_PER_MONTH } from "@/lib/billing/subscription";
+import { LIFETIME_PRICE } from "@/lib/billing/access";
 import type { MessageKey } from "@/lib/i18n/messages/en";
-import { useTranslation } from "@/lib/i18n/useLocale";
+import { useT } from "@/lib/i18n/useLocale";
 import { SectionIntro } from "./SectionIntro";
 
 /**
@@ -15,9 +15,9 @@ import { SectionIntro } from "./SectionIntro";
  * range its content is built for; it does not replace school because it does
  * not follow a syllabus and does not pretend to; it runs in a browser on
  * whatever the family already owns because there is no app to install; and
- * the prices are read from `AMOUNTS` through `planText`, so the answer here
- * cannot drift away from what the pricing section says or from what Stripe
- * charges.
+ * the price is read from `LIFETIME_AMOUNT`, so the answer here cannot drift
+ * away from what the pricing section says or from what a parent is
+ * actually charged.
  *
  * Built on `<details>` rather than on state, so the questions work before
  * JavaScript arrives, open with a keyboard, and are findable with the
@@ -38,14 +38,10 @@ const QUESTIONS: { id: string; q: MessageKey; a: MessageKey }[] = [
 ];
 
 export function Faq() {
-  const { locale, t } = useTranslation();
-  /* The answers with numbers in them take them from the same place the
-     pricing cards do, so there is nothing to keep in sync by hand. */
-  const prices = {
-    monthly: planText("monthly", locale).price,
-    yearly: planText("yearly", locale).price,
-    perMonth: YEARLY_PER_MONTH,
-  };
+  const t = useT();
+  /* The answers with a number in them take it from the same place the
+     pricing card does, so there is nothing to keep in sync by hand. */
+  const prices = { price: LIFETIME_PRICE };
 
   return (
     <section aria-labelledby="faq-heading" id="faq" className="scroll-mt-24">

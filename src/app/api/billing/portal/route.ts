@@ -1,6 +1,6 @@
 import { requireAppCheck } from "@/server/appCheck";
 import { subscriptionOf } from "@/server/billing";
-import { billingUnavailable, json, problem, readJson, requireCaller, safePath, siteUrl, tooMany } from "@/server/http";
+import { legacyBillingUnavailable, json, problem, readJson, requireCaller, safePath, siteUrl, tooMany } from "@/server/http";
 import { consume, LIMITS } from "@/server/rateLimit";
 import { stripe } from "@/server/stripe";
 
@@ -15,7 +15,7 @@ export const dynamic = "force-dynamic";
  * never from the request, so a parent can only ever open their own portal.
  */
 export async function POST(request: Request) {
-  const down = billingUnavailable();
+  const down = legacyBillingUnavailable();
   if (down) return down;
   const attested = await requireAppCheck(request);
   if (attested) return attested;

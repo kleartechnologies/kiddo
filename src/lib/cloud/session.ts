@@ -3,7 +3,7 @@
 import { useSyncExternalStore } from "react";
 
 import { reportCheckoutStarted } from "@/lib/analytics/events";
-import { hasAccess, type Plan, type SubscriptionState } from "@/lib/billing/subscription";
+import { hasAccess, type Entitlement } from "@/lib/billing/access";
 import {
   bindJourneyToCloud,
   clearLocalJourney,
@@ -24,10 +24,10 @@ import { CloudError, type AuthFailure, type ChildProfile, type CloudBackend, typ
  * child is known the store binds the journey and the name to the cloud;
  * when the parent signs out it unbinds them and wipes the device cache.
  *
- * The store also carries the parent's subscription, read from the cloud
- * and never decided here: `hasAccess` on what the server wrote is the only
+ * The store also carries the parent's entitlement, read from the cloud and
+ * never decided here: `hasAccess` on what the server wrote is the only
  * thing that opens KIDDO. The gate comes before the child: a signed-in
- * parent without access is asked to subscribe before onboarding, and the
+ * parent who has not bought KIDDO is asked to before onboarding, and the
  * child's pages stay closed (see `PlayGate`) until the cloud says otherwise.
  *
  * Nothing on the child's side reads this except through the journey and
@@ -41,10 +41,10 @@ export type SessionStatus =
   /** This build has no Firebase config: device-only mode, no account UI. */
   | "unavailable"
   | "signed-out"
-  /** Signed in; the subscription and child profile are being looked up. */
+  /** Signed in; the entitlement and child profile are being looked up. */
   | "signed-in"
-  /** Signed in, no active subscription: the subscription gate. */
-  | "needs-subscription"
+  /** Signed in, KIDDO not bought yet: the purchase gate. */
+  | "needs-purchase"
   /** Signed in, no child profile yet: onboarding. */
   | "needs-child"
   /** Signed in but the account could not be read (offline?): offer a retry. */
@@ -59,10 +59,10 @@ export interface Session {
   /** What binding decided the first time this child's journey was loaded. */
   migration: "cloud" | "migrated" | "empty" | null;
   /** The server's word on billing; null until the first cloud read. */
-  subscription: SubscriptionState | null;
+  entitlement: Entitlement | null;
 }
 
-const NONE = { user: null, child: null, migration: null, subscription: null } as const;
+const NONE = { user: null, child: null, migration: null, entitlement: null } as const;
 const SIGNED_OUT: Session = { status: "signed-out", ...NONE };
 const LOADING: Session = { status: "loading", ...NONE };
 const UNAVAILABLE: Session = { status: "unavailable", ...NONE };
@@ -75,13 +75,13 @@ let backend: CloudBackend | null = null;
 let loader: (() => Promise<CloudBackend>) | null = null;
 let starting: Promise<CloudBackend> | null = null;
 let stopAuth: (() => void) | null = null;
-let stopSubscription: (() => void) | null = null;
+let stopEntitlement: (() => void) | null = null;
 /** Guards against an older sign-in finishing after a newer one. */
 let generation = 0;
 
-/** Whether the subscription the store knows about opens KIDDO right now. */
+/** Whether what the store knows about opens KIDDO right now. */
 export function sessionHasAccess(s: Session = session): boolean {
-  return hasAccess(s.subscription, Date.now());
+  return hasAccess(s.entitlement, Date.now());
 }
 
 /**
@@ -186,11 +186,11 @@ async function attach(user: ParentUser): Promise<void> {
   set({ status: "signed-in", ...NONE, user });
   try {
     await backend.ensureUser(user);
-    const subscription = await watchSubscription(user.uid, mine);
+    const entitlement = await watchEntitlement(user.uid, mine);
     if (mine !== generation) return;
-    set({ ...session, user, subscription });
-    if (!hasAccess(subscription, Date.now())) {
-      set({ ...session, status: "needs-subscription" });
+    set({ ...session, user, entitlement });
+    if (!hasAccess(entitlement, Date.now())) {
+      set({ ...session, status: "needs-purchase" });
       return;
     }
     await lookUpChild(user, mine);
@@ -198,27 +198,27 @@ async function attach(user: ParentUser): Promise<void> {
     if (mine !== generation) return;
     /* Firestore unreachable right after sign-in. Never guess "no child"
        here — that would invite a second profile — just offer to try again. */
-    set({ status: "trouble", ...NONE, user, subscription: session.subscription });
+    set({ status: "trouble", ...NONE, user, entitlement: session.entitlement });
   }
 }
 
 /**
- * Start watching `users/{uid}.subscription`; resolves with the first value.
- * Later values update the session in place — and when access arrives while
- * the parent is at the gate (the webhook landing after Checkout), carry on
- * to the child lookup as if they had just signed in.
+ * Start watching the billing half of `users/{uid}`; resolves with the first
+ * value. Later values update the session in place — and when access arrives
+ * while the parent is at the gate (the Billplz callback landing after a
+ * payment), carry on to the child lookup as if they had just signed in.
  */
-function watchSubscription(uid: string, mine: number): Promise<SubscriptionState> {
-  stopSubscription?.();
+function watchEntitlement(uid: string, mine: number): Promise<Entitlement> {
+  stopEntitlement?.();
   return new Promise((resolve, reject) => {
     let first = true;
     const timer = setTimeout(() => {
       if (first) {
         first = false;
-        reject(new CloudError("offline", "subscription read timed out"));
+        reject(new CloudError("offline", "entitlement read timed out"));
       }
-    }, SUBSCRIPTION_FIRST_READ_MS);
-    stopSubscription = backend!.watchSubscription(uid, (state) => {
+    }, ENTITLEMENT_FIRST_READ_MS);
+    stopEntitlement = backend!.watchEntitlement(uid, (state) => {
       if (mine !== generation) return;
       if (first) {
         first = false;
@@ -227,15 +227,15 @@ function watchSubscription(uid: string, mine: number): Promise<SubscriptionState
         return;
       }
       const hadAccess = sessionHasAccess();
-      set({ ...session, subscription: state });
-      if (!hadAccess && hasAccess(state, Date.now()) && session.status === "needs-subscription" && session.user) {
+      set({ ...session, entitlement: state });
+      if (!hadAccess && hasAccess(state, Date.now()) && session.status === "needs-purchase" && session.user) {
         void lookUpChild(session.user, mine);
       }
     });
   });
 }
 
-const SUBSCRIPTION_FIRST_READ_MS = 15_000;
+const ENTITLEMENT_FIRST_READ_MS = 15_000;
 
 async function lookUpChild(user: ParentUser, mine: number): Promise<void> {
   if (!backend) return;
@@ -264,8 +264,8 @@ async function adoptChild(user: ParentUser, child: ChildProfile, mine: number): 
 function detach(): void {
   generation += 1;
   hint(false);
-  stopSubscription?.();
-  stopSubscription = null;
+  stopEntitlement?.();
+  stopEntitlement = null;
   const wasSignedIn = session.user !== null;
   if (wasSignedIn) {
     /* A different parent may sign in on this device next. Their account
@@ -489,22 +489,68 @@ export async function finishEmailVerification(code: string): Promise<AuthFailure
 /* ---- Billing --------------------------------------------------------- */
 
 /**
- * Ask the server for a Checkout URL and go there. Nothing about access
- * changes here; it changes when the webhook has written the subscription
- * and `watchSubscription` hears about it.
+ * Ask the server for a Billplz bill and go there. Nothing about access
+ * changes here; it changes when the server has asked Billplz whether the
+ * money arrived and `watchEntitlement` hears what it wrote.
  */
-export async function startCheckout(plan: Plan, returnTo = "/parents"): Promise<AuthFailure | null> {
+export async function startPurchase(returnTo = "/welcome"): Promise<AuthFailure | null> {
   if (!backend || !session.user) return "unknown";
-  /* Before the round trip, not after it: the redirect to Stripe would
+  /* Before the round trip, not after it: the redirect to Billplz would
      cancel a beacon still in flight, and what this records is the parent
-     choosing to pay — which they did, whatever Stripe answers next. */
-  reportCheckoutStarted(plan);
+     choosing to pay — which they did, whatever Billplz answers next. */
+  reportCheckoutStarted();
   try {
-    const url = await backend.startCheckout(plan, returnTo);
+    const { url, billId } = await backend.startPurchase(returnTo);
+    /* So the return leg can name the bill even if Billplz sends the browser
+       back without its query string. A bill id is not a credential — the
+       server checks it belongs to the caller before answering. */
+    rememberBill(billId);
     window.location.assign(url);
     return null;
   } catch (error) {
     return failure(error);
+  }
+}
+
+/**
+ * Ask the server whether a bill has been paid. Used by `/welcome` on the way
+ * back from Billplz so a parent is not left watching a spinner until the
+ * callback lands — but the answer is the server's, made by re-reading the
+ * bill from Billplz, never the browser's own reading of the redirect.
+ */
+export async function confirmPurchase(billId: string): Promise<boolean> {
+  if (!backend || !session.user) return false;
+  try {
+    return await backend.confirmPurchase(billId);
+  } catch {
+    return false;
+  }
+}
+
+/** Where `startPurchase` leaves the bill id for the return leg to find. */
+export const PENDING_BILL_KEY = "kiddo.billplz.pending.v1";
+
+function rememberBill(billId: string): void {
+  try {
+    window.sessionStorage.setItem(PENDING_BILL_KEY, billId);
+  } catch {
+    /* No storage. The redirect carries the id in its query string too. */
+  }
+}
+
+export function pendingBill(): string | null {
+  try {
+    return window.sessionStorage.getItem(PENDING_BILL_KEY);
+  } catch {
+    return null;
+  }
+}
+
+export function forgetPendingBill(): void {
+  try {
+    window.sessionStorage.removeItem(PENDING_BILL_KEY);
+  } catch {
+    /* Nothing to forget. */
   }
 }
 
@@ -568,8 +614,8 @@ export async function deleteAccount(): Promise<AuthFailure | null> {
 export function __resetSessionForTests(): void {
   stopAuth?.();
   stopAuth = null;
-  stopSubscription?.();
-  stopSubscription = null;
+  stopEntitlement?.();
+  stopEntitlement = null;
   backend = null;
   loader = null;
   starting = null;

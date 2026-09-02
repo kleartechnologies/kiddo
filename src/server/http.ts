@@ -1,5 +1,6 @@
 import "server-only";
 
+import { billplzConfigured } from "./billplz";
 import { adminConfigured, callerFromRequest, type Caller } from "./firebaseAdmin";
 import { stripeConfigured } from "./stripe";
 
@@ -45,8 +46,24 @@ export function tooMany(retryAfterS: number): Response {
   });
 }
 
-/** 503 until the server has both Firebase Admin and Stripe configured. */
+/**
+ * 503 until the server can actually take a payment: Firebase Admin for the
+ * caller's identity, Billplz for the bill.
+ *
+ * A build without credentials is *unavailable*, not broken — the route says
+ * so plainly and the parent area shows a sentence instead of a dead button.
+ */
 export function billingUnavailable(): Response | null {
+  if (!adminConfigured() || !billplzConfigured()) return problem(503, "billing-not-configured");
+  return null;
+}
+
+/**
+ * The same, for the two routes that still speak to Stripe on behalf of
+ * parents who subscribed before KIDDO sold a lifetime purchase. Nothing new
+ * goes through these; see `docs/kiddo-billing.md`.
+ */
+export function legacyBillingUnavailable(): Response | null {
   if (!adminConfigured() || !stripeConfigured()) return problem(503, "billing-not-configured");
   return null;
 }
@@ -61,11 +78,13 @@ export async function requireCaller(request: Request): Promise<Caller | Response
  *
  * `NEXT_PUBLIC_SITE_URL` is the single answer in production, because every
  * other candidate is chosen by the caller. `Origin` is a request header: an
- * attacker who sends `Origin: https://evil.example` to `/api/billing/checkout`
- * would otherwise be handed a Stripe Checkout URL whose `success_url` points
- * at their own site — a page a parent reaches with a payment just completed
- * and every reason to trust it. `request.url` is no better behind a proxy
- * that honours `Host`.
+ * attacker who sends `Origin: https://evil.example` to
+ * `/api/billing/billplz/create` would otherwise be handed a bill whose
+ * `redirect_url` points at their own site — a page a parent lands on with a
+ * payment just completed and every reason to trust it. Worse, the same
+ * header would choose the `callback_url`, so the one message that grants
+ * lifetime access would be delivered to an address the attacker picked.
+ * `request.url` is no better behind a proxy that honours `Host`.
  *
  * So in production there is no fallback. If the variable is missing the
  * answer is `null` and the route says so, which is a loud, safe failure a
@@ -73,8 +92,9 @@ export async function requireCaller(request: Request): Promise<Caller | Response
  * attacker chose. Locally, where there is no such variable and no such
  * attacker, the request's own origin is used, and only if it is loopback.
  *
- * Both callers pass the result straight into a Stripe URL; see
- * `docs/SECURITY.md` for the deployment requirement.
+ * Every caller passes the result straight into a URL Billplz will send a
+ * parent — or KIDDO's own server — back to; see `docs/SECURITY.md` for the
+ * deployment requirement.
  */
 export function siteUrl(request: Request): string | null {
   const configured = process.env.NEXT_PUBLIC_SITE_URL;
@@ -93,7 +113,7 @@ export function safePath(value: unknown, fallback: string): string {
 }
 
 /**
- * Every JSON body KIDDO accepts is a handful of short fields — a plan name
+ * Every JSON body KIDDO accepts is a handful of short fields — a bill id
  * and a path. Four kilobytes is already far more than any of them, and is
  * small enough that a flood of large bodies is refused before the server
  * has spent memory holding one.

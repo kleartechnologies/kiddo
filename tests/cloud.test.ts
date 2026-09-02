@@ -53,7 +53,7 @@ import { activitiesOf } from "@/lib/worlds/activities";
  */
 
 import { CloudError } from "@/lib/cloud/types";
-import { ACTIVE, FakeCloud, storage } from "./helpers/fakeCloud";
+import { FakeCloud, PAID, storage } from "./helpers/fakeCloud";
 
 /* ---- Helpers ------------------------------------------------------------ */
 
@@ -107,7 +107,7 @@ test("a fresh device starts signed out without loading the backend", async () =>
 test("a device that has signed in before restores the session on load", async () => {
   cloud.accounts.set("p@example.com", { uid: "uid-1", password: "secret1", verified: true });
   cloud.current = { uid: "uid-1", email: "p@example.com", emailVerified: true };
-  cloud.subscriptions.set("uid-1", ACTIVE);
+  cloud.entitlements.set("uid-1", PAID);
   cloud.children.set("child-1", { id: "child-1", parentId: "uid-1", name: "Mia" });
   storage.setItem(ACCOUNT_HINT_KEY, "1");
   await boot();

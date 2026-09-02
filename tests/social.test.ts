@@ -16,29 +16,28 @@ import {
  * cannot be made up.
  *
  * The claim KIDDO makes on the landing page is "another family joined".
- * That claim is only honest if every notice traces back to a Stripe
- * subscription that really became active — so these tests do not merely
- * check the formatting, they check the shape of the system: that the only
- * writer is the webhook, that nothing generates or samples an event, that
- * the document holds no fact about a person, and that "no events" renders
- * as no notices rather than as something reassuring.
+ * That claim is only honest if every notice traces back to a Billplz bill
+ * that really settled — so these tests do not merely check the formatting,
+ * they check the shape of the system: that the only writer is the grant
+ * itself, that nothing generates or samples an event, that the document
+ * holds no fact about a person, and that "no events" renders as no notices
+ * rather than as something reassuring.
  */
 
 const NOW = 1_800_000_000_000;
 const MINUTE = 60_000;
-const at = (msAgo: number): JoinEvent => ({ at: NOW - msAgo, plan: null });
+const at = (msAgo: number): JoinEvent => ({ at: NOW - msAgo });
 
-test("an event is two facts, read back defensively, or it is not an event", () => {
-  assert.deepEqual(parseJoinEvent({ at: NOW, plan: "yearly" }), { at: NOW, plan: "yearly" });
-  assert.deepEqual(parseJoinEvent({ at: NOW, plan: "monthly" }), { at: NOW, plan: "monthly" });
-  assert.deepEqual(parseJoinEvent({ at: NOW }), { at: NOW, plan: null });
-  assert.deepEqual(parseJoinEvent({ at: NOW, plan: "lifetime" }), { at: NOW, plan: null });
+test("an event is one fact, read back defensively, or it is not an event", () => {
+  assert.deepEqual(parseJoinEvent({ at: NOW }), { at: NOW });
   for (const bad of [null, undefined, "yesterday", 5, [], {}, { at: "now" }, { at: 0 }, { at: -1 }, { at: NaN }]) {
     assert.equal(parseJoinEvent(bad), null, `${JSON.stringify(bad)} parsed as an event`);
   }
-  /* Anything else in the document is dropped rather than carried onward. */
+  /* Anything else in the document is dropped rather than carried onward —
+     including the `plan` on rows written while KIDDO was a subscription,
+     which is history rather than something a notice may mention. */
   const extra = parseJoinEvent({ at: NOW, plan: "yearly", uid: "uid-1", email: "p@example.com", city: "Ipoh", amount: 5990 });
-  assert.deepEqual(Object.keys(extra ?? {}).sort(), ["at", "plan"]);
+  assert.deepEqual(Object.keys(extra ?? {}), ["at"]);
 });
 
 test("only recent, real, newest-first events are shown, and only a handful", () => {
@@ -56,20 +55,23 @@ test("only recent, real, newest-first events are shown, and only a handful", () 
 
 test("a notice says a family joined and nothing about the family", () => {
   const sentences = [
-    noticeFor({ at: NOW, plan: "yearly" }, "en"),
-    noticeFor({ at: NOW, plan: "monthly" }, "en"),
-    noticeFor({ at: NOW, plan: null }, "en"),
+    noticeFor({ at: NOW }, "en"),
+    noticeFor({ at: NOW + 1 }, "en"),
+    noticeFor({ at: NOW }, "ms"),
+    noticeFor({ at: NOW + 1 }, "ms"),
   ];
-  assert.match(sentences[0], /Yearly plan/);
   for (const sentence of sentences) {
     assert.doesNotMatch(sentence, /\d/, `"${sentence}" carries a number`);
     assert.doesNotMatch(sentence, /@|\bfrom\b|RM/, `"${sentence}" carries a place, a name or an amount`);
     assert.ok(sentence.length < 60);
   }
-  assert.equal(new Set(sentences).size, 3, "each plan reads differently, so the notice is about a real event");
+  assert.equal(new Set(sentences).size, 4, "two wordings, two languages, and no repeats between them");
+  /* The wording is a function of the event, not of the moment it is drawn,
+     so a reload does not turn one purchase into two different notices. */
+  assert.equal(noticeFor({ at: NOW }, "en"), noticeFor({ at: NOW }, "en"));
 });
 
-test("nothing in KIDDO can invent a join: the webhook is the only writer", () => {
+test("nothing in KIDDO can invent a join: the grant is the only writer", () => {
   const walk = (dir: string): string[] =>
     readdirSync(dir, { withFileTypes: true }).flatMap((entry) =>
       entry.isDirectory() ? walk(`${dir}/${entry.name}`) : /\.(ts|tsx)$/.test(entry.name) ? [`${dir}/${entry.name}`] : [],
@@ -78,13 +80,17 @@ test("nothing in KIDDO can invent a join: the webhook is the only writer", () =>
   const writers = walk(src).filter((file) => /collection\(JOINS\)|"joinEvents"/.test(readFileSync(file, "utf8")));
   assert.deepEqual(
     writers.map((f) => f.slice(src.length)),
-    ["/server/billing.ts"],
-    "joinEvents is touched somewhere other than the webhook's own module",
+    ["/server/entitlement.ts"],
+    "joinEvents is touched somewhere other than the module that grants access",
   );
 
-  const billing = readFileSync(`${src}/server/billing.ts`, "utf8");
-  assert.match(billing, /\.doc\(subscriptionId\)\.create\(\{ at, plan \}\)/, "a join must be one document per real subscription, created once");
-  assert.match(billing, /status === "active" && !applied\.wasActive/, "a join is recorded on the transition into active, not on every event");
+  const entitlement = readFileSync(`${src}/server/entitlement.ts`, "utf8");
+  assert.match(entitlement, /\.doc\(billId\)\.create\(\{ at \}\)/, "a join must be one document per settled bill, created once");
+  assert.match(
+    entitlement,
+    /if \(result\.outcome === "granted"\) await recordJoin\(/,
+    "a join is recorded on the transition into granted, not on every callback",
+  );
 
   /* No sample data, no generator, no clock that produces news by itself. */
   for (const file of [`${src}/lib/social/joins.ts`, `${src}/components/landing/JoinNotices.tsx`, `${src}/app/api/social/recent/route.ts`]) {
@@ -95,7 +101,7 @@ test("nothing in KIDDO can invent a join: the webhook is the only writer", () =>
 
   /* Firestore hands joinEvents to no client, signed in or not. */
   const rules = readFileSync(new URL("../firestore.rules", import.meta.url), "utf8");
-  assert.match(rules, /match \/joinEvents\/\{subscriptionId\} \{\s*allow read, write: if false;/);
+  assert.match(rules, /match \/joinEvents\/\{joinId\} \{\s*allow read, write: if false;/);
 });
 
 test("no events is answered with no notices, never with something reassuring", () => {

@@ -1,4 +1,4 @@
-import type { Plan, SubscriptionState } from "@/lib/billing/subscription";
+import type { Entitlement } from "@/lib/billing/access";
 import type { Journey } from "@/lib/journey/journey";
 
 /**
@@ -121,7 +121,9 @@ export interface CloudBackend {
    * Removes the journey, the child, the user document and finally the
    * parent's sign-in, in that order, so nothing private is left behind.
    * When billing is set up this goes through the server, which also
-   * cancels the Stripe subscription first.
+   * cancels any old Stripe subscription first. It ends the lifetime
+   * entitlement too — `access` lives on `users/{uid}` — which is why the
+   * confirmation says so in as many words.
    */
   deleteAccount(user: ParentUser): Promise<void>;
 
@@ -140,12 +142,29 @@ export interface CloudBackend {
   /* ---- Billing --------------------------------------------------------- */
 
   /**
-   * Watches `users/{uid}.subscription`. Fires with `NO_SUBSCRIPTION` when
-   * the document or field does not exist, so the first call always comes.
+   * Watches the billing half of `users/{uid}`: the lifetime purchase, and
+   * the old subscription for a parent who has one. Fires with
+   * `NO_ENTITLEMENT` when the document or the fields do not exist, so the
+   * first call always comes.
    */
-  watchSubscription(uid: string, listener: (state: SubscriptionState) => void): () => void;
-  /** Asks the server for a Stripe Checkout URL; the caller navigates to it. */
-  startCheckout(plan: Plan, returnTo: string): Promise<string>;
-  /** Asks the server for a Stripe Customer Portal URL. */
+  watchEntitlement(uid: string, listener: (entitlement: Entitlement) => void): () => void;
+  /**
+   * Asks the server for a Billplz bill; the caller navigates to `url`.
+   * `billId` comes back so the return leg can name the bill it is asking
+   * about — it is not proof of anything by itself.
+   */
+  startPurchase(returnTo: string): Promise<{ url: string; billId: string }>;
+  /**
+   * Asks the server whether a bill has actually been paid, and resolves to
+   * what the server said. The server re-reads the bill from Billplz; a
+   * `true` here means access has been written, not that a browser came back
+   * from a payment page.
+   */
+  confirmPurchase(billId: string): Promise<boolean>;
+  /**
+   * Asks the server for a Stripe Customer Portal URL. Only reachable by the
+   * parents who subscribed before KIDDO was sold once; see
+   * `docs/kiddo-billing.md`.
+   */
   openPortal(returnTo: string): Promise<string>;
 }

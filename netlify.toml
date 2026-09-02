@@ -6,9 +6,15 @@
 # here; everything else is left to the runtime's defaults.
 #
 # No secrets belong in this file. Every value KIDDO needs at runtime —
-# FIREBASE_SERVICE_ACCOUNT, STRIPE_SECRET_KEY, STRIPE_WEBHOOK_SECRET, the two
-# price ids, and the NEXT_PUBLIC_* identifiers — is set under
-# Site configuration → Environment variables, where it is never committed.
+# FIREBASE_SERVICE_ACCOUNT, BILLPLZ_SECRET_KEY, BILLPLZ_COLLECTION_ID,
+# BILLPLZ_XSIGNATURE_KEY, BILLPLZ_MODE, the legacy Stripe values, and the
+# NEXT_PUBLIC_* identifiers — is set under Site configuration →
+# Environment variables, where it is never committed.
+#
+# BILLPLZ_MODE deserves a deliberate hand: set it to "production" only on
+# the production context, with production Billplz credentials beside it.
+# Every other context should be left on sandbox, which is also what an
+# unset value means.
 
 [build]
   command = "npm run build"

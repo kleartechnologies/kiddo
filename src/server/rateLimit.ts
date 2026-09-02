@@ -58,20 +58,32 @@ export interface RateLimitResult {
 /**
  * KIDDO's budgets, in one place so they can be read as a set.
  *
- * These are sized for a family, not for a load test. A parent subscribes
- * once, opens the portal when something changes, and deletes an account at
- * most once ever. Anything above these numbers is not a parent.
+ * These are sized for a family, not for a load test. A parent buys KIDDO
+ * once, comes back from Billplz a handful of times at most, and deletes an
+ * account at most once ever. Anything above these numbers is not a parent.
  */
 export const LIMITS = {
   /** Public and unauthenticated, so keyed on IP and the loosest of them. */
   social: { name: "social", limit: 30, windowMs: 60_000 },
-  /** Each call creates a real Stripe Checkout session. */
+  /** Each call creates a real Billplz bill. */
   checkout: { name: "checkout", limit: 8, windowMs: 60 * 60_000 },
-  /** Each call creates a real Stripe Customer Portal session. */
+  /**
+   * Re-checking one's own bill after coming back from Billplz. Looser than
+   * creating one — the browser may ask a few times while the callback is in
+   * flight — but still bounded, because each call is a request to Billplz.
+   */
+  confirm: { name: "confirm", limit: 30, windowMs: 60 * 60_000 },
+  /**
+   * The Billplz callback, keyed on the bill it names. Billplz retries a
+   * handful of times; a stranger replaying one must not be able to make
+   * KIDDO hammer the Billplz API on its behalf.
+   */
+  callback: { name: "callback", limit: 20, windowMs: 60 * 60_000 },
+  /** Each call creates a real Stripe Customer Portal session (legacy). */
   portal: { name: "portal", limit: 12, windowMs: 60 * 60_000 },
   /** Irreversible, and never wanted twice. */
   accountDelete: { name: "account-delete", limit: 3, windowMs: 60 * 60_000 },
-  /** Paid content draws, per subscriber. Generous: a child plays a lot. */
+  /** Paid content draws, per parent. Generous: a child plays a lot. */
   content: { name: "content", limit: 240, windowMs: 60 * 60_000 },
 } as const satisfies Record<string, RateLimitRule>;
 

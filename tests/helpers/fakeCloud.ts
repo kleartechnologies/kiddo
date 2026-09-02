@@ -1,4 +1,5 @@
-import type { Plan, SubscriptionState } from "@/lib/billing/subscription";
+import { LIFETIME_AMOUNT, NO_ACCESS, NO_ENTITLEMENT, type Entitlement } from "@/lib/billing/access";
+import type { SubscriptionState } from "@/lib/billing/subscription";
 import { NO_SUBSCRIPTION } from "@/lib/billing/subscription";
 import type { ChildProfile, CloudBackend, ParentUser } from "@/lib/cloud/types";
 import { CloudError } from "@/lib/cloud/types";
@@ -7,8 +8,19 @@ import type { Journey } from "@/lib/journey/journey";
 /**
  * An in-memory `CloudBackend` that behaves like the real one from the
  * stores' point of view: auth state arrives through a listener, a journey
- * or subscription watch fires with whatever is stored, writes can be made
- * to fail, and Checkout "redirects" are recorded instead of navigating.
+ * or entitlement watch fires with whatever is stored, writes can be made to
+ * fail, and the trip to Billplz is recorded instead of navigating.
+ *
+ * The payment is modelled in the three separate steps the real one has, so
+ * a test can put them in any order and see what the store does:
+ *
+ *   startPurchase   a bill exists; nobody has paid anything
+ *   payBill         the parent paid at the bank; KIDDO has not been told
+ *   deliverCallback the server heard, checked with Billplz, and granted
+ *
+ * `confirmPurchase` is the fourth: the browser asking the same question on
+ * its way back. It grants on the same evidence the callback does and on no
+ * other, which is the property the redirect leg has to have.
  *
  * Shared by the cloud (accounts) tests and the billing tests.
  */
@@ -48,6 +60,19 @@ export const navigations: string[] = [];
   },
 };
 
+/** A parent who bought KIDDO. The ordinary state of a paid-up account. */
+export const PAID: Entitlement = {
+  access: {
+    lifetime: true,
+    grantedAt: 1_700_000_000_000,
+    source: "billplz",
+    billId: "bill_paid",
+    amount: LIFETIME_AMOUNT,
+  },
+  subscription: NO_SUBSCRIPTION,
+};
+
+/** A subscription from before KIDDO was sold once, still paid up. */
 export const ACTIVE: SubscriptionState = {
   status: "active",
   plan: "yearly",
@@ -58,6 +83,9 @@ export const ACTIVE: SubscriptionState = {
   eventCreated: 1_700_000_000,
 };
 
+/** That parent's whole entitlement: no purchase, one live subscription. */
+export const LEGACY: Entitlement = { access: NO_ACCESS, subscription: ACTIVE };
+
 /* ---- The fake cloud ----------------------------------------------------- */
 
 export class FakeCloud implements CloudBackend {
@@ -66,20 +94,21 @@ export class FakeCloud implements CloudBackend {
   journeys = new Map<string, Journey>();
   /** `password: null` is a Google account — no password can reach it. */
   accounts = new Map<string, { uid: string; password: string | null; verified: boolean }>();
-  subscriptions = new Map<string, SubscriptionState>();
+  entitlements = new Map<string, Entitlement>();
   /**
    * Most account tests are about the child and the journey, not billing,
-   * so by default every new account is treated as paid up. Billing tests
-   * turn this off and set `subscriptions` by hand.
+   * so by default every new account is treated as having bought KIDDO.
+   * Billing tests turn this off and set `entitlements` by hand.
    */
-  autoSubscribe = true;
+  autoGrant = true;
   current: ParentUser | null = null;
   failWrites = false;
   writes = 0;
-  /** What the fake "server" answers: a URL, or a failure reason. */
-  checkoutAnswer: string | CloudError = "https://checkout.stripe.test/session";
+  /** What the fake "server" answers when asked for a bill, or why not. */
+  purchaseAnswer: CloudError | null = null;
   portalAnswer: string | CloudError = "https://billing.stripe.test/portal";
-  checkouts: Array<{ uid: string; plan: Plan; returnTo: string }> = [];
+  /** Every bill this fake has created, in order. */
+  bills: Array<{ id: string; uid: string; returnTo: string; paid: boolean }> = [];
   resetEmails: string[] = [];
   verificationEmails: string[] = [];
   /** Codes the fake will accept, mapped to the email they are for. */
@@ -103,7 +132,7 @@ export class FakeCloud implements CloudBackend {
   hangGoogle = false;
   private authListeners = new Set<(user: ParentUser | null) => void>();
   private journeyListeners = new Map<string, Set<(journey: Journey | null) => void>>();
-  private subscriptionListeners = new Map<string, Set<(state: SubscriptionState) => void>>();
+  private entitlementListeners = new Map<string, Set<(state: Entitlement) => void>>();
 
   /** The auth callback, as Firebase fires it: on subscribe and on change. */
   onAuth(listener: (user: ParentUser | null) => void) {
@@ -120,7 +149,7 @@ export class FakeCloud implements CloudBackend {
     if (password.length < 6) throw new CloudError("weak-password", "weak");
     const uid = `uid-${this.accounts.size + 1}`;
     this.accounts.set(email, { uid, password, verified: false });
-    if (this.autoSubscribe) this.subscriptions.set(uid, ACTIVE);
+    if (this.autoGrant) this.entitlements.set(uid, PAID);
     const user = { uid, email, emailVerified: false };
     this.become(user);
     return user;
@@ -129,7 +158,7 @@ export class FakeCloud implements CloudBackend {
     const account = this.accounts.get(email);
     if (!account) throw new CloudError("no-account", "none");
     if (account.password === null || account.password !== password) throw new CloudError("wrong-password", "wrong");
-    if (this.autoSubscribe && !this.subscriptions.has(account.uid)) this.subscriptions.set(account.uid, ACTIVE);
+    if (this.autoGrant && !this.entitlements.has(account.uid)) this.entitlements.set(account.uid, PAID);
     const user = { uid: account.uid, email, emailVerified: account.verified };
     this.become(user);
     return user;
@@ -153,7 +182,7 @@ export class FakeCloud implements CloudBackend {
     if (existing && existing.password !== null) throw new CloudError("different-sign-in", "password account");
     const uid = existing?.uid ?? `uid-${this.accounts.size + 1}`;
     if (!existing) this.accounts.set(email, { uid, password: null, verified: true });
-    if (this.autoSubscribe && !this.subscriptions.has(uid)) this.subscriptions.set(uid, ACTIVE);
+    if (this.autoGrant && !this.entitlements.has(uid)) this.entitlements.set(uid, PAID);
     /* Google has already checked the address, so the account arrives
        verified and never sees the "check your email" step. */
     const user = { uid, email, emailVerified: true };
@@ -172,7 +201,7 @@ export class FakeCloud implements CloudBackend {
     if (existing && existing.password !== null) throw new CloudError("different-sign-in", "password account");
     const uid = existing?.uid ?? `uid-${this.accounts.size + 1}`;
     if (!existing) this.accounts.set(answer, { uid, password: null, verified: true });
-    if (this.autoSubscribe && !this.subscriptions.has(uid)) this.subscriptions.set(uid, ACTIVE);
+    if (this.autoGrant && !this.entitlements.has(uid)) this.entitlements.set(uid, PAID);
     const user = { uid, email: answer, emailVerified: true };
     this.become(user);
     return user;
@@ -216,7 +245,10 @@ export class FakeCloud implements CloudBackend {
       this.children.delete(id);
     }
     this.users.delete(user.uid);
-    this.subscriptions.delete(user.uid);
+    /* Deleting the account deletes the user document, and `access` lives on
+       it — so the lifetime purchase goes with it. See `deleteAccount` in
+       `docs/kiddo-billing.md`. */
+    this.entitlements.delete(user.uid);
     this.deleted.push(user.uid);
     for (const [email, account] of this.accounts) if (account.uid === user.uid) this.accounts.delete(email);
     this.become(null);
@@ -263,24 +295,69 @@ export class FakeCloud implements CloudBackend {
 
   /* ---- Billing --------------------------------------------------------- */
 
-  watchSubscription(uid: string, listener: (state: SubscriptionState) => void) {
-    const set = this.subscriptionListeners.get(uid) ?? new Set();
+  watchEntitlement(uid: string, listener: (state: Entitlement) => void) {
+    const set = this.entitlementListeners.get(uid) ?? new Set();
     set.add(listener);
-    this.subscriptionListeners.set(uid, set);
-    queueMicrotask(() => listener(this.subscriptions.get(uid) ?? NO_SUBSCRIPTION));
+    this.entitlementListeners.set(uid, set);
+    queueMicrotask(() => listener(this.entitlements.get(uid) ?? NO_ENTITLEMENT));
     return () => set.delete(listener);
   }
-  /** What the webhook does: the server writes, the watch fires. */
-  setSubscription(uid: string, state: SubscriptionState) {
-    this.subscriptions.set(uid, state);
-    for (const listener of this.subscriptionListeners.get(uid) ?? []) listener(state);
+
+  /** What the server does: it writes, and the watch hears about it. */
+  setEntitlement(uid: string, state: Entitlement) {
+    this.entitlements.set(uid, state);
+    for (const listener of this.entitlementListeners.get(uid) ?? []) listener(state);
   }
-  async startCheckout(plan: Plan, returnTo: string) {
+
+  /** Ask for a bill. Creating one is not paying for one. */
+  async startPurchase(returnTo: string) {
     if (!this.current) throw new CloudError("no-account");
-    if (this.checkoutAnswer instanceof CloudError) throw this.checkoutAnswer;
-    this.checkouts.push({ uid: this.current.uid, plan, returnTo });
-    return this.checkoutAnswer;
+    if (this.purchaseAnswer) throw this.purchaseAnswer;
+    const id = `bill_${this.bills.length + 1}`;
+    this.bills.push({ id, uid: this.current.uid, returnTo, paid: false });
+    return { url: `https://www.billplz-sandbox.test/bills/${id}`, billId: id };
   }
+
+  /** The parent paid at the bank. KIDDO has not been told yet. */
+  payBill(billId: string) {
+    const bill = this.bills.find((one) => one.id === billId);
+    if (bill) bill.paid = true;
+  }
+
+  /**
+   * The server-side callback, arriving. Grants only for a bill that was
+   * actually paid, and is safe to call as many times as Billplz sends it.
+   */
+  deliverCallback(billId: string): boolean {
+    const bill = this.bills.find((one) => one.id === billId);
+    if (!bill?.paid) return false;
+    const before = this.entitlements.get(bill.uid) ?? NO_ENTITLEMENT;
+    if (before.access.lifetime) return true;
+    this.setEntitlement(bill.uid, {
+      ...before,
+      access: {
+        lifetime: true,
+        grantedAt: Date.now(),
+        source: "billplz",
+        billId,
+        amount: LIFETIME_AMOUNT,
+      },
+    });
+    return true;
+  }
+
+  /**
+   * The browser, back from Billplz, asking the server whether that bill was
+   * really paid. Answers for the caller's own bills only — an unknown bill
+   * and somebody else's get the same "no", so ids cannot be fished for.
+   */
+  async confirmPurchase(billId: string): Promise<boolean> {
+    if (!this.current) throw new CloudError("no-account");
+    const bill = this.bills.find((one) => one.id === billId);
+    if (!bill || bill.uid !== this.current.uid) return false;
+    return this.deliverCallback(billId);
+  }
+
   async openPortal(returnTo: string) {
     if (!this.current) throw new CloudError("no-account");
     if (this.portalAnswer instanceof CloudError) throw this.portalAnswer;

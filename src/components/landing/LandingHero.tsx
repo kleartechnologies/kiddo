@@ -3,7 +3,8 @@
 import { ArrowRight, Check } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
-import { LIFETIME_PRICE } from "@/lib/billing/access";
+import { LIFETIME_PRICE, ORIGINAL_PRICE } from "@/lib/billing/access";
+import { LaunchOffer } from "@/components/landing/LaunchOffer";
 import { reportCta } from "@/lib/analytics/events";
 import { ButtonLink } from "@/components/ui/Button";
 import { WorldScene } from "@/components/worlds/WorldScene";
@@ -27,10 +28,12 @@ import { PLAYABLE_WORLDS } from "@/lib/worlds/activities";
  *
  * The price stands in the open right under the pitch — a parent one tap off
  * a cold advert decides against hidden pricing faster than against any
- * price — and the three lines under the buttons answer the objections that
- * would otherwise be raised silently: no advertising, nothing sold to the
- * child, one payment and no renewal. The figure comes from
- * `LIFETIME_AMOUNT`, so it is the figure the bill will carry.
+ * price — and it stands there as the launch offer itself: the shared
+ * `LaunchOffer` card, old price struck through, launch price large. The
+ * three lines under the buttons answer the objections that would otherwise
+ * be raised silently: no advertising, nothing sold to the child, one payment
+ * and no renewal. The figures come from `lib/billing/access`, so they are
+ * the figures the bill will carry.
  *
  * Next to the words are the three worlds, drawn by the same `WorldScene` the
  * child's own doors are drawn with, with KIDDO waving in front the way it
@@ -69,9 +72,12 @@ export function LandingHero() {
         <p className="text-ink-700 mx-auto max-w-xl text-lg leading-relaxed text-pretty sm:text-xl lg:mx-0">
           {t("landing.hero.body")}
         </p>
-        <p className="font-display text-ink-900 text-lg font-semibold sm:text-xl">
-          {t("landing.hero.price", { price: LIFETIME_PRICE })}
-        </p>
+        <LaunchOffer
+          scale="hero"
+          price={LIFETIME_PRICE}
+          was={ORIGINAL_PRICE}
+          className="mx-auto w-full max-w-sm lg:mx-0"
+        />
         <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-center lg:justify-start">
           <ButtonLink
             href={PRICING}
@@ -84,7 +90,7 @@ export function LandingHero() {
               followHashLink(event, "pricing");
             }}
           >
-            {t("landing.hero.cta")}
+            {t("offer.cta", { price: LIFETIME_PRICE })}
           </ButtonLink>
           <ButtonLink
             href="#gameplay"

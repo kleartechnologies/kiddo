@@ -68,6 +68,7 @@ export const en = {
   "landing.footer.aria": "Footer",
   "landing.footer.blurb":
     "A small, safe play world for children aged 4 to 8, so that screen time becomes time to play, learn and explore. One parent account, no adverts, nothing sold to your child.",
+  "landing.footer.copyright": "© ZWEET ENTERPRISE 2026. All rights reserved.",
 
   /* ---- Landing: metadata --------------------------------------------- */
   "landing.meta.title": "KIDDO — Turn your child’s screen time into play and learning",
@@ -258,12 +259,12 @@ export const en = {
   "landing.pricing.title": "Make screen time worth something.",
   "landing.pricing.body":
     "One payment, by you, the grown-up. Your child never signs in, never sees a price and is never asked to buy anything.",
-  "landing.pricing.included.1": "Every world, every door and every game",
+  "landing.pricing.included.1": "Full access to every KIDDO world, door and game",
   "landing.pricing.included.2":
-    "One child’s journey, kept and carried between devices",
-  "landing.pricing.included.3":
-    "The parent area, with what was explored and what is next",
-  "landing.pricing.included.4": "No adverts and nothing to buy inside",
+    "Nothing to pay each month or each year — one payment",
+  "landing.pricing.included.3": "New content, added continuously",
+  "landing.pricing.included.4": "Works on a phone, a tablet and a laptop",
+  "landing.pricing.included.5": "No adverts and no in-app purchases",
   "landing.pricing.footnote":
     "Paid once. Nothing renews, so there is nothing to cancel. Payments are handled by Billplz — KIDDO never sees or stores your card.",
 
@@ -495,6 +496,9 @@ export const en = {
   "offer.blurb": "Pay once. Lifetime access to KIDDO — no renewal, nothing to cancel.",
   "offer.cta": "Get KIDDO — {price}",
   "offer.ctaShort": "Get Access — {price}",
+  "offer.ctaNow": "Get KIDDO Now",
+  "offer.payOnce": "Pay once.",
+  "offer.lifetimeLine": "Lifetime KIDDO access.",
 
   /* ---- What a parent owns, in one word -------------------------------- */
   "access.label.lifetime": "Lifetime access",

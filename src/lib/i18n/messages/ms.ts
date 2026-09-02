@@ -58,6 +58,7 @@ export const ms: Record<MessageKey, string> = {
   "landing.footer.aria": "Kaki laman",
   "landing.footer.blurb":
     "Tempat bermain yang kecil dan selamat untuk anak berumur 4 hingga 8 tahun, supaya screen time jadi masa untuk bermain, belajar dan meneroka. Satu akaun ibu bapa, tiada iklan, tiada apa-apa dijual kepada anak anda.",
+  "landing.footer.copyright": "© ZWEET ENTERPRISE 2026. Hak Cipta Terpelihara.",
 
   /* ---- Landing: metadata --------------------------------------------- */
   "landing.meta.title": "KIDDO — Tukar screen time anak kepada masa bermain & belajar",
@@ -248,12 +249,12 @@ export const ms: Record<MessageKey, string> = {
   "landing.pricing.title": "Jadikan Screen Time Lebih Bermakna.",
   "landing.pricing.body":
     "Satu bayaran sahaja, oleh anda, orang dewasa. Anak tidak pernah log masuk, tidak pernah nampak harga, dan tidak pernah diminta membeli apa-apa.",
-  "landing.pricing.included.1": "Setiap dunia, setiap pintu dan setiap permainan",
+  "landing.pricing.included.1": "Akses penuh kepada setiap dunia, pintu dan permainan KIDDO",
   "landing.pricing.included.2":
-    "Perjalanan seorang anak, disimpan dan dibawa antara peranti",
-  "landing.pricing.included.3":
-    "Ruang ibu bapa, dengan apa yang diteroka dan apa yang seterusnya",
-  "landing.pricing.included.4": "Tiada iklan dan tiada apa-apa untuk dibeli di dalam",
+    "Tiada bayaran bulanan dan tiada bayaran tahunan — bayar sekali sahaja",
+  "landing.pricing.included.3": "Kemas kini kandungan secara berterusan",
+  "landing.pricing.included.4": "Boleh guna di telefon, tablet dan komputer riba",
+  "landing.pricing.included.5": "Tiada iklan dan tiada pembelian dalam aplikasi",
   "landing.pricing.footnote":
     "Bayar sekali sahaja. Tiada pembaharuan, jadi tiada apa-apa untuk dibatalkan. Pembayaran dikendalikan oleh Billplz — KIDDO tidak pernah melihat atau menyimpan kad anda.",
 
@@ -487,6 +488,9 @@ export const ms: Record<MessageKey, string> = {
   "offer.blurb": "Bayar sekali sahaja. Akses KIDDO seumur hidup — tiada pembaharuan, tiada apa-apa untuk dibatalkan.",
   "offer.cta": "Dapatkan KIDDO — {price}",
   "offer.ctaShort": "Dapatkan Akses — {price}",
+  "offer.ctaNow": "Dapatkan KIDDO Sekarang",
+  "offer.payOnce": "Bayar sekali sahaja.",
+  "offer.lifetimeLine": "Akses KIDDO seumur hidup.",
 
   "access.label.lifetime": "Akses seumur hidup",
   "access.label.legacy": "Langganan lama",

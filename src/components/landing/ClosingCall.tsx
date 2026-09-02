@@ -3,16 +3,17 @@
 import { ArrowRight } from "lucide-react";
 
 import { CharacterFigure } from "@/components/kiddo/CharacterFigure";
+import { LaunchOffer } from "@/components/landing/LaunchOffer";
 import { ButtonLink } from "@/components/ui/Button";
 import { reportCta } from "@/lib/analytics/events";
-import { LIFETIME_PRICE } from "@/lib/billing/access";
+import { LIFETIME_PRICE, ORIGINAL_PRICE } from "@/lib/billing/access";
 import { followHashLink } from "@/lib/hashLink";
 import { useT } from "@/lib/i18n/useLocale";
 import { PRICING } from "@/lib/routes";
 
 /** The last thing on the page says the first thing again, with KIDDO next to
-    it — and the price beside the button, so the final decision is made with
-    the figure in view rather than remembered from four screens up. */
+    it — and the launch offer beside the button, so the final decision is made
+    with the figure in view rather than remembered from four screens up. */
 export function ClosingCall() {
   const t = useT();
   return (
@@ -28,9 +29,12 @@ export function ClosingCall() {
         <p className="text-ink-700 max-w-xl text-lg leading-relaxed text-pretty">
           {t("landing.closing.body")}
         </p>
-        <p className="font-display text-ink-900 text-lg font-semibold">
-          {t("landing.hero.price", { price: LIFETIME_PRICE })}
-        </p>
+        <LaunchOffer
+          scale="compact"
+          price={LIFETIME_PRICE}
+          was={ORIGINAL_PRICE}
+          className="w-full max-w-xs"
+        />
         <ButtonLink
           href={PRICING}
           data-landing-closing-cta
@@ -42,7 +46,7 @@ export function ClosingCall() {
             followHashLink(event, "pricing");
           }}
         >
-          {t("landing.closing.cta")}
+          {t("offer.ctaNow")}
         </ButtonLink>
       </div>
     </section>
